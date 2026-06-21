@@ -45,7 +45,20 @@ The monorepo shares tooling configuration (ESLint, Prettier, TypeScript configs,
 
 MySQL 8+ remains the primary data store, accessed exclusively through the Laravel API.
 
-### 2.1 High-Level Architecture
+### 2.1 Cross-Cutting System Features
+
+Independent of the clinical modules, the application includes a set of foundational features available to all authenticated users:
+
+- **Authentication & Identity**: Register, Login, Logout, Email Verification, OTP verification, Forgot Password, Reset Password, Profile management.
+- **Settings**: Per-user preferences (theme, language, notification preferences) and admin-configurable system settings.
+- **Search & Filter**: Global search bar across patients, doctors, appointments, bills, and other entities. Server-side filtering, sorting, and pagination on all list endpoints.
+- **Home Page**: A role-based dashboard acting as the landing page after login, showing relevant KPIs, recent activity, and quick actions.
+- **Messaging**: Internal communication between staff (doctor-to-doctor, doctor-to-reception, admin broadcast). Threaded conversations with read/unread status.
+- **Notifications**: In-app notification bell with real-time badge count, plus email/SMS channels. Configurable per event type (appointment reminders, lab results, billing alerts, etc.).
+- **Activity Logs**: Immutable audit trail recording all Create/Update/Delete operations with user, timestamp, IP, and diff of changed fields.
+- **Device Logs**: Record of user login sessions including device type, browser, IP, and timestamps for security monitoring.
+
+### 2.2 High-Level Architecture
 
 ```
 ┌─────────────────────────────────────────────────────────────────────┐
@@ -155,6 +168,28 @@ MySQL 8+ remains the primary data store, accessed exclusively through the Larave
 59. As a **Patient**, I want to cancel or reschedule an appointment online, so that I can manage my bookings without calling.
 60. As a **Patient**, I want to receive SMS/email reminders for upcoming appointments, so that I don't forget my visits.
 
+### 3.3 Cross-Cutting System Features
+
+61. As a **Visitor**, I want to register a new account with my email or phone, so that I can access the patient portal.
+62. As a **Visitor**, I want to receive an OTP on my registered phone/email during registration and login, so that my account is verified securely.
+63. As a **Registered User**, I want to log in using my email/phone and password, so that I can access my account.
+64. As a **Registered User**, I want to receive a password reset link or OTP if I forget my password, so that I can regain access to my account.
+65. As a **Registered User**, I want to reset my password using a secure token or OTP, so that my account remains protected.
+66. As a **Registered User**, I want to verify my email address after registration, so that my identity is confirmed and I can receive notifications.
+67. As a **User**, I want to view and edit my profile (name, phone, email, avatar, change password), so that my information stays current.
+68. As a **User**, I want to configure my notification preferences (which events trigger email/SMS/in-app), so that I control what I receive.
+69. As a **User**, I want to see a role-based home page after login with relevant KPIs, recent activity, quick actions, and announcements, so that I can start work immediately.
+70. As a **User**, I want to use a global search bar to quickly find patients, doctors, appointments, bills, or any entity, so that I don't need to navigate through menus.
+71. As a **User**, I want to filter and sort table data on any list page (patients, appointments, bills), so that I can find what I need quickly.
+72. As a **User**, I want to send an internal message to another staff member (doctor, nurse, reception), so that I can communicate without leaving the application.
+73. As a **User**, I want to view my conversations as a threaded list with read/unread status and reply inline, so that I stay organized.
+74. As a **User**, I want to receive in-app notifications with a bell icon showing unread count, so that I never miss important updates.
+75. As a **User**, I want in-app notifications to link directly to the relevant record (appointment, lab result, message), so that I can act on them immediately.
+76. As a **Super Admin**, I want to view activity logs showing who did what and when across the entire system, so that I can audit changes for compliance.
+77. As a **Super Admin**, I want to view device logs showing login history with device type, browser, IP, and location, so that I can detect unauthorized access.
+78. As a **User**, I want to see my own recent login sessions and revoke any active session, so that I can secure my account if I suspect compromise.
+79. As a **User**, I want to configure my account settings (language, timezone, theme), so that the application works the way I prefer.
+
 ---
 
 ## 4. Implementation Decisions
@@ -178,9 +213,12 @@ MySQL 8+ remains the primary data store, accessed exclusively through the Larave
 - Form Request validation for all API endpoints.
 - API resource classes for consistent JSON responses.
 - Spatie Laravel Permission for RBAC — permission checks in controllers/FormRequests.
-- Laravel Queue with database driver for async jobs (notifications, report generation, backups).
+- Laravel Queue with database driver for async jobs (notifications, report generation, backups, email dispatch).
 - Laravel Cache for content caching with tag-based invalidation.
-- Jobs for: SMS notifications, email notifications, PDF generation, scheduled report dispatch, database backup.
+- Jobs for: SMS notifications, email notifications, in-app notifications, PDF generation, scheduled report dispatch, database backup, message dispatch.
+- Laravel's built-in notification system with database (in-app), mail, and SMS (Vonage/Twilio) channels.
+- Spatie Activitylog package or custom Model Observers for immutable audit trail on all core models.
+- Reusable `FilterService` trait for consistent search/filter/sort/paginate across all list endpoints.
 - All business logic in Service classes, not controllers.
 
 ### 4.3 React SPA Frontend
@@ -188,23 +226,58 @@ MySQL 8+ remains the primary data store, accessed exclusively through the Larave
 - **Framework**: React 18+ with TypeScript.
 - **Build tool**: Vite.
 - **Routing**: React Router v6+ with lazy-loaded route groups:
-  - `/admin/*` — Admin panel (20 module routes, protected by auth check)
+  - `/admin/*` — Admin panel (20 module routes, protected by auth + role)
   - `/public/*` — Public website routes (open access)
-  - `/portal/*` — Patient portal routes (protected by auth check)
+  - `/portal/*` — Patient portal routes (protected by patient auth)
+  - `/auth/*` — Login, Register, Forgot Password, Reset Password (guest only)
+  - `/settings/*` — Profile, Preferences, Sessions, Change Password
 - **State management**: React Context + hooks for auth/user state; React Query (TanStack Query) for server state caching and mutations.
-- **UI components**: Shared component library under `src/shared/components/` (DataTable, Form fields, Modal, Card, Chart, Calendar, KPI widget).
-- **API client**: Axios instance with interceptors for auth token/cookie attachment, error handling, and request/response transformation.
+- **UI components**: Shared component library under `src/shared/components/` (DataTable with built-in search/filter/sort/pagination, Form fields, Modal, Card, Chart, Calendar, KPI widget, NotificationBell, MessagePanel).
+- **API client**: Axios instance with interceptors for auth token/cookie attachment, error handling, and request/response transformation. Global search bar component with debounced lookup across multiple endpoints.
 - **Form handling**: React Hook Form + Zod for client-side validation matching server rules.
 - **Charts**: Recharts or Chart.js React wrapper for dashboard visualizations.
 - **Rich text**: React Quill or TipTap for CMS content editing.
 - **Styling**: Tailwind CSS 3 with a shared design system.
 
-### 4.4 Authentication Flow
+### 4.4 Authentication & Identity Flow
 
-- React SPA makes a POST to `/api/login` → Laravel validates credentials → Sanctum issues a session cookie (SPA auth) or token (API auth).
-- On page load, React calls `GET /api/user` to validate session and fetch user permissions.
-- Frontend stores role/permissions in React context; route guards block unauthorized navigation.
-- Patient portal uses same Sanctum SPA auth with separate login endpoint.
+**Registration:**
+- `POST /api/register` accepts name, email, phone, password. Optionally triggers email verification and/or phone OTP depending on configuration.
+- During registration, the user can optionally select role (admin registration by super admin allows role assignment; self-registration defaults to Patient role).
+
+**Login:**
+- `POST /api/login` validates credentials → Sanctum issues a session cookie (SPA auth) for browser clients, or a token-based auth (API clients).
+- If 2FA/OTP is enabled for the account, login returns a `requires_otp` flag; the client then prompts for OTP and calls `POST /api/login/otp` to complete authentication.
+- On page load, React calls `GET /api/user` to validate session and fetch user permissions, roles, and profile data.
+- Frontend stores user/permissions in React context; route guards block unauthorized navigation.
+
+**Email Verification:**
+- `POST /api/email/verify/send` sends a verification link to the user's registered email.
+- `GET /api/email/verify/{id}/{hash}` verifies the email via signed URL (Laravel built-in).
+- Unverified users can still log in but have limited access (cannot book appointments, cannot receive notifications).
+
+**OTP Verification:**
+- OTP can serve as 2FA (after password login) or as a standalone verification step (registration, password reset).
+- `POST /api/otp/send` sends a 6-digit code to the verified phone/email.
+- `POST /api/otp/verify` validates the code with expiry check (OTP expires after 5 minutes, one-time use).
+- Rate-limited: max 3 OTP requests per 10 minutes per user.
+
+**Password Reset:**
+- `POST /api/forgot-password` sends a reset link or OTP to the registered email/phone.
+- `POST /api/reset-password` accepts token/OTP + new password + confirmation, resets the credential.
+- Uses Laravel built-in password reset with Sanctum token scoping.
+
+**Profile Management:**
+- `GET /api/profile` returns the authenticated user's profile.
+- `PUT /api/profile` updates name, phone, email, avatar (with re-verification if email changed).
+- `PUT /api/profile/password` changes password (requires current password verification).
+
+**Session Management:**
+- `GET /api/sessions` returns list of active sessions (device, browser, IP, last active, created at).
+- `DELETE /api/sessions/{id}` revokes a specific session (logs out the device).
+
+**Patient Portal:**
+- Uses same Sanctum SPA auth with a separate `/api/portal/*` login endpoint scoped to patient role only.
 
 ### 4.5 API Response Convention
 
@@ -242,25 +315,24 @@ Error responses:
 - UUIDs for public-facing IDs (patient ID, appointment reference, bill number) to avoid sequential ID exposure.
 - Database migrations in the backend package.
 
-### 4.7 Module Implementation Order
+### 4.15 Module Implementation Order
 
-The same 23 vertical slices from the v1.0 roadmap apply, but each slice now includes:
-
+Each vertical slice includes:
 - **Backend**: Migration, Model, API Controller, Form Request, Service class, API Resource, Route, Test
 - **Frontend**: Page components, route config, API client integration, form components, table components, tests
 
-Build order (unchanged from v1.0):
+The cross-cutting features (auth, profile, settings, search, messaging, notifications, activity logs) are built incrementally across the first two phases rather than as a single monolithic issue:
 
 | Phase | Issues | Description |
 |-------|--------|-------------|
-| Foundation | 1→2→3 | Scaffolding, auth, RBAC, CMS foundation, public layout |
-| Clinical Core | 4→5→6→7→8 | Patients, doctors, appointments, OPD, IPD |
+| Foundation | 1→2→3 | Scaffolding, auth (register, login, email verify, password reset), RBAC, profile, CMS foundation, public layout. Basic search/filter on list endpoints. Activity logs observer setup. |
+| Clinical Core | 4→5→6→7→8 | Patients, doctors, appointments, OPD, IPD. Messaging module. Notifications infrastructure + first notification types. Device/session logging. |
 | Diagnostics | 9→10 | Lab, pharmacy |
 | Finance | 11 | Billing |
 | Operations | 12→13→14→15→16→17 | OT, ER, blood bank, inventory, HR, radiology |
 | Reports | 18 | Dashboards, reports |
 | Public | 19→20→21→22 | Online booking, patient portal, public pages, blog |
-| System | 23 | Settings, integrations |
+| System | 23 | Settings, integrations. User preferences. Notification preferences UI. |
 
 ### 4.8 Caching Strategy
 
@@ -275,7 +347,70 @@ Build order (unchanged from v1.0):
 - Parallel jobs: backend tests (PHPUnit/Pest), frontend tests (Vitest), lint (ESLint, PHP CS Fixer), type check (TypeScript).
 - Build step compiles frontend assets, then a deploy step copies built assets or deploys backend and frontend independently.
 
----
+### 4.10 Search & Filter
+
+- All list API endpoints support a consistent query interface:
+  - `?search=term` — full-text search across relevant fields (configurable per resource).
+  - `?filters[field]=value` — exact or partial match filters.
+  - `?sort=field` and `?sort_dir=asc|desc` — sorting.
+  - `?per_page=N` and `?page=N` — pagination.
+  - `?date_from=...&date_to=...` — date range filter.
+- Backend: Laravel query scopes + a reusable `FilterService` trait that applies filters dynamically based on a `$filterable` array on each model.
+- Full-text search uses MySQL `LIKE` with indexed columns for performance; switches to Laravel Scout / Meilisearch if scale demands it.
+- Frontend: A shared `DataTable` component accepts columns, filter config, and API endpoint — it handles pagination, sorting, search input, and filter UI automatically.
+- Global search bar in the header: debounced input (300ms), searches across patients, doctors, appointments, bills, and users. Results grouped by type with a "view all" link.
+
+### 4.11 Internal Messaging
+
+- **Backend tables**: `conversations` (participants, subject, last_message_at), `messages` (conversation_id, sender_id, body, created_at), `message_recipients` (message_id, user_id, read_at).
+- `GET /api/messages/conversations` — list user's conversations with last message preview, unread count, participant avatars.
+- `GET /api/messages/conversations/{id}` — thread view with all messages, paginated (oldest first).
+- `POST /api/messages/conversations` — start a new conversation (select participants, subject, body).
+- `POST /api/messages/conversations/{id}/reply` — add a message to an existing conversation.
+- `POST /api/messages/{id}/read` — mark as read (updates read_at).
+- Notifications: new message triggers an in-app notification + optional email when user is offline.
+- Frontend: A slide-over panel accessible from the header shows recent conversations; clicking opens full thread view. Unread count badge on the message icon.
+
+### 4.12 Notifications
+
+- **Backend**: A `notifications` table (Laravel's built-in notification system) storing all in-app notifications per user.
+- Notification types: Appointment reminders, Lab results ready, Bill generated, Message received, Low stock alert, Leave approved/rejected, Surgery scheduled, System announcement.
+- Each notification has a `type`, `title`, `body`, `data` (JSON — includes the linked entity type and ID), `read_at` timestamp.
+- `GET /api/notifications` — list user's notifications (paginated, newest first). Supports `?unread_only=true`.
+- `POST /api/notifications/{id}/read` — mark single as read.
+- `POST /api/notifications/read-all` — mark all as read.
+- Channels: In-app (always sent), Email (per user preference), SMS (per user preference for critical types like appointment reminders).
+- Backend dispatches notifications via Laravel Jobs queued on the default queue; each notification implements `ShouldQueue` and `ViaDatabase`, `ViaMail`, `ViaVonage` as configured.
+- Frontend: Bell icon in the header with unread count badge. Dropdown shows last 5 notifications with a "View all" link. Each notification links to the relevant entity page.
+
+### 4.13 Activity & Device Logs
+
+**Activity Logs (Audit Trail):**
+- A single `activity_logs` table recording immutable entries: `id`, `user_id` (nullable for system actions), `action` (created/updated/deleted/restored), `module`, `entity_type`, `entity_id`, `old_values` (JSON of changed fields before), `new_values` (JSON after), `ip_address`, `user_agent`, `created_at`.
+- Implemented as a Laravel Model Observer or Spatie Activitylog package attached to all core models (patients, appointments, bills, prescriptions, etc.).
+- `GET /api/admin/activity-logs` — list with filters by user, module, action, date range. Super Admin and Admin only.
+- `GET /api/admin/activity-logs/{id}` — detail view showing full diff.
+- Retention: logs retained for 12 months, then archived. Configurable from settings.
+
+**Device Logs (Session History):**
+- Derived from Sanctum's `personal_access_tokens` table and a custom `session_logs` table.
+- Each login creates a session_log entry: `user_id`, `ip_address`, `user_agent`, `device_type` (computed from user agent), `browser`, `location` (from IP geolocation, optional), `login_at`, `last_activity_at`, `logout_at` (nullable).
+- `GET /api/sessions` — current user's active sessions + recent session history (last 30 entries).
+- `GET /api/admin/sessions` — all users' session history (Super Admin only), filterable by user, date range, device type.
+- Frontend: User settings page shows "Active Sessions" table with option to revoke. Admin panel has a "Device Logs" page for security monitoring.
+
+### 4.14 Settings
+
+**User Preferences:**
+- `GET /api/settings` — returns current user's preferences (theme: light/dark, language, timezone, notification preferences per event type).
+- `PUT /api/settings` — updates user preferences.
+- Stored as a JSON column on the `users` table or a separate `user_settings` table.
+
+**System Settings (Admin):**
+- `GET /api/admin/settings` — returns all system settings (hospital profile, notification config, business hours, etc.).
+- `PUT /api/admin/settings` — updates system settings (admin only).
+- Stored as key-value pairs in a `settings` table with type casting (string, boolean, integer, JSON).
+- Cached with tag-based invalidation: update clears cache for the affected setting group.
 
 ## 5. Testing Decisions
 
@@ -354,11 +489,7 @@ This PRD (v2.0) supersedes the previous v1.0 PRD. All domain content (module spe
 - **Frontend**: Blade templates → React components with client-side routing
 - **APIs**: Web routes → JSON API routes with consistent response format
 
-### 7.2 New ADR Needed
-
-The existing ADR 0001 (Monolithic Laravel Architecture) is now superseded. A new ADR (0003) should be written to document the decision to adopt a headless Laravel API + React SPA monorepo architecture, including rationale and trade-offs.
-
-### 7.3 Dev Experience
+### 7.2 Dev Experience
 
 - Root `package.json` scripts: `npm run dev` starts both Laravel (`php artisan serve`) and Vite dev server concurrently.
 - `npm run build` builds the React app and runs any backend build steps.
