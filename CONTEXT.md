@@ -4,6 +4,15 @@
 
 A multi-speciality hospital management system handling 200+ beds with full administrative and public-facing capabilities.
 
+## Project Status
+
+- **Phase 0 (Scaffold)**: ✅ Laravel 12.12.2 installed, React + Vite wired, `npm run build` passes
+- **Phase 1 (Auth/RBAC)**: 🔜 Next — install Sanctum, create auth routes/controllers/migrations, build React auth pages
+- **Architecture**: Headless Laravel API + React SPA (ADR 0003)
+- **Testing**: Feature tests via HTTP JSON endpoints (single API seam)
+- **GitHub**: pushed to `origin/main`
+- **Blocker**: `gh` CLI not authenticated — run `gh auth login -p https -w` to create GitHub issues from PRD
+
 ## Glossary
 
 | Term | Definition |
