@@ -1,0 +1,235 @@
+import { type FormEvent, useRef, useState } from 'react'
+
+export function SignUpForm() {
+    const [step, setStep] = useState<'form' | 'otp'>('form')
+    const [username, setUsername] = useState('')
+    const [gmail, setGmail] = useState('')
+    const [phone, setPhone] = useState('')
+    const [password, setPassword] = useState('')
+    const [confirmPassword, setConfirmPassword] = useState('')
+    const [showPassword, setShowPassword] = useState(false)
+    const [showConfirm, setShowConfirm] = useState(false)
+    const [code, setCode] = useState(['', '', '', ''])
+    const [loading, setLoading] = useState(false)
+    const [error, setError] = useState('')
+    const [success, setSuccess] = useState('')
+    const inputRefs = useRef<(HTMLInputElement | null)[]>([])
+
+    async function handleFormSubmit(e: FormEvent) {
+        e.preventDefault()
+        setLoading(true)
+        setError('')
+        setSuccess('')
+        if (password !== confirmPassword) {
+            setError('Passwords do not match')
+            setLoading(false)
+            return
+        }
+        try {
+            const res = await fetch('/api/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+                body: JSON.stringify({ name: username, email: gmail, phone, password, password_confirmation: confirmPassword }),
+            })
+            const data = await res.json()
+            if (!res.ok) throw new Error(data.message)
+            setStep('otp')
+            setTimeout(() => inputRefs.current[0]?.focus(), 100)
+        } catch (err: unknown) {
+            setError(err instanceof Error ? err.message : 'Something went wrong')
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    function handleCodeChange(index: number, value: string) {
+        if (!/^\d?$/.test(value)) return
+        const newCode = [...code]
+        newCode[index] = value
+        setCode(newCode)
+        if (value && index < 3) {
+            inputRefs.current[index + 1]?.focus()
+        }
+    }
+
+    function handleCodeKeyDown(index: number, e: React.KeyboardEvent) {
+        if (e.key === 'Backspace' && !code[index] && index > 0) {
+            inputRefs.current[index - 1]?.focus()
+        }
+    }
+
+    async function handleOtpSubmit(e: FormEvent) {
+        e.preventDefault()
+        setLoading(true)
+        setError('')
+        try {
+            const otp = code.join('')
+            const res = await fetch('/api/verify-signup-otp', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+                body: JSON.stringify({ email: gmail, otp }),
+            })
+            const data = await res.json()
+            if (!res.ok) throw new Error(data.message)
+            window.location.href = '/dashboard'
+        } catch (err: unknown) {
+            setError(err instanceof Error ? err.message : 'Something went wrong')
+            setCode(['', '', '', ''])
+            inputRefs.current[0]?.focus()
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    if (step === 'otp') {
+        return (
+            <form onSubmit={handleOtpSubmit} className="flex flex-col gap-6">
+                <div className="flex flex-col items-center gap-2">
+                    <div className="flex h-14 w-14 items-center justify-center rounded-full bg-red-100">
+                        <svg fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="h-8 w-8 text-red-600">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 5.25a3 3 0 0 1 3 3m3 0a6 6 0 0 1-7.029 5.912c-.563-.097-1.159.026-1.563.43L10.5 17.25H8.25v2.25H6v2.25H2.25v-2.818c0-.597.237-1.17.659-1.591l6.499-6.499c.404-.404.527-1 .43-1.563A6 6 0 1 1 21.75 8.25Z" />
+                        </svg>
+                    </div>
+                    <h1 className="text-xl font-bold text-gray-800">Verify Email</h1>
+                    <p className="text-center text-sm text-gray-500">
+                        A 4-digit code was sent to<br />
+                        <span className="font-medium text-gray-700">{gmail}</span>
+                    </p>
+                </div>
+                {error && <p className="text-center text-sm text-red-600">{error}</p>}
+                <div className="flex justify-center gap-3">
+                    {code.map((digit, i) => (
+                        <input
+                            key={i}
+                            ref={(el) => { inputRefs.current[i] = el }}
+                            type="text"
+                            inputMode="numeric"
+                            maxLength={1}
+                            value={digit}
+                            disabled={loading}
+                            onChange={(e) => handleCodeChange(i, e.target.value)}
+                            onKeyDown={(e) => handleCodeKeyDown(i, e)}
+                            className="h-14 w-14 rounded-lg border border-gray-300 text-center text-xl font-semibold outline-none transition focus:border-red-400 focus:ring-2 focus:ring-red-100 disabled:opacity-50"
+                            required
+                        />
+                    ))}
+                </div>
+                <button type="submit" disabled={loading} className="rounded-lg bg-red-600 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-red-700 disabled:opacity-50">
+                    {loading ? 'Verifying...' : 'Verify & Sign in'}
+                </button>
+                <button type="button" disabled={loading} onClick={() => setStep('form')} className="text-sm text-gray-500 underline hover:text-gray-700">
+                    Back to sign up
+                </button>
+            </form>
+        )
+    }
+
+    return (
+        <form onSubmit={handleFormSubmit} className="flex flex-col gap-6">
+            <div className="flex flex-col items-center gap-2">
+                <div className="flex h-14 w-14 items-center justify-center rounded-full bg-red-100">
+                    <svg fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="h-8 w-8 text-red-600">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M18 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0ZM3 19.235v-.11a6.375 6.375 0 0 1 12.75 0v.109A12.318 12.318 0 0 1 9.374 21c-2.331 0-4.512-.645-6.374-1.766Z" />
+                    </svg>
+                </div>
+                <h1 className="text-xl font-bold text-gray-800">Create Account</h1>
+                <p className="text-sm text-gray-500">Sign up to get started</p>
+            </div>
+            {error && <p className="text-center text-sm text-red-600">{error}</p>}
+            {success && <p className="text-center text-sm text-green-600">{success}</p>}
+            <div className="flex flex-col gap-4">
+                <div className="flex flex-col gap-2">
+                    <label htmlFor="signup-username" className="text-sm font-medium text-gray-700">Username</label>
+                    <input
+                        id="signup-username"
+                        type="text"
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
+                        className="rounded-lg border border-gray-300 px-3 py-2.5 text-sm outline-none transition focus:border-red-400 focus:ring-2 focus:ring-red-100"
+                        placeholder="johndoe"
+                        required
+                    />
+                </div>
+                <div className="flex flex-col gap-2">
+                    <label htmlFor="signup-gmail" className="text-sm font-medium text-gray-700">Gmail</label>
+                    <input
+                        id="signup-gmail"
+                        type="email"
+                        value={gmail}
+                        onChange={(e) => setGmail(e.target.value)}
+                        className="rounded-lg border border-gray-300 px-3 py-2.5 text-sm outline-none transition focus:border-red-400 focus:ring-2 focus:ring-red-100"
+                        placeholder="johndoe@gmail.com"
+                        required
+                    />
+                </div>
+                <div className="flex flex-col gap-2">
+                    <label htmlFor="signup-phone" className="text-sm font-medium text-gray-700">Phone Number</label>
+                    <input
+                        id="signup-phone"
+                        type="tel"
+                        value={phone}
+                        onChange={(e) => setPhone(e.target.value)}
+                        className="rounded-lg border border-gray-300 px-3 py-2.5 text-sm outline-none transition focus:border-red-400 focus:ring-2 focus:ring-red-100"
+                        placeholder="+1 234 567 8900"
+                        required
+                    />
+                </div>
+                <div className="flex flex-col gap-2">
+                    <label htmlFor="signup-password" className="text-sm font-medium text-gray-700">Password</label>
+                    <div className="relative">
+                        <input
+                            id="signup-password"
+                            type={showPassword ? 'text' : 'password'}
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            className="w-full rounded-lg border border-gray-300 px-3 py-2.5 pr-10 text-sm outline-none transition focus:border-red-400 focus:ring-2 focus:ring-red-100"
+                            placeholder="••••••••"
+                            required
+                        />
+                        <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+                            {showPassword ? (
+                                <svg fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="h-5 w-5">
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M3.98 8.223A10.477 10.477 0 0 0 1.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0 1 12 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 0 1-4.293 5.774M6.228 6.228 3 3m3.228 3.228 3.65 3.65m7.894 7.894L21 21m-3.228-3.228-3.65-3.65m0 0a3 3 0 1 0-4.243-4.243m4.242 4.242L9.88 9.88" />
+                                </svg>
+                            ) : (
+                                <svg fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="h-5 w-5">
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                                </svg>
+                            )}
+                        </button>
+                    </div>
+                </div>
+                <div className="flex flex-col gap-2">
+                    <label htmlFor="signup-confirm-password" className="text-sm font-medium text-gray-700">Confirm Password</label>
+                    <div className="relative">
+                        <input
+                            id="signup-confirm-password"
+                            type={showConfirm ? 'text' : 'password'}
+                            value={confirmPassword}
+                            onChange={(e) => setConfirmPassword(e.target.value)}
+                            className="w-full rounded-lg border border-gray-300 px-3 py-2.5 pr-10 text-sm outline-none transition focus:border-red-400 focus:ring-2 focus:ring-red-100"
+                            placeholder="••••••••"
+                            required
+                        />
+                        <button type="button" onClick={() => setShowConfirm(!showConfirm)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+                            {showConfirm ? (
+                                <svg fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="h-5 w-5">
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M3.98 8.223A10.477 10.477 0 0 0 1.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0 1 12 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 0 1-4.293 5.774M6.228 6.228 3 3m3.228 3.228 3.65 3.65m7.894 7.894L21 21m-3.228-3.228-3.65-3.65m0 0a3 3 0 1 0-4.243-4.243m4.242 4.242L9.88 9.88" />
+                                </svg>
+                            ) : (
+                                <svg fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="h-5 w-5">
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                                </svg>
+                            )}
+                        </button>
+                    </div>
+                </div>
+                <button type="submit" disabled={loading} className="rounded-lg bg-red-600 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-red-700 disabled:opacity-50">
+                    {loading ? 'Creating account...' : 'Sign Up'}
+                </button>
+            </div>
+        </form>
+    )
+}

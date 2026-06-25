@@ -16,6 +16,8 @@
 5. [Testing Decisions](#5-testing-decisions)
 6. [Out of Scope](#6-out-of-scope)
 7. [Further Notes](#7-further-notes)
+8. [Implementation Plan](#8-implementation-plan)
+9. [Dependency Graph](#9-dependency-graph)
 
 ---
 
@@ -495,3 +497,233 @@ This PRD (v2.0) supersedes the previous v1.0 PRD. All domain content (module spe
 - `npm run build` builds the React app and runs any backend build steps.
 - `npm run test` runs both backend and frontend test suites.
 - Shared ESLint/Prettier config ensures consistent code style across PHP and TypeScript.
+
+---
+
+## 8. Implementation Plan
+
+See the full phased plan at [`IMPLEMENTATION_PLAN.md`](../IMPLEMENTATION_PLAN.md). The plan breaks the 23 issues into 8 phases with detailed API endpoints, frontend pages, database migrations, and tests per phase.
+
+### Phase 1 — Foundation (Issues 1→2→3)
+
+**Goal:** Project scaffolding, auth identity, RBAC, admin layout, CMS foundation, public shell.
+
+#### Auth Flow Design
+
+The authentication system uses **Laravel Sanctum SPA authentication** with the following flow:
+
+##### 1. Login Flow
+
+```
+React SPA                  Laravel API                  Database
+   │                           │                          │
+   │  POST /api/login          │                          │
+   │  { email, password }      │                          │
+   │──────────────────────────►│                          │
+   │                           │  Validate credentials     │
+   │                           │─────────────────────────►│
+   │                           │◄─────────────────────────│
+   │                           │                          │
+   │                           │  Sanctum issues           │
+   │                           │  session cookie           │
+   │◄──────────────────────────│                          │
+   │                           │                          │
+   │  200 OK                   │                          │
+   │  { user, roles,           │                          │
+   │    permissions }          │                          │
+```
+
+- Frontend sends `POST /api/login` with `email` + `password` + `CSRF token`
+- Laravel validates via Sanctum; issues a session cookie (HTTP-only, SameSite=Strict)
+- Response returns user object, assigned roles, and all permissions
+- Frontend stores user context in React Context
+
+##### 2. Session Validation
+
+```
+React SPA                  Laravel API
+   │                           │
+   │  GET /api/user            │
+   │  (cookie sent             │
+   │   automatically)          │
+   │──────────────────────────►│
+   │                           │  Verify Sanctum session
+   │◄──────────────────────────│
+   │  { user, roles,           │
+   │    permissions }          │
+```
+
+- On app load, React calls `GET /api/user` to validate session
+- Sanctum middleware checks cookie validity
+- Returns user + roles + permissions; frontend populates auth context
+- If 401, redirect to login page
+
+##### 3. Logout
+
+- Frontend calls `POST /api/logout`
+- Sanctum invalidates session cookie
+- Frontend clears auth context and redirects to login
+
+##### 4. RBAC Integration
+
+```
+                  ┌─────────────────┐
+                  │    11 Roles      │
+                  │                  │
+                  │ Super Admin      │
+                  │ Admin            │
+                  │ Doctor           │
+                  │ Nurse            │
+                  │ Receptionist     │
+                  │ Lab Technician   │
+                  │ Pharmacist       │
+                  │ Accountant       │
+                  │ HR               │
+                  │ Department Head  │
+                  │ Patient          │
+                  └────────┬────────┘
+                           │
+           ┌───────────────┴───────────────┐
+           │    Spatie Laravel Permission   │
+           │                               │
+           │  Module-wise CRUD permissions  │
+           │  per role (permission matrix)  │
+           └───────────────┬───────────────┘
+                           │
+              ┌────────────┴────────────┐
+              │                         │
+     ┌────────▼────────┐    ┌──────────▼──────────┐
+     │  Backend Guard   │    │  Frontend Guard      │
+     │                  │    │                      │
+     │  Middleware on   │    │  Route-level checks  │
+     │  routes:         │    │  + sidebar filtering │
+     │  - auth:sanctum  │    │  - ProtectedRoute    │
+     │  - role:doctor   │    │    component         │
+     │  - permission:   │    │  - useAuth() hook    │
+     │    patient.create│    │  - PermissionGate    │
+     └─────────────────┘    └──────────────────────┘
+```
+
+- **Spatie Laravel Permission** manages roles and permissions at the database level
+- Permission matrix defines CRUD access per module per role
+- Backend middleware: `auth:sanctum` + custom role/permission middleware on API routes
+- Frontend guards: `ProtectedRoute` component checks auth context; sidebar hides menu items the user lacks permission for
+
+##### 5. Frontend Auth Architecture
+
+```
+resources/js/
+  shared/
+    api/
+      client.ts          ← Axios instance (withCredentials: true)
+      auth.ts            ← login(), logout(), getUser() functions
+    context/
+      AuthContext.tsx     ← React Context for user/roles/permissions
+      AuthProvider.tsx    ← Wraps app; validates session on mount
+    guards/
+      ProtectedRoute.tsx  ← Redirects to /login if unauthenticated
+      RoleGate.tsx        ← Renders children only if user has required role
+      PermissionGate.tsx  ← Renders children only if user has required permission
+    hooks/
+      useAuth.ts          ← Convenience hook for AuthContext
+      usePermission.ts    ← Check specific permissions
+  admin/
+    layouts/
+      AdminLayout.tsx     ← Sidebar + header; filters menu by permissions
+    pages/
+      Login.tsx           ← Login form; calls auth service
+      Dashboard.tsx       ← Post-login landing page
+```
+
+##### 6. Auth Database Tables
+
+| Table | Purpose |
+|-------|---------|
+| `users` | All system users (staff + patients) |
+| `roles` | Spatie roles table |
+| `permissions` | Spatie permissions table |
+| `role_has_permissions` | Spatie pivot |
+| `model_has_roles` | Spatie pivot (user→role) |
+| `model_has_permissions` | Spatie pivot (direct user permissions) |
+| `personal_access_tokens` | Sanctum token management |
+| `sessions` | Session storage |
+| `audit_logs` | Login/logout + critical action audit trail |
+
+#### Backend APIs (Phase 1)
+
+- `POST /api/register`, `POST /api/login`, `POST /api/logout`
+- `POST /api/email/verify/send`, `GET /api/email/verify/{id}/{hash}`
+- `POST /api/otp/send`, `POST /api/otp/verify`
+- `POST /api/forgot-password`, `POST /api/reset-password`
+- `GET /api/user`, `GET /api/profile`, `PUT /api/profile`, `PUT /api/profile/password`
+- `GET /api/sessions`, `DELETE /api/sessions/{id}`
+- `GET /api/admin/users`, `POST /api/admin/users`, `PUT /api/admin/users/{id}`, `DELETE /api/admin/users/{id}`
+- `GET /api/admin/roles`, `POST /api/admin/roles`, `PUT /api/admin/roles/{id}`
+- `GET /api/admin/cms/pages`, `POST /api/admin/cms/pages`, `PUT /api/admin/cms/pages/{id}`
+- `GET /api/public/pages/{slug}`, `GET /api/public/home`
+- Activity log observer on User model
+
+#### Frontend Pages (Phase 1)
+
+- Auth pages: Login, Register, Email Verification, OTP challenge, Forgot Password, Reset Password
+- Admin layout: sidebar nav, header (user menu, notification bell placeholder, message icon placeholder), route outlet
+- User management page (Super Admin): table of users, create/edit modal, role assignment
+- Role/permission matrix page
+- Profile page: view/edit name/phone/email/avatar, change password
+- Sessions page: active sessions list, revoke button
+- CMS page management (admin): create/edit pages with rich text, publish/draft
+- Public website shell: home page component, CMS page renderer
+- Shared DataTable component with search/filter/sort/pagination
+
+#### Database Migrations (Phase 1)
+
+- `users` (with email_verified_at, phone, avatar, preferences JSON)
+- `personal_access_tokens` (Sanctum)
+- `roles` + `permissions` + `model_has_roles` + `model_has_permissions` + `role_has_permissions` (Spatie)
+- `activity_logs`
+- `session_logs`
+- `sessions` (Laravel session table)
+- `cms_pages`, `cms_content_blocks`, `cms_media`, `cms_menus`
+
+### Phase 2 — Clinical Core (Issues 4→5→6→7→8)
+
+See [`IMPLEMENTATION_PLAN.md`](../IMPLEMENTATION_PLAN.md) for full Phase 2 details.
+
+### Phase 3 — Diagnostics (Issues 9→10)
+
+See [`IMPLEMENTATION_PLAN.md`](../IMPLEMENTATION_PLAN.md) for full Phase 3 details.
+
+### Phase 4 — Finance (Issue 11)
+
+See [`IMPLEMENTATION_PLAN.md`](../IMPLEMENTATION_PLAN.md) for full Phase 4 details.
+
+### Phase 5 — Operations (Issues 12→13→14→15→16→17)
+
+See [`IMPLEMENTATION_PLAN.md`](../IMPLEMENTATION_PLAN.md) for full Phase 5 details.
+
+### Phase 6 — Reports & Dashboards (Issue 18)
+
+See [`IMPLEMENTATION_PLAN.md`](../IMPLEMENTATION_PLAN.md) for full Phase 6 details.
+
+### Phase 7 — Public Website & Patient Portal (Issues 19→20→21→22)
+
+See [`IMPLEMENTATION_PLAN.md`](../IMPLEMENTATION_PLAN.md) for full Phase 7 details.
+
+### Phase 8 — System & Settings (Issue 23)
+
+See [`IMPLEMENTATION_PLAN.md`](../IMPLEMENTATION_PLAN.md) for full Phase 8 details.
+
+---
+
+## 9. Dependency Graph
+
+```
+Phase 1 (Foundation)
+  ├── Phase 2 (Clinical Core) + Messaging + Notifications
+  │     ├── Phase 3 (Diagnostics: Lab, Pharmacy)
+  │     │     └── Phase 4 (Finance: Billing)
+  │     ├── Phase 5 (Operations: OT, ER, Blood Bank, Inventory, HR, Radiology)
+  │     └── Phase 7 (Public: depends on Phase 1 CMS + Phase 2 Doctors/Appointments)
+  ├── Phase 6 (Reports: depends on all data phases 1-5)
+  └── Phase 8 (Settings: configures all phases)
+```

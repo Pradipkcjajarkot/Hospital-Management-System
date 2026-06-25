@@ -8,6 +8,161 @@ Based on PRD v2.0 (Laravel API + React SPA Monorepo)
 
 **Goal:** Monorepo scaffolding, auth identity, RBAC, admin layout, CMS foundation, public shell.
 
+### Auth Flow Design
+
+The authentication system uses **Laravel Sanctum SPA authentication** with the following flow:
+
+#### 1. Login Flow
+
+```
+React SPA                  Laravel API                  Database
+   │                           │                          │
+   │  POST /api/login          │                          │
+   │  { email, password }      │                          │
+   │──────────────────────────►│                          │
+   │                           │  Validate credentials     │
+   │                           │─────────────────────────►│
+   │                           │◄─────────────────────────│
+   │                           │                          │
+   │                           │  Sanctum issues           │
+   │                           │  session cookie           │
+   │◄──────────────────────────│                          │
+   │                           │                          │
+   │  200 OK                   │                          │
+   │  { user, roles,           │                          │
+   │    permissions }          │                          │
+```
+
+- Frontend sends `POST /api/login` with `email` + `password` + `CSRF token`
+- Laravel validates via Sanctum; issues a session cookie (HTTP-only, SameSite=Strict)
+- Response returns user object, assigned roles, and all permissions
+- Frontend stores user context in React Context
+
+#### 2. Session Validation
+
+```
+React SPA                  Laravel API
+   │                           │
+   │  GET /api/user            │
+   │  (cookie sent             │
+   │   automatically)          │
+   │──────────────────────────►│
+   │                           │  Verify Sanctum session
+   │◄──────────────────────────│
+   │  { user, roles,           │
+   │    permissions }          │
+```
+
+- On app load, React calls `GET /api/user` to validate session
+- Sanctum middleware checks cookie validity
+- Returns user + roles + permissions; frontend populates auth context
+- If 401, redirect to login page
+
+#### 3. Logout
+
+- Frontend calls `POST /api/logout`
+- Sanctum invalidates session cookie
+- Frontend clears auth context and redirects to login
+
+#### 4. RBAC Integration
+
+```
+                  ┌─────────────────┐
+                  │    11 Roles      │
+                  │                  │
+                  │ Super Admin      │
+                  │ Admin            │
+                  │ Doctor           │
+                  │ Nurse            │
+                  │ Receptionist     │
+                  │ Lab Technician   │
+                  │ Pharmacist       │
+                  │ Accountant       │
+                  │ HR               │
+                  │ Department Head  │
+                  │ Patient          │
+                  └────────┬────────┘
+                           │
+           ┌───────────────┴───────────────┐
+           │    Spatie Laravel Permission   │
+           │                               │
+           │  Module-wise CRUD permissions  │
+           │  per role (permission matrix)  │
+           └───────────────┬───────────────┘
+                           │
+              ┌────────────┴────────────┐
+              │                         │
+     ┌────────▼────────┐    ┌──────────▼──────────┐
+     │  Backend Guard   │    │  Frontend Guard      │
+     │                  │    │                      │
+     │  Middleware on   │    │  Route-level checks  │
+     │  routes:         │    │  + sidebar filtering │
+     │  - auth:sanctum  │    │  - ProtectedRoute    │
+     │  - role:doctor   │    │    component         │
+     │  - permission:   │    │  - useAuth() hook    │
+     │    patient.create│    │  - PermissionGate    │
+     └─────────────────┘    └──────────────────────┘
+```
+
+- **Spatie Laravel Permission** manages roles and permissions at the database level
+- Permission matrix defines CRUD access per module per role
+- Backend middleware: `auth:sanctum` + custom role/permission middleware on API routes
+- Frontend guards: `ProtectedRoute` component checks auth context before rendering routes; sidebar hides menu items the user lacks permission for
+
+#### 5. Frontend Auth Architecture
+
+```
+packages/frontend/src/
+  shared/
+    api/
+      client.ts          ← Axios instance (withCredentials: true)
+      auth.ts            ← login(), logout(), getUser() functions
+    context/
+      AuthContext.tsx     ← React Context for user/roles/permissions
+      AuthProvider.tsx    ← Wraps app; validates session on mount
+    guards/
+      ProtectedRoute.tsx  ← Redirects to /login if unauthenticated
+      RoleGate.tsx        ← Renders children only if user has required role
+      PermissionGate.tsx  ← Renders children only if user has required permission
+    hooks/
+      useAuth.ts          ← Convenience hook for AuthContext
+      usePermission.ts    ← Check specific permissions
+  admin/
+    layouts/
+      AdminLayout.tsx     ← Sidebar + header; filters menu by permissions
+    pages/
+      Login.tsx           ← Login form; calls auth service
+      Dashboard.tsx       ← Post-login landing page
+```
+
+#### 6. Auth Database Tables
+
+| Table | Purpose |
+|-------|---------|
+| `users` | All system users (staff + patients) |
+| `roles` | Spatie roles table |
+| `permissions` | Spatie permissions table |
+| `role_has_permissions` | Spatie pivot |
+| `model_has_roles` | Spatie pivot (user→role) |
+| `model_has_permissions` | Spatie pivot (direct user permissions) |
+| `personal_access_tokens` | Sanctum token management |
+| `sessions` | Session storage |
+| `audit_logs` | Login/logout + critical action audit trail |
+
+#### 7. API Route Structure
+
+| Method | Endpoint | Access |
+|--------|----------|--------|
+| POST | `/api/login` | Public |
+| POST | `/api/logout` | Authenticated |
+| GET | `/api/user` | Authenticated |
+| GET | `/sanctum/csrf-cookie` | Public (Sanctum CSRF init) |
+| CRUD | `/api/admin/users` | Super Admin |
+| CRUD | `/api/admin/roles` | Super Admin |
+| READ | `/api/admin/permissions` | Super Admin |
+
+See `docs/prd-phase1-auth.md` for full API contracts, RBAC permission matrix, security configuration, and testing strategy.
+
 ### Backend APIs
 
 - `POST /api/register`, `POST /api/login`, `POST /api/logout`
