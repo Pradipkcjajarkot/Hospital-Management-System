@@ -1,7 +1,9 @@
 import { useState, useEffect, useRef } from 'react'
-import { Settings, Building2, Mail, Phone, MapPin, Shield, Clock, KeyRound, Save, CheckCircle2, Upload, Image as ImageIcon, Trash2 } from "lucide-react"
+import { Settings, Building2, Mail, Phone, MapPin, Shield, Clock, KeyRound, Save, CheckCircle2, Upload, Image as ImageIcon, Trash2, Globe } from "lucide-react"
+import { useLanguage } from '@/contexts/LanguageContext'
 
 export default function SettingsPage() {
+  const { lang, setLang, t } = useLanguage()
   const [settings, setSettings] = useState<Record<string, string>>({})
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
@@ -75,6 +77,21 @@ export default function SettingsPage() {
           className="flex items-center gap-2 rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-emerald-700 disabled:opacity-50 dark:bg-emerald-500 dark:hover:bg-emerald-600">
           {saving ? 'Saving...' : saved ? <><CheckCircle2 className="h-4 w-4" /> Saved</> : <><Save className="h-4 w-4" /> Save Changes</>}
         </button>
+      </div>
+
+      <div className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-900">
+        <h3 className="mb-4 font-semibold text-gray-900 dark:text-white">{t('language')}</h3>
+        <div className="flex items-center gap-4">
+          <Globe className="h-5 w-5 text-gray-400" />
+          <div className="flex gap-2">
+            <button onClick={() => setLang('en')} className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${lang === 'en' ? 'bg-blue-600 text-white shadow-sm' : 'bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600'}`}>
+              {t('english')}
+            </button>
+            <button onClick={() => setLang('ne')} className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${lang === 'ne' ? 'bg-blue-600 text-white shadow-sm' : 'bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600'}`}>
+              {t('nepali')}
+            </button>
+          </div>
+        </div>
       </div>
 
       <div className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-900">

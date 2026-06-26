@@ -1,6 +1,7 @@
 import './bootstrap';
 import { useState } from 'react';
 import { createRoot } from 'react-dom/client';
+import { LanguageProvider } from '@/contexts/LanguageContext';
 import LoginPage from '@/pages/login';
 import SignUpPage from '@/pages/signup';
 import Dashboard from '@/pages/dashboard';
@@ -128,4 +129,4 @@ function App() {
 }
 
 const root = createRoot(document.getElementById('app')!);
-root.render(<App />);
+root.render(<LanguageProvider><App /></LanguageProvider>);

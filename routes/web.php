@@ -121,6 +121,7 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/api/settings', [SettingController::class, 'index']);
     Route::put('/api/settings', [SettingController::class, 'update']);
+    Route::post('/api/settings/language', [SettingController::class, 'updateLanguage']);
 
     Route::get('/api/notifications', [NotificationController::class, 'index']);
     Route::post('/api/notifications/{id}/read', [NotificationController::class, 'markAsRead']);

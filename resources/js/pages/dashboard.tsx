@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
+import { useLanguage } from '@/contexts/LanguageContext'
 import PatientManagement from '@/components/PatientManagement'
 import DoctorManagement from '@/components/DoctorManagement'
 import AppointmentManagement from '@/components/AppointmentManagement'
@@ -30,30 +31,30 @@ import {
 } from "lucide-react"
 
 const menuItems = [
-  { label: 'Dashboard', icon: LayoutDashboard },
-  { label: 'Register Patient', icon: UserPlus },
-  { label: 'Patients', icon: Users },
-  { label: 'Doctors', icon: Stethoscope },
-  { label: 'Appointments', icon: CalendarRange },
-  { label: 'Departments', icon: Building2 },
-  { label: 'OPD', icon: Activity },
-  { label: 'Beds & Wards', icon: BedDouble },
-  { label: 'Laboratory', icon: FlaskConical },
-  { label: 'Pharmacy', icon: Pill },
-  { label: 'Blog', icon: FileText },
-  { label: 'Gallery', icon: Image },
-  { label: 'Events', icon: Calendar },
-  { label: 'Testimonials', icon: Star },
-  { label: 'Careers', icon: Briefcase },
-  { label: 'Contacts', icon: MessageSquare },
-  { label: 'Billing & Finance', icon: Receipt },
-  { label: 'Reports', icon: BarChart3 },
-  { label: 'Users', icon: Users },
-  { label: 'Settings', icon: Settings },
-  { label: 'Notifications', icon: Bell },
-  { label: 'OTP Logs', icon: Shield },
-  { label: 'Messages', icon: MessageSquare },
-  { label: 'Logout', icon: LogOut },
+  { key: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
+  { key: 'registerPatient', label: 'Register Patient', icon: UserPlus },
+  { key: 'patients', label: 'Patients', icon: Users },
+  { key: 'doctors', label: 'Doctors', icon: Stethoscope },
+  { key: 'appointments', label: 'Appointments', icon: CalendarRange },
+  { key: 'departments', label: 'Departments', icon: Building2 },
+  { key: 'opd', label: 'OPD', icon: Activity },
+  { key: 'bedsWards', label: 'Beds & Wards', icon: BedDouble },
+  { key: 'laboratory', label: 'Laboratory', icon: FlaskConical },
+  { key: 'pharmacy', label: 'Pharmacy', icon: Pill },
+  { key: 'blog', label: 'Blog', icon: FileText },
+  { key: 'gallery', label: 'Gallery', icon: Image },
+  { key: 'events', label: 'Events', icon: Calendar },
+  { key: 'testimonials', label: 'Testimonials', icon: Star },
+  { key: 'careers', label: 'Careers', icon: Briefcase },
+  { key: 'contacts', label: 'Contacts', icon: MessageSquare },
+  { key: 'billingFinance', label: 'Billing & Finance', icon: Receipt },
+  { key: 'reports', label: 'Reports', icon: BarChart3 },
+  { key: 'users', label: 'Users', icon: Users },
+  { key: 'settings', label: 'Settings', icon: Settings },
+  { key: 'notifications', label: 'Notifications', icon: Bell },
+  { key: 'otpLogs', label: 'OTP Logs', icon: Shield },
+  { key: 'messages', label: 'Messages', icon: MessageSquare },
+  { key: 'logout', label: 'Logout', icon: LogOut },
 ]
 
 const summaryCards = [
@@ -134,7 +135,8 @@ const activityIcons: Record<string, typeof Activity> = {
 }
 
 export default function Dashboard() {
-  const [active, setActive] = useState('Dashboard')
+  const { t } = useLanguage()
+  const [active, setActive] = useState('dashboard')
   const [sidebarOpen, setSidebarOpen] = useState(true)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [photoUrl, setPhotoUrl] = useState<string | null>(user.profile_photo_path ? `/storage/${user.profile_photo_path}` : null)
@@ -184,7 +186,7 @@ export default function Dashboard() {
   }
 
   function renderContent() {
-    if (active === 'Dashboard') {
+    if (active === 'dashboard') {
       return (
         <div className="space-y-6">
           <div>
@@ -270,12 +272,12 @@ export default function Dashboard() {
             <h3 className="font-semibold text-gray-900 dark:text-white mb-4">Quick Actions</h3>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
               {[
-                { label: 'Register Patient', target: 'Register Patient', icon: UserPlus, color: 'bg-blue-50 text-blue-600 hover:bg-blue-100 dark:bg-blue-900/30 dark:text-blue-400 dark:hover:bg-blue-900/50' },
-                { label: 'Book Appointment', target: 'Appointments', icon: CalendarPlus, color: 'bg-violet-50 text-violet-600 hover:bg-violet-100 dark:bg-violet-900/30 dark:text-violet-400 dark:hover:bg-violet-900/50' },
-                { label: 'Admit Patient', target: 'Beds & Wards', icon: DoorOpen, color: 'bg-amber-50 text-amber-600 hover:bg-amber-100 dark:bg-amber-900/30 dark:text-amber-400 dark:hover:bg-amber-900/50' },
-                { label: 'Create Bill', target: 'Billing & Finance', icon: FileText, color: 'bg-emerald-50 text-emerald-600 hover:bg-emerald-100 dark:bg-emerald-900/30 dark:text-emerald-400 dark:hover:bg-emerald-900/50' },
-                { label: 'Lab Request', target: 'Laboratory', icon: Beaker, color: 'bg-rose-50 text-rose-600 hover:bg-rose-100 dark:bg-rose-900/30 dark:text-rose-400 dark:hover:bg-rose-900/50' },
-                { label: 'New Event', target: 'Events', icon: Calendar, color: 'bg-purple-50 text-purple-600 hover:bg-purple-100 dark:bg-purple-900/30 dark:text-purple-400 dark:hover:bg-purple-900/50' },
+                { label: 'Register Patient', target: 'registerPatient', icon: UserPlus, color: 'bg-blue-50 text-blue-600 hover:bg-blue-100 dark:bg-blue-900/30 dark:text-blue-400 dark:hover:bg-blue-900/50' },
+                { label: 'Book Appointment', target: 'appointments', icon: CalendarPlus, color: 'bg-violet-50 text-violet-600 hover:bg-violet-100 dark:bg-violet-900/30 dark:text-violet-400 dark:hover:bg-violet-900/50' },
+                { label: 'Admit Patient', target: 'bedsWards', icon: DoorOpen, color: 'bg-amber-50 text-amber-600 hover:bg-amber-100 dark:bg-amber-900/30 dark:text-amber-400 dark:hover:bg-amber-900/50' },
+                { label: 'Create Bill', target: 'billingFinance', icon: FileText, color: 'bg-emerald-50 text-emerald-600 hover:bg-emerald-100 dark:bg-emerald-900/30 dark:text-emerald-400 dark:hover:bg-emerald-900/50' },
+                { label: 'Lab Request', target: 'laboratory', icon: Beaker, color: 'bg-rose-50 text-rose-600 hover:bg-rose-100 dark:bg-rose-900/30 dark:text-rose-400 dark:hover:bg-rose-900/50' },
+                { label: 'New Event', target: 'events', icon: Calendar, color: 'bg-purple-50 text-purple-600 hover:bg-purple-100 dark:bg-purple-900/30 dark:text-purple-400 dark:hover:bg-purple-900/50' },
               ].map((action) => {
                 const Icon = action.icon
                 return (
@@ -291,95 +293,95 @@ export default function Dashboard() {
       )
     }
 
-    if (active === 'Register Patient') {
+    if (active === 'registerPatient') {
       return <RegisterPatient />
     }
 
-    if (active === 'Patients') {
+    if (active === 'patients') {
       return <PatientManagement />
     }
 
-    if (active === 'Doctors') {
+    if (active === 'doctors') {
       return <DoctorManagement />
     }
 
-    if (active === 'Appointments') {
+    if (active === 'appointments') {
       return <AppointmentManagement />
     }
 
-    if (active === 'Departments') {
+    if (active === 'departments') {
       return <DepartmentManagement />
     }
 
-    if (active === 'OPD') {
+    if (active === 'opd') {
       return <OPDManagement />
     }
 
-    if (active === 'Beds & Wards') {
+    if (active === 'bedsWards') {
       return <BedWardManagement />
     }
 
-    if (active === 'Laboratory') {
+    if (active === 'laboratory') {
       return <LaboratoryManagement />
     }
 
-    if (active === 'Pharmacy') {
+    if (active === 'pharmacy') {
       return <PharmacyManagement />
     }
 
-    if (active === 'Blog') {
+    if (active === 'blog') {
       return <BlogManagement />
     }
 
-    if (active === 'Gallery') {
+    if (active === 'gallery') {
       return <GalleryManagement />
     }
 
-    if (active === 'Events') {
+    if (active === 'events') {
       return <EventManagement />
     }
 
-    if (active === 'Testimonials') {
+    if (active === 'testimonials') {
       return <TestimonialManagement />
     }
 
-    if (active === 'Contacts') {
+    if (active === 'contacts') {
       return <ContactManagement />
     }
 
-    if (active === 'Careers') {
+    if (active === 'careers') {
       return <CareerManagement />
     }
 
-    if (active === 'Billing & Finance') {
+    if (active === 'billingFinance') {
       return <BillingManagement />
     }
 
-    if (active === 'Reports') {
+    if (active === 'reports') {
       return <ReportsAnalytics />
     }
 
-    if (active === 'Users') {
+    if (active === 'users') {
       return <UserManagement />
     }
 
-    if (active === 'Settings') {
+    if (active === 'settings') {
       return <SettingsPage />
     }
 
-    if (active === 'Notifications') {
+    if (active === 'notifications') {
       return <NotificationsPage />
     }
 
-    if (active === 'OTP Logs') {
+    if (active === 'otpLogs') {
       return <OtpManagement />
     }
 
-    if (active === 'Messages') {
+    if (active === 'messages') {
       return <MessagingPanel />
     }
 
-    if (active === 'Logout') {
+    if (active === 'logout') {
       handleLogout()
       return null
     }
@@ -461,22 +463,22 @@ export default function Dashboard() {
           {sidebarOpen && (
             <p className="px-3 pb-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-blue-400/60">Main</p>
           )}
-          {menuItems.slice(0, 6).map((item) => {
-            const Icon = item.icon
-            const isActive = active === item.label
-            return (
-              <button
-                key={item.label}
-                onClick={() => setActive(item.label)}
+            {menuItems.slice(0, 6).map((item) => {
+              const Icon = item.icon
+              const isActive = active === item.key
+              return (
+                <button
+                  key={item.key}
+                  onClick={() => setActive(item.key)}
                 className={`flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-200 ${
                   isActive
                     ? 'bg-gradient-to-r from-blue-600/25 to-blue-500/10 text-white shadow-sm border border-blue-500/25 shadow-blue-500/5'
                     : 'text-blue-200/60 hover:bg-blue-800/30 hover:text-blue-100 hover:border-blue-700/30 border border-transparent'
                 } ${!sidebarOpen && 'justify-center px-0'}`}
-                title={!sidebarOpen ? item.label : undefined}
+                title={!sidebarOpen ? t(item.key) : undefined}
               >
                 <Icon className={`h-5 w-5 shrink-0 ${isActive ? 'text-blue-400' : ''}`} />
-                {sidebarOpen && <span>{item.label}</span>}
+                {sidebarOpen && <span>{t(item.key)}</span>}
                 {isActive && sidebarOpen && <div className="ml-auto h-1.5 w-1.5 rounded-full bg-blue-400 shadow-sm shadow-blue-400/50" />}
               </button>
             )
@@ -491,20 +493,20 @@ export default function Dashboard() {
           )}
           {menuItems.slice(6, 17).map((item) => {
             const Icon = item.icon
-            const isActive = active === item.label
+            const isActive = active === item.key
             return (
               <button
-                key={item.label}
-                onClick={() => setActive(item.label)}
+                key={item.key}
+                onClick={() => setActive(item.key)}
                 className={`flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-200 ${
                   isActive
                     ? 'bg-gradient-to-r from-blue-600/25 to-blue-500/10 text-white shadow-sm border border-blue-500/25 shadow-blue-500/5'
                     : 'text-blue-200/60 hover:bg-blue-800/30 hover:text-blue-100 hover:border-blue-700/30 border border-transparent'
                 } ${!sidebarOpen && 'justify-center px-0'}`}
-                title={!sidebarOpen ? item.label : undefined}
+                title={!sidebarOpen ? t(item.key) : undefined}
               >
                 <Icon className={`h-5 w-5 shrink-0 ${isActive ? 'text-blue-400' : ''}`} />
-                {sidebarOpen && <span>{item.label}</span>}
+                {sidebarOpen && <span>{t(item.key)}</span>}
                 {isActive && sidebarOpen && <div className="ml-auto h-1.5 w-1.5 rounded-full bg-blue-400 shadow-sm shadow-blue-400/50" />}
               </button>
             )
@@ -519,14 +521,14 @@ export default function Dashboard() {
           )}
           {menuItems.slice(17).map((item) => {
             const Icon = item.icon
-            const isActive = active === item.label
-            const isLogout = item.label === 'Logout'
+            const isActive = active === item.key
+            const isLogout = item.key === 'logout'
             return (
               <button
-                key={item.label}
+                key={item.key}
                 onClick={() => {
                   if (isLogout) { handleLogout(); return }
-                  setActive(item.label)
+                  setActive(item.key)
                 }}
                 className={`flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-200 ${
                   isActive
@@ -535,10 +537,10 @@ export default function Dashboard() {
                       ? 'text-red-400/60 hover:bg-red-950/30 hover:text-red-400 hover:border-red-800/30 border border-transparent'
                       : 'text-blue-200/60 hover:bg-blue-800/30 hover:text-blue-100 hover:border-blue-700/30 border border-transparent'
                 } ${!sidebarOpen && 'justify-center px-0'}`}
-                title={!sidebarOpen ? item.label : undefined}
+                title={!sidebarOpen ? t(item.key) : undefined}
               >
                 <Icon className="h-5 w-5 shrink-0" />
-                {sidebarOpen && <span>{item.label}</span>}
+                {sidebarOpen && <span>{t(item.key)}</span>}
                 {isActive && sidebarOpen && <div className="ml-auto h-1.5 w-1.5 rounded-full bg-blue-400 shadow-sm shadow-blue-400/50" />}
               </button>
             )
