@@ -20,8 +20,16 @@ class DatabaseSeeder extends Seeder
                 'role' => 'admin',
                 'status' => 'active',
             ]);
-
             $this->command->info('Default admin user created: admin@hospital.com / admin123');
+        }
+
+        if (!User::where('role', 'admin')->exists()) {
+            $user = User::where('email', 'neupane0123456@yopmail.com')->first()
+                  ?? User::orderBy('id')->first();
+            if ($user) {
+                $user->update(['role' => 'admin']);
+                $this->command->info("User '{$user->email}' has been set as admin.");
+            }
         }
     }
 }
