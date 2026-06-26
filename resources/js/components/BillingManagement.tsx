@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Search, Receipt, Edit3, Trash2, X, ArrowLeft, Plus, User, DollarSign, Calendar, CreditCard, FileText, Calculator, Percent, Minus, GripVertical, Printer } from "lucide-react"
+import { Search, Receipt, Edit3, Trash2, X, ArrowLeft, Plus, User, Calendar, CreditCard, FileText, Calculator, Percent, Minus, GripVertical, Printer } from "lucide-react"
 
 interface Bill {
   id: number
@@ -25,6 +25,14 @@ const emptyForm = {
 const paymentMethods = ['cash', 'card', 'insurance', 'online', 'other']
 const paymentStatuses = ['paid', 'partial', 'pending', 'cancelled', 'refunded']
 
+const methodLabels: Record<string, string> = {
+  cash: 'नगद', card: 'कार्ड', insurance: 'बीमा', online: 'अनलाइन', other: 'अन्य'
+}
+
+const statusLabels: Record<string, string> = {
+  paid: 'भुक्तानी भयो', partial: 'आंशिक', pending: 'विचाराधीन', cancelled: 'रद्द', refunded: 'फिर्ता'
+}
+
 function BillForm({ form, setForm, saving, onCancel, onSubmit, title, submitLabel, patients }: {
   form: typeof emptyForm
   setForm: (f: typeof emptyForm) => void
@@ -39,72 +47,72 @@ function BillForm({ form, setForm, saving, onCancel, onSubmit, title, submitLabe
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{title}</h1>
-        <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">Fill in the billing details below.</p>
+        <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">कृपया बिल विवरण भर्नुहोस्।</p>
       </div>
       <form onSubmit={onSubmit} className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-900">
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
-            <label className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">Patient <span className="text-rose-500">*</span></label>
+            <label className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">बिरामी <span className="text-rose-500">*</span></label>
             <select value={form.patient_id} onChange={(e) => setForm({ ...form, patient_id: e.target.value })} required
               className="w-full rounded-xl border border-gray-200 bg-gray-50 px-3 py-2.5 text-sm text-gray-900 outline-none focus:outline-2 focus:outline-offset-0 focus:outline-amber-500/25 focus:border-amber-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100">
-              <option value="">Select patient...</option>
+              <option value="">बिरामी चयन गर्नुहोस्...</option>
               {patients.map((p) => <option key={p.id} value={p.id}>{p.first_name} {p.last_name}</option>)}
             </select>
           </div>
           <div>
-            <label className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">Invoice Number <span className="text-rose-500">*</span></label>
-            <input value={form.invoice_number} onChange={(e) => setForm({ ...form, invoice_number: e.target.value })} required placeholder="e.g. INV-001"
+            <label className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">इनभ्वाइस नम्बर <span className="text-rose-500">*</span></label>
+            <input value={form.invoice_number} onChange={(e) => setForm({ ...form, invoice_number: e.target.value })} required placeholder="जस्तै INV-001"
               className="w-full rounded-xl border border-gray-200 bg-gray-50 px-3 py-2.5 text-sm text-gray-900 outline-none focus:outline-2 focus:outline-offset-0 focus:outline-amber-500/25 focus:border-amber-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100" />
           </div>
           <div>
-            <label className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">Bill Date <span className="text-rose-500">*</span></label>
+            <label className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">बिल मिति <span className="text-rose-500">*</span></label>
             <input type="date" value={form.bill_date} onChange={(e) => setForm({ ...form, bill_date: e.target.value })} required
               className="w-full rounded-xl border border-gray-200 bg-gray-50 px-3 py-2.5 text-sm text-gray-900 outline-none focus:outline-2 focus:outline-offset-0 focus:outline-amber-500/25 focus:border-amber-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100" />
           </div>
           <div>
-            <label className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">Total Amount ($) <span className="text-rose-500">*</span></label>
+            <label className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">जम्मा रकम (रु.) <span className="text-rose-500">*</span></label>
             <input type="number" step="0.01" min="0" value={form.total_amount} onChange={(e) => setForm({ ...form, total_amount: e.target.value })} required
               className="w-full rounded-xl border border-gray-200 bg-gray-50 px-3 py-2.5 text-sm text-gray-900 outline-none focus:outline-2 focus:outline-offset-0 focus:outline-amber-500/25 focus:border-amber-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100" />
           </div>
           <div>
-            <label className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">Paid Amount ($) <span className="text-rose-500">*</span></label>
+            <label className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">भुक्तानी रकम (रु.) <span className="text-rose-500">*</span></label>
             <input type="number" step="0.01" min="0" value={form.paid_amount} onChange={(e) => setForm({ ...form, paid_amount: e.target.value })} required
               className="w-full rounded-xl border border-gray-200 bg-gray-50 px-3 py-2.5 text-sm text-gray-900 outline-none focus:outline-2 focus:outline-offset-0 focus:outline-amber-500/25 focus:border-amber-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100" />
           </div>
           <div>
-            <label className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">Payment Method</label>
+            <label className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">भुक्तानी विधि</label>
             <select value={form.payment_method} onChange={(e) => setForm({ ...form, payment_method: e.target.value })}
               className="w-full rounded-xl border border-gray-200 bg-gray-50 px-3 py-2.5 text-sm text-gray-900 outline-none focus:outline-2 focus:outline-offset-0 focus:outline-amber-500/25 focus:border-amber-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100">
-              <option value="">-- Select --</option>
-              {paymentMethods.map((m) => <option key={m} value={m}>{m.replace(/\b\w/g, (l) => l.toUpperCase())}</option>)}
+              <option value="">-- चयन गर्नुहोस् --</option>
+              {paymentMethods.map((m) => <option key={m} value={m}>{methodLabels[m]}</option>)}
             </select>
           </div>
           <div>
-            <label className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">Payment Status</label>
+            <label className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">भुक्तानी स्थिति</label>
             <select value={form.payment_status} onChange={(e) => setForm({ ...form, payment_status: e.target.value })}
               className="w-full rounded-xl border border-gray-200 bg-gray-50 px-3 py-2.5 text-sm text-gray-900 outline-none focus:outline-2 focus:outline-offset-0 focus:outline-amber-500/25 focus:border-amber-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100">
-              {paymentStatuses.map((s) => <option key={s} value={s}>{s.replace(/\b\w/g, (l) => l.toUpperCase())}</option>)}
+              {paymentStatuses.map((s) => <option key={s} value={s}>{statusLabels[s]}</option>)}
             </select>
           </div>
           <div className="sm:col-span-2">
-            <label className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">Description</label>
-            <textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} rows={2} placeholder="Bill description..."
+            <label className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">विवरण</label>
+            <textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} rows={2} placeholder="बिल विवरण..."
               className="w-full rounded-xl border border-gray-200 bg-gray-50 px-3 py-2.5 text-sm text-gray-900 outline-none focus:outline-2 focus:outline-offset-0 focus:outline-amber-500/25 focus:border-amber-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100" />
           </div>
           <div className="sm:col-span-2">
-            <label className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">Line Items (JSON or plain text)</label>
-            <textarea value={form.items} onChange={(e) => setForm({ ...form, items: e.target.value })} rows={3} placeholder='e.g. Consultation: $50, Lab Test: $30, Pharmacy: $25' 
+            <label className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">लाइन आइटमहरू</label>
+            <textarea value={form.items} onChange={(e) => setForm({ ...form, items: e.target.value })} rows={3} placeholder='जस्तै: परामर्श: रु. ५०, ल्याब: रु. ३०, फार्मेसी: रु. २५' 
               className="w-full rounded-xl border border-gray-200 bg-gray-50 px-3 py-2.5 text-sm text-gray-900 outline-none focus:outline-2 focus:outline-offset-0 focus:outline-amber-500/25 focus:border-amber-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100" />
           </div>
         </div>
         <div className="mt-8 flex justify-end gap-3 border-t border-gray-100 pt-6 dark:border-gray-800">
           <button type="button" onClick={onCancel}
             className="rounded-xl bg-rose-600 px-5 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-rose-700 dark:bg-rose-500 dark:hover:bg-rose-600">
-            Cancel
+            रद्द गर्नुहोस्
           </button>
           <button type="submit" disabled={saving}
             className="rounded-xl bg-emerald-600 px-6 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-emerald-700 disabled:opacity-50 dark:bg-emerald-500 dark:hover:bg-emerald-600">
-            {saving ? 'Saving...' : submitLabel}
+            {saving ? 'सुरक्षित गर्दै...' : submitLabel}
           </button>
         </div>
       </form>
@@ -135,6 +143,8 @@ export default function BillingManagement() {
   const [calcTaxPct, setCalcTaxPct] = useState(0)
   const [calcDiscount, setCalcDiscount] = useState(0)
   let calcIdCounter = 1
+  
+  const C = (n: number | string) => 'रु. ' + Number(n).toFixed(2)
 
   useEffect(() => { fetchBills(); fetchPatients() }, [])
 
@@ -181,11 +191,11 @@ export default function BillingManagement() {
   }
 
   async function handleDelete(id: number) {
-    if (!confirm('Delete this bill?')) return
+    if (!confirm('के यो बिल मेटाउने?') ) return
     try {
       const res = await fetch(`/api/bills/${id}`, { method: 'DELETE' })
       if (res.ok) { if (selected?.id === id) setSelected(null); await fetchBills() }
-    } catch { alert('Delete failed') }
+    } catch { alert('मेटाउन असफल') }
   }
 
   const filtered = bills.filter((b) => {
@@ -215,14 +225,14 @@ export default function BillingManagement() {
     document.body.appendChild(iframe)
 
     const items = b.items ? b.items.split('\n').filter(l => l.trim()).map(l => '<tr><td class="py-2 px-4 border-b border-gray-200">' + l + '</td><td class="py-2 px-4 border-b border-gray-200 text-right"></td><td class="py-2 px-4 border-b border-gray-200 text-right"></td><td class="py-2 px-4 border-b border-gray-200 text-right"></td></tr>').join('') : ''
-    const billDate = new Date(b.bill_date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
+    const billDate = new Date(b.bill_date).toLocaleDateString('ne-NP', { year: 'numeric', month: 'long', day: 'numeric' })
     const statusClass = 'status-' + b.payment_status
-    const pm = b.payment_method ? b.payment_method.charAt(0).toUpperCase() + b.payment_method.slice(1) : '\u2014'
+    const pm = methodLabels[b.payment_method || ''] || '\u2014'
 
     iframe.contentDocument?.write(`
       <html>
       <head>
-        <title>Invoice - ${b.invoice_number}</title>
+        <title>बिल - ${b.invoice_number}</title>
         <style>
           @page { margin: 15mm; }
           body { font-family: 'Segoe UI', Arial, sans-serif; color: #1a1a2e; margin: 0; padding: 20px; }
@@ -254,34 +264,34 @@ export default function BillingManagement() {
         <div class="invoice-box">
           <div class="header">
             <div>
-              <div class="hospital-name">City Hospital</div>
-              <div class="hospital-sub">123 Healthcare Avenue, Medical District</div>
-              <div class="hospital-sub">Phone: (555) 123-4567 | Email: info@cityhospital.com</div>
+              <div class="hospital-name">सिटी अस्पताल</div>
+              <div class="hospital-sub">१२३ स्वास्थ्य सेवा एभिन्यु, मेडिकल डिस्ट्रिक्ट</div>
+              <div class="hospital-sub">फोन: (५५५) १२३-४५६७ | इमेल: info@cityhospital.com</div>
             </div>
-            <div class="invoice-title">INVOICE</div>
+            <div class="invoice-title">बिल</div>
           </div>
           <div class="invoice-meta">
             <div class="meta-left">
-              <p><span class="meta-label">Invoice No:</span> ${b.invoice_number}</p>
-              <p><span class="meta-label">Date:</span> ${billDate}</p>
-              <p><span class="meta-label">Status:</span> <span class="status-badge ${statusClass}">${b.payment_status}</span></p>
+              <p><span class="meta-label">इनभ्वाइस नं.:</span> ${b.invoice_number}</p>
+              <p><span class="meta-label">मिति:</span> ${billDate}</p>
+              <p><span class="meta-label">स्थिति:</span> <span class="status-badge ${statusClass}">${statusLabels[b.payment_status]}</span></p>
             </div>
             <div class="meta-right">
-              <p><span class="meta-label">Patient:</span> ${b.patient.first_name} ${b.patient.last_name}</p>
-              <p><span class="meta-label">Payment Method:</span> ${pm}</p>
+              <p><span class="meta-label">बिरामी:</span> ${b.patient.first_name} ${b.patient.last_name}</p>
+              <p><span class="meta-label">भुक्तानी विधि:</span> ${pm}</p>
             </div>
           </div>
           <table>
-            <thead><tr><th>Description</th><th class="text-right">Price</th></tr></thead>
-            <tbody>${items || '<tr><td colspan="2" class="text-center" style="color:#94a3b8;padding:20px;">No line items</td></tr>'}</tbody>
+            <thead><tr><th>विवरण</th><th class="text-right">मूल्य</th></tr></thead>
+            <tbody>${items || '<tr><td colspan="2" class="text-center" style="color:#94a3b8;padding:20px;">कुनै लाइन आइटम छैन</td></tr>'}</tbody>
           </table>
           <table class="total-table">
-            <tr><td style="text-align:right;width:80%"><span class="meta-label">Total Amount:</span></td><td style="text-align:right;width:20%;font-weight:600">$${Number(b.total_amount).toFixed(2)}</td></tr>
-            <tr><td style="text-align:right"><span class="meta-label">Paid Amount:</span></td><td style="text-align:right;color:#059669;font-weight:600">$${Number(b.paid_amount).toFixed(2)}</td></tr>
-            <tr class="grand-total"><td style="text-align:right"><span class="meta-label">Due Amount:</span></td><td style="text-align:right;color:#dc2626;font-weight:700">$${(Number(b.total_amount) - Number(b.paid_amount)).toFixed(2)}</td></tr>
+            <tr><td style="text-align:right;width:80%"><span class="meta-label">जम्मा रकम:</span></td><td style="text-align:right;width:20%;font-weight:600">${C(b.total_amount)}</td></tr>
+            <tr><td style="text-align:right"><span class="meta-label">भुक्तानी रकम:</span></td><td style="text-align:right;color:#059669;font-weight:600">${C(b.paid_amount)}</td></tr>
+            <tr class="grand-total"><td style="text-align:right"><span class="meta-label">बाँकी रकम:</span></td><td style="text-align:right;color:#dc2626;font-weight:700">${C(Number(b.total_amount) - Number(b.paid_amount))}</td></tr>
           </table>
-          ${b.description ? '<div style="margin-top:20px;padding-top:16px;border-top:1px solid #e2e8f0"><p style="font-size:12px;font-weight:600;color:#64748b;text-transform:uppercase;letter-spacing:0.5px;">Notes</p><p style="font-size:13px;color:#475569;margin-top:4px;">' + b.description + '</p></div>' : ''}
-          <div class="footer"><p>Thank you for your visit. This is a computer-generated invoice.</p><p>City Hospital &bull; www.cityhospital.com</p></div>
+          ${b.description ? '<div style="margin-top:20px;padding-top:16px;border-top:1px solid #e2e8f0"><p style="font-size:12px;font-weight:600;color:#64748b;text-transform:uppercase;letter-spacing:0.5px;">नोटहरू</p><p style="font-size:13px;color:#475569;margin-top:4px;">' + b.description + '</p></div>' : ''}
+          <div class="footer"><p>भ्रमणको लागि धन्यवाद। यो कम्प्युटर-उत्पन्न बिल हो।</p><p>सिटी अस्पताल &bull; www.cityhospital.com</p></div>
         </div>
       </body>
       </html>
@@ -298,7 +308,7 @@ export default function BillingManagement() {
     return (
       <div className="space-y-6">
         <button onClick={() => setSelected(null)} className="flex items-center gap-2 text-sm font-medium text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
-          <ArrowLeft className="h-4 w-4" /> Back to all bills
+          <ArrowLeft className="h-4 w-4" /> सबै बिलहरूमा फर्कनुहोस्
         </button>
 
         <div className="rounded-2xl border border-gray-100 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900">
@@ -313,19 +323,19 @@ export default function BillingManagement() {
                   <div className="mt-2 flex items-center gap-2">
                     <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-medium ${paymentStatusColors[b.payment_status]?.bg || 'bg-gray-50 text-gray-600'}`}>
                       <span className={`h-1.5 w-1.5 rounded-full ${paymentStatusColors[b.payment_status]?.dot || 'bg-gray-400'}`} />
-                      {b.payment_status}
+                      {statusLabels[b.payment_status]}
                     </span>
                   </div>
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                <button onClick={() => printInvoice(b)} className="rounded-lg p-2 text-gray-400 hover:bg-gray-100 hover:text-blue-600 dark:hover:bg-gray-800 dark:hover:text-blue-400" title="Print">
+                <button onClick={() => printInvoice(b)} className="rounded-lg p-2 text-gray-400 hover:bg-gray-100 hover:text-blue-600 dark:hover:bg-gray-800 dark:hover:text-blue-400" title="प्रिन्ट">
                   <Printer className="h-4 w-4" />
                 </button>
-                <button onClick={() => openEdit(b)} className="rounded-lg p-2 text-gray-400 hover:bg-gray-100 hover:text-amber-600 dark:hover:bg-gray-800 dark:hover:text-amber-400" title="Edit">
+                <button onClick={() => openEdit(b)} className="rounded-lg p-2 text-gray-400 hover:bg-gray-100 hover:text-amber-600 dark:hover:bg-gray-800 dark:hover:text-amber-400" title="सम्पादन">
                   <Edit3 className="h-4 w-4" />
                 </button>
-                <button onClick={() => handleDelete(b.id)} className="rounded-lg p-2 text-gray-400 hover:bg-gray-100 hover:text-red-600 dark:hover:bg-gray-800 dark:hover:text-red-400" title="Delete">
+                <button onClick={() => handleDelete(b.id)} className="rounded-lg p-2 text-gray-400 hover:bg-gray-100 hover:text-red-600 dark:hover:bg-gray-800 dark:hover:text-red-400" title="मेटाउन">
                   <Trash2 className="h-4 w-4" />
                 </button>
               </div>
@@ -334,52 +344,52 @@ export default function BillingManagement() {
             <div className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               <div className="rounded-xl bg-gray-50 p-4 dark:bg-gray-800/50">
                 <div className="flex items-center gap-2 text-xs font-medium text-gray-500 dark:text-gray-400">
-                  <User className="h-3.5 w-3.5" /> Patient
+                  <User className="h-3.5 w-3.5" /> बिरामी
                 </div>
                 <p className="mt-1 text-sm font-medium text-gray-900 dark:text-white">{b.patient.first_name} {b.patient.last_name}</p>
               </div>
               <div className="rounded-xl bg-gray-50 p-4 dark:bg-gray-800/50">
                 <div className="flex items-center gap-2 text-xs font-medium text-gray-500 dark:text-gray-400">
-                  <Calendar className="h-3.5 w-3.5" /> Bill Date
+                  <Calendar className="h-3.5 w-3.5" /> बिल मिति
                 </div>
                 <p className="mt-1 text-sm font-medium text-gray-900 dark:text-white">{new Date(b.bill_date).toLocaleDateString()}</p>
               </div>
               <div className="rounded-xl bg-gray-50 p-4 dark:bg-gray-800/50">
                 <div className="flex items-center gap-2 text-xs font-medium text-gray-500 dark:text-gray-400">
-                  <CreditCard className="h-3.5 w-3.5" /> Payment Method
+                  <CreditCard className="h-3.5 w-3.5" /> भुक्तानी विधि
                 </div>
-                <p className="mt-1 text-sm font-medium text-gray-900 dark:text-white">{b.payment_method ? b.payment_method.replace(/\b\w/g, (l) => l.toUpperCase()) : '—'}</p>
+                <p className="mt-1 text-sm font-medium text-gray-900 dark:text-white">{methodLabels[b.payment_method || ''] || '\u2014'}</p>
               </div>
               <div className="rounded-xl bg-gray-50 p-4 dark:bg-gray-800/50">
                 <div className="flex items-center gap-2 text-xs font-medium text-gray-500 dark:text-gray-400">
-                  <DollarSign className="h-3.5 w-3.5" /> Total Amount
+                  <FileText className="h-3.5 w-3.5" /> जम्मा रकम
                 </div>
-                <p className="mt-1 text-sm font-bold text-gray-900 dark:text-white">${Number(b.total_amount).toFixed(2)}</p>
+                <p className="mt-1 text-sm font-bold text-gray-900 dark:text-white">{C(b.total_amount)}</p>
               </div>
               <div className="rounded-xl bg-gray-50 p-4 dark:bg-gray-800/50">
                 <div className="flex items-center gap-2 text-xs font-medium text-gray-500 dark:text-gray-400">
-                  <DollarSign className="h-3.5 w-3.5" /> Paid Amount
+                  <FileText className="h-3.5 w-3.5" /> भुक्तानी रकम
                 </div>
-                <p className="mt-1 text-sm font-bold text-emerald-600 dark:text-emerald-400">${Number(b.paid_amount).toFixed(2)}</p>
+                <p className="mt-1 text-sm font-bold text-emerald-600 dark:text-emerald-400">{C(b.paid_amount)}</p>
               </div>
               <div className="rounded-xl bg-gray-50 p-4 dark:bg-gray-800/50">
                 <div className="flex items-center gap-2 text-xs font-medium text-gray-500 dark:text-gray-400">
-                  <DollarSign className="h-3.5 w-3.5" /> Due Amount
+                  <FileText className="h-3.5 w-3.5" /> बाँकी रकम
                 </div>
-                <p className="mt-1 text-sm font-bold text-rose-600 dark:text-rose-400">${(Number(b.total_amount) - Number(b.paid_amount)).toFixed(2)}</p>
+                <p className="mt-1 text-sm font-bold text-rose-600 dark:text-rose-400">{C(Number(b.total_amount) - Number(b.paid_amount))}</p>
               </div>
             </div>
 
             {b.description && (
               <div className="mt-6">
-                <h3 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Description</h3>
+                <h3 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">विवरण</h3>
                 <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">{b.description}</p>
               </div>
             )}
 
             {b.items && (
               <div className="mt-4">
-                <h3 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Line Items</h3>
+                <h3 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">लाइन आइटमहरू</h3>
                 <p className="mt-1 text-sm text-gray-600 dark:text-gray-400 whitespace-pre-wrap">{b.items}</p>
               </div>
             )}
@@ -396,8 +406,8 @@ export default function BillingManagement() {
           <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-gray-50 dark:bg-gray-800">
             <Receipt className="h-8 w-8 text-gray-400" />
           </div>
-          <h3 className="mt-4 text-lg font-semibold text-gray-900 dark:text-white">No bills found</h3>
-          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">Click "Create Bill" to create one.</p>
+          <h3 className="mt-4 text-lg font-semibold text-gray-900 dark:text-white">कुनै बिल फेला परेन</h3>
+          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">नयाँ बिल सिर्जना गर्न "बिल सिर्जना गर्नुहोस्" मा क्लिक गर्नुहोस्।</p>
         </div>
       )
     }
@@ -412,20 +422,20 @@ export default function BillingManagement() {
               </div>
               <h4 className="font-semibold text-gray-900 dark:text-white">{b.invoice_number}</h4>
               <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">{b.patient.first_name} {b.patient.last_name}</p>
-              <p className="text-xs text-gray-400 dark:text-gray-500">${Number(b.total_amount).toFixed(2)} | ${Number(b.paid_amount).toFixed(2)} paid</p>
+              <p className="text-xs text-gray-400 dark:text-gray-500">{C(b.total_amount)} | {C(b.paid_amount)} भुक्तानी</p>
               <span className={`mt-3 inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-medium ${paymentStatusColors[b.payment_status]?.bg || 'bg-gray-50 text-gray-600'}`}>
                 <span className={`h-1.5 w-1.5 rounded-full ${paymentStatusColors[b.payment_status]?.dot || 'bg-gray-400'}`} />
-                {b.payment_status}
+                {statusLabels[b.payment_status]}
               </span>
             </button>
             <div className="absolute right-3 top-3 hidden gap-1 group-hover:flex">
-              <button onClick={(e) => { e.stopPropagation(); printInvoice(b) }} className="rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 hover:text-blue-600 dark:hover:bg-gray-700 dark:hover:text-blue-400" title="Print">
+              <button onClick={(e) => { e.stopPropagation(); printInvoice(b) }} className="rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 hover:text-blue-600 dark:hover:bg-gray-700 dark:hover:text-blue-400" title="प्रिन्ट">
                 <Printer className="h-3.5 w-3.5" />
               </button>
-              <button onClick={(e) => { e.stopPropagation(); openEdit(b) }} className="rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 hover:text-amber-600 dark:hover:bg-gray-700 dark:hover:text-amber-400" title="Edit">
+              <button onClick={(e) => { e.stopPropagation(); openEdit(b) }} className="rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 hover:text-amber-600 dark:hover:bg-gray-700 dark:hover:text-amber-400" title="सम्पादन">
                 <Edit3 className="h-3.5 w-3.5" />
               </button>
-              <button onClick={(e) => { e.stopPropagation(); handleDelete(b.id) }} className="rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 hover:text-red-600 dark:hover:bg-gray-700 dark:hover:text-red-400" title="Delete">
+              <button onClick={(e) => { e.stopPropagation(); handleDelete(b.id) }} className="rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 hover:text-red-600 dark:hover:bg-gray-700 dark:hover:text-red-400" title="मेटाउन">
                 <Trash2 className="h-3.5 w-3.5" />
               </button>
             </div>
@@ -447,10 +457,10 @@ export default function BillingManagement() {
     }
 
     function createFromCalc() {
-      const lines = calcItems.map((i) => `${i.description} x ${i.qty} @ $${i.unitPrice.toFixed(2)} = $${(i.qty * i.unitPrice).toFixed(2)}`).join('\n')
-      const taxLine = calcTaxPct > 0 ? `\nTax (${calcTaxPct}%): $${taxAmount.toFixed(2)}` : ''
-      const discLine = calcDiscount > 0 ? `\nDiscount: -$${calcDiscount.toFixed(2)}` : ''
-      const desc = `Generated from calculator\n${lines}${taxLine}${discLine}\nTotal: $${grandTotal.toFixed(2)}`
+      const lines = calcItems.map((i) => `${i.description} x ${i.qty} @ रु. ${i.unitPrice.toFixed(2)} = रु. ${(i.qty * i.unitPrice).toFixed(2)}`).join('\n')
+      const taxLine = calcTaxPct > 0 ? `\nकर (${calcTaxPct}%): रु. ${taxAmount.toFixed(2)}` : ''
+      const discLine = calcDiscount > 0 ? `\nछुट: -रु. ${calcDiscount.toFixed(2)}` : ''
+      const desc = `क्याल्कुलेटरबाट उत्पन्न\n${lines}${taxLine}${discLine}\nजम्मा: रु. ${grandTotal.toFixed(2)}`
       setForm({ ...emptyForm, total_amount: grandTotal.toFixed(2), paid_amount: grandTotal.toFixed(2), description: desc, items: lines })
       setShowCalculator(false)
       setShowAddForm(true)
@@ -460,11 +470,11 @@ export default function BillingManagement() {
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Billing Calculator</h1>
-            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">Add line items to calculate the total bill amount.</p>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">बिल क्याल्कुलेटर</h1>
+            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">जम्मा बिल रकम गणना गर्न लाइन आइटमहरू थप्नुहोस्।</p>
           </div>
           <button onClick={() => setShowCalculator(false)} className="flex items-center gap-2 rounded-xl bg-gray-100 px-4 py-2.5 text-sm font-medium text-gray-600 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600">
-            <ArrowLeft className="h-4 w-4" /> Back
+            <ArrowLeft className="h-4 w-4" /> फर्कनुहोस्
           </button>
         </div>
 
@@ -474,10 +484,10 @@ export default function BillingManagement() {
               <thead>
                 <tr className="border-b border-gray-100 dark:border-gray-800">
                   <th className="py-2 pr-2 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 w-8"></th>
-                  <th className="py-2 px-2 text-left text-xs font-semibold text-gray-500 dark:text-gray-400">Description</th>
-                  <th className="py-2 px-2 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 w-20">Qty</th>
-                  <th className="py-2 px-2 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 w-28">Unit Price</th>
-                  <th className="py-2 pl-2 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 w-28">Total</th>
+                  <th className="py-2 px-2 text-left text-xs font-semibold text-gray-500 dark:text-gray-400">विवरण</th>
+                  <th className="py-2 px-2 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 w-20">मात्रा</th>
+                  <th className="py-2 px-2 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 w-28">एकाइ मूल्य</th>
+                  <th className="py-2 pl-2 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 w-28">जम्मा</th>
                   <th className="py-2 pl-2 text-right w-10"></th>
                 </tr>
               </thead>
@@ -486,7 +496,7 @@ export default function BillingManagement() {
                   <tr key={item.id} className="border-b border-gray-50 dark:border-gray-800/50">
                     <td className="py-2 pr-2 text-gray-300"><GripVertical className="h-4 w-4" /></td>
                     <td className="py-2 px-2">
-                      <input value={item.description} onChange={(e) => updateRow(item.id, 'description', e.target.value)} placeholder="Item name..."
+                      <input value={item.description} onChange={(e) => updateRow(item.id, 'description', e.target.value)} placeholder="वस्तुको नाम..."
                         className="w-full rounded-lg border border-gray-200 bg-gray-50 px-2.5 py-1.5 text-sm text-gray-900 outline-none focus:border-amber-500 focus:outline-amber-500/25 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100" />
                     </td>
                     <td className="py-2 px-2">
@@ -497,7 +507,7 @@ export default function BillingManagement() {
                       <input type="number" step="0.01" min="0" value={item.unitPrice || ''} onChange={(e) => updateRow(item.id, 'unitPrice', e.target.value)}
                         className="w-full rounded-lg border border-gray-200 bg-gray-50 px-2.5 py-1.5 text-right text-sm text-gray-900 outline-none focus:border-amber-500 focus:outline-amber-500/25 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100" />
                     </td>
-                    <td className="py-2 px-2 text-right text-sm font-medium text-gray-900 dark:text-white">${(item.qty * item.unitPrice).toFixed(2)}</td>
+                    <td className="py-2 px-2 text-right text-sm font-medium text-gray-900 dark:text-white">{C(item.qty * item.unitPrice)}</td>
                     <td className="py-2 pl-2 text-right">
                       {calcItems.length > 1 && (
                         <button onClick={() => removeRow(item.id)} className="rounded-lg p-1 text-gray-400 hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-900/30"><X className="h-4 w-4" /></button>
@@ -510,50 +520,50 @@ export default function BillingManagement() {
           </div>
 
           <button onClick={addRow} className="mt-3 flex items-center gap-1.5 text-sm font-medium text-amber-600 hover:text-amber-700 dark:text-amber-400 dark:hover:text-amber-300">
-            <Plus className="h-4 w-4" /> Add Item
+            <Plus className="h-4 w-4" /> आइटम थप्नुहोस्
           </button>
 
           <div className="mt-6 border-t border-gray-100 pt-4 dark:border-gray-800">
             <div className="ml-auto space-y-2 sm:w-72">
               <div className="flex items-center justify-between">
-                <label className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400"><Percent className="h-4 w-4" /> Tax (%)</label>
+                <label className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400"><Percent className="h-4 w-4" /> कर (%)</label>
                 <input type="number" min="0" max="100" step="0.1" value={calcTaxPct} onChange={(e) => setCalcTaxPct(Number(e.target.value) || 0)}
                   className="w-24 rounded-lg border border-gray-200 bg-gray-50 px-2.5 py-1.5 text-right text-sm text-gray-900 outline-none focus:border-amber-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100" />
               </div>
               <div className="flex items-center justify-between">
-                <label className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400"><Minus className="h-4 w-4" /> Discount ($)</label>
+                <label className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400"><Minus className="h-4 w-4" /> छुट (रु.)</label>
                 <input type="number" min="0" step="0.01" value={calcDiscount} onChange={(e) => setCalcDiscount(Number(e.target.value) || 0)}
                   className="w-24 rounded-lg border border-gray-200 bg-gray-50 px-2.5 py-1.5 text-right text-sm text-gray-900 outline-none focus:border-amber-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100" />
               </div>
               <div className="border-t border-gray-100 pt-2 dark:border-gray-800">
                 <div className="flex items-center justify-between text-sm text-gray-600 dark:text-gray-300">
-                  <span>Subtotal</span>
-                  <span>${subtotal.toFixed(2)}</span>
+                  <span>उप-जम्मा</span>
+                  <span>{C(subtotal)}</span>
                 </div>
                 {calcTaxPct > 0 && (
                   <div className="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400">
-                    <span>Tax ({calcTaxPct}%)</span>
-                    <span>${taxAmount.toFixed(2)}</span>
+                    <span>कर ({calcTaxPct}%)</span>
+                    <span>{C(taxAmount)}</span>
                   </div>
                 )}
                 {calcDiscount > 0 && (
                   <div className="flex items-center justify-between text-sm text-rose-500">
-                    <span>Discount</span>
-                    <span>-${calcDiscount.toFixed(2)}</span>
+                    <span>छुट</span>
+                    <span>-{C(calcDiscount)}</span>
                   </div>
                 )}
                 <div className="flex items-center justify-between text-lg font-bold text-gray-900 dark:text-white mt-2 pt-2 border-t border-gray-200 dark:border-gray-700">
-                  <span>Grand Total</span>
-                  <span>${grandTotal.toFixed(2)}</span>
+                  <span>जम्मा</span>
+                  <span>{C(grandTotal)}</span>
                 </div>
               </div>
             </div>
           </div>
 
           <div className="mt-6 flex justify-end gap-3 border-t border-gray-100 pt-6 dark:border-gray-800">
-            <button onClick={() => setShowCalculator(false)} className="rounded-xl bg-gray-100 px-5 py-2.5 text-sm font-medium text-gray-600 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600">Cancel</button>
+            <button onClick={() => setShowCalculator(false)} className="rounded-xl bg-gray-100 px-5 py-2.5 text-sm font-medium text-gray-600 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600">रद्द गर्नुहोस्</button>
             <button onClick={createFromCalc} className="flex items-center gap-2 rounded-xl bg-emerald-600 px-6 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600">
-              <Receipt className="h-4 w-4" /> Create Bill from Calculator
+              <Receipt className="h-4 w-4" /> क्याल्कुलेटरबाट बिल सिर्जना गर्नुहोस्
             </button>
           </div>
         </div>
@@ -570,7 +580,7 @@ export default function BillingManagement() {
       <BillForm
         form={form} setForm={setForm} saving={saving} patients={patients}
         onCancel={() => setShowAddForm(false)} onSubmit={handleAdd}
-        title="Create New Bill" submitLabel="Create Bill"
+        title="नयाँ बिल सिर्जना गर्नुहोस्" submitLabel="बिल सिर्जना गर्नुहोस्"
       />
     )
   }
@@ -579,41 +589,41 @@ export default function BillingManagement() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Billing & Finance</h1>
-          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">{bills.length} bills</p>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">बिलिङ र वित्त</h1>
+          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">{bills.length} बिलहरू</p>
         </div>
         <div className="flex gap-2">
           <button onClick={() => setShowCalculator(true)} className="flex items-center gap-2 rounded-xl border border-amber-200 bg-amber-50 px-4 py-2.5 text-sm font-medium text-amber-700 shadow-sm hover:bg-amber-100 dark:border-amber-700 dark:bg-amber-900/20 dark:text-amber-400 dark:hover:bg-amber-900/30">
-            <Calculator className="h-4 w-4" /> Calculator
+            <Calculator className="h-4 w-4" /> क्याल्कुलेटर
           </button>
           <button onClick={openAddForm} className="flex items-center gap-2 rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600">
-            <Plus className="h-4 w-4" /> Create Bill
+            <Plus className="h-4 w-4" /> बिल सिर्जना गर्नुहोस्
           </button>
         </div>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-4">
         <div className="rounded-2xl border border-gray-100 bg-white p-4 shadow-sm dark:border-gray-800 dark:bg-gray-900">
-          <p className="text-xs font-medium text-gray-500 dark:text-gray-400">Total Revenue</p>
-          <p className="mt-1 text-2xl font-bold text-gray-900 dark:text-white">${totalRevenue.toFixed(2)}</p>
+          <p className="text-xs font-medium text-gray-500 dark:text-gray-400">कुल आम्दानी</p>
+          <p className="mt-1 text-2xl font-bold text-gray-900 dark:text-white">{C(totalRevenue)}</p>
         </div>
         <div className="rounded-2xl border border-gray-100 bg-white p-4 shadow-sm dark:border-gray-800 dark:bg-gray-900">
-          <p className="text-xs font-medium text-emerald-600 dark:text-emerald-400">Total Collected</p>
-          <p className="mt-1 text-2xl font-bold text-emerald-700 dark:text-emerald-300">${totalPaid.toFixed(2)}</p>
+          <p className="text-xs font-medium text-emerald-600 dark:text-emerald-400">कुल सङ्कलन</p>
+          <p className="mt-1 text-2xl font-bold text-emerald-700 dark:text-emerald-300">{C(totalPaid)}</p>
         </div>
         <div className="rounded-2xl border border-gray-100 bg-white p-4 shadow-sm dark:border-gray-800 dark:bg-gray-900">
-          <p className="text-xs font-medium text-rose-600 dark:text-rose-400">Total Due</p>
-          <p className="mt-1 text-2xl font-bold text-rose-700 dark:text-rose-300">${totalDue.toFixed(2)}</p>
+          <p className="text-xs font-medium text-rose-600 dark:text-rose-400">कुल बाँकी</p>
+          <p className="mt-1 text-2xl font-bold text-rose-700 dark:text-rose-300">{C(totalDue)}</p>
         </div>
         <div className="rounded-2xl border border-gray-100 bg-white p-4 shadow-sm dark:border-gray-800 dark:bg-gray-900">
-          <p className="text-xs font-medium text-blue-600 dark:text-blue-400">Pending Bills</p>
+          <p className="text-xs font-medium text-blue-600 dark:text-blue-400">विचाराधीन बिल</p>
           <p className="mt-1 text-2xl font-bold text-blue-700 dark:text-blue-300">{bills.filter((b) => b.payment_status === 'pending').length}</p>
         </div>
       </div>
 
       <div className="relative">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 dark:text-gray-500" />
-        <input type="text" placeholder="Search by invoice number, patient name or status..."
+        <input type="text" placeholder="इनभ्वाइस नम्बर, बिरामीको नाम वा स्थिति अनुसार खोज्नुहोस्..."
           value={search} onChange={(e) => setSearch(e.target.value)}
           className="w-full rounded-xl border border-gray-200 bg-white py-2.5 pl-9 pr-4 text-sm text-gray-900 placeholder-gray-400 outline-none focus:outline-2 focus:outline-offset-0 focus:outline-amber-500/25 focus:border-amber-500 transition-all dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500 dark:focus:border-amber-500 dark:focus:outline-amber-500/25"
         />
@@ -625,13 +635,13 @@ export default function BillingManagement() {
         <div className="fixed inset-0 z-40 flex items-start justify-center overflow-y-auto bg-black/30 backdrop-blur-sm py-10">
           <div className="relative w-full max-w-2xl rounded-2xl border border-gray-100 bg-white p-6 shadow-xl dark:border-gray-700 dark:bg-gray-800">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-lg font-bold text-gray-900 dark:text-white">Edit Bill</h2>
+              <h2 className="text-lg font-bold text-gray-900 dark:text-white">बिल सम्पादन गर्नुहोस्</h2>
               <button onClick={() => setEditing(null)} className="rounded-lg p-1 text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700"><X className="h-5 w-5" /></button>
             </div>
             <BillForm
               form={form} setForm={setForm} saving={saving} patients={patients}
               onCancel={() => setEditing(null)} onSubmit={handleSave}
-              title="Edit Bill" submitLabel="Update Bill"
+              title="बिल सम्पादन गर्नुहोस्" submitLabel="बिल अद्यावधिक गर्नुहोस्"
             />
           </div>
         </div>
