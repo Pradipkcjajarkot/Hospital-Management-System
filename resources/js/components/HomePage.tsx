@@ -51,17 +51,17 @@ export default function HomePage({ setPage }: { setPage: (p: string) => void }) 
         <div className="absolute inset-0 bg-gradient-to-r from-gray-900/90 via-gray-900/70 to-gray-900/50" />
         <div className="relative mx-auto max-w-7xl">
           <div className="max-w-2xl">
-            <div className="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-1.5 text-sm text-gray-300 backdrop-blur-sm">
+            <div className="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-1.5 text-sm text-gray-300 backdrop-blur-sm animate-fade-in">
               <Activity className="h-4 w-4 text-rose-400" /> Trusted Healthcare Since 2010
             </div>
-            <h1 className="mt-6 text-3xl font-bold leading-tight text-white sm:text-5xl lg:text-6xl">
+            <h1 className="mt-6 text-3xl font-bold leading-tight text-white sm:text-5xl lg:text-6xl animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
               Your Health Is Our<br />
               <span className="bg-gradient-to-r from-rose-400 to-rose-300 bg-clip-text text-transparent">Top Priority</span>
             </h1>
-            <p className="mt-4 max-w-xl text-lg text-gray-300">
+            <p className="mt-4 max-w-xl text-lg text-gray-300 animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
               {s.hospital_name || 'MediCare Hospital'} offers world-class healthcare services with cutting-edge technology, experienced doctors, and compassionate staff.
             </p>
-            <div className="mt-8 flex flex-wrap gap-4">
+            <div className="mt-8 flex flex-wrap gap-4 animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
               <button onClick={() => setPage('booking')} className="flex items-center gap-2 rounded-xl bg-rose-600 px-6 py-3 text-sm font-medium text-white shadow-lg shadow-rose-600/25 hover:bg-rose-700 transition-all">
                 <Calendar className="h-4 w-4" /> Book Appointment
               </button>
@@ -83,8 +83,8 @@ export default function HomePage({ setPage }: { setPage: (p: string) => void }) 
               { label: 'Departments', value: data.stats.departments, icon: Building2 },
               { label: 'Hospital Beds', value: '200+', icon: Bed },
               { label: 'Years Experience', value: data.stats.years + '+', icon: Award },
-            ].map((stat) => (
-              <div key={stat.label} className="text-center">
+            ].map((stat, i) => (
+              <div key={stat.label} className="text-center animate-scale-in" style={{ animationDelay: `${0.1 + i * 0.1}s` }}>
                 <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-rose-50 text-rose-600 dark:bg-rose-900/30 dark:text-rose-400">
                   <stat.icon className="h-6 w-6" />
                 </div>
@@ -112,18 +112,18 @@ export default function HomePage({ setPage }: { setPage: (p: string) => void }) 
               </div>
             </div>
             <div>
-              <h2 className="text-3xl font-bold text-gray-900 dark:text-white">About {s.hospital_name || 'MediCare Hospital'}</h2>
-              <p className="mt-4 text-gray-600 dark:text-gray-400 leading-relaxed">
+              <h2 className="text-3xl font-bold text-gray-900 dark:text-white animate-fade-in-up">About {s.hospital_name || 'MediCare Hospital'}</h2>
+              <p className="mt-4 text-gray-600 dark:text-gray-400 leading-relaxed animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
                 We are committed to providing compassionate, high-quality healthcare services to our community. 
                 With state-of-the-art facilities and a team of dedicated medical professionals, we ensure every patient receives personalized care.
               </p>
               <div className="mt-8 grid gap-6 sm:grid-cols-2">
-                <div className="rounded-2xl border border-rose-100 bg-rose-50/50 p-5 dark:border-rose-900/30 dark:bg-rose-900/10">
+                <div className="rounded-2xl border border-rose-100 bg-rose-50/50 p-5 dark:border-rose-900/30 dark:bg-rose-900/10 animate-slide-in-left">
                   <Heart className="h-6 w-6 text-rose-600 dark:text-rose-400" />
                   <h3 className="mt-3 font-semibold text-gray-900 dark:text-white">Our Mission</h3>
                   <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">To deliver exceptional healthcare with compassion, innovation, and a commitment to improving lives.</p>
                 </div>
-                <div className="rounded-2xl border border-blue-100 bg-blue-50/50 p-5 dark:border-blue-900/30 dark:bg-blue-900/10">
+                <div className="rounded-2xl border border-blue-100 bg-blue-50/50 p-5 dark:border-blue-900/30 dark:bg-blue-900/10 animate-slide-in-right">
                   <Eye className="h-6 w-6 text-blue-600 dark:text-blue-400" />
                   <h3 className="mt-3 font-semibold text-gray-900 dark:text-white">Our Vision</h3>
                   <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">To be the most trusted healthcare provider, setting standards of excellence in medical care.</p>
@@ -141,7 +141,7 @@ export default function HomePage({ setPage }: { setPage: (p: string) => void }) 
       <section className="bg-gray-50 px-4 py-20 dark:bg-gray-900/50 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-7xl">
           <div className="text-center">
-            <h2 className="text-3xl font-bold text-gray-900 dark:text-white">Our Departments</h2>
+            <h2 className="text-3xl font-bold text-gray-900 dark:text-white animate-fade-in-up">Our Departments</h2>
             <p className="mt-2 text-gray-500 dark:text-gray-400">Comprehensive medical care across all specialties</p>
           </div>
           <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
@@ -154,8 +154,8 @@ export default function HomePage({ setPage }: { setPage: (p: string) => void }) 
               { name: 'Neurology', icon: Brain },
               { name: 'Emergency', icon: Ambulance },
               { name: 'Laboratory', icon: FlaskConical },
-            ].map((dept) => (
-              <div key={dept.name} className="group rounded-2xl border border-gray-100 bg-white p-6 text-center shadow-sm transition-all hover:shadow-lg hover:border-rose-200 dark:border-gray-800 dark:bg-gray-900 dark:hover:border-rose-800">
+            ].map((dept, i) => (
+              <div key={dept.name} className="group rounded-2xl border border-gray-100 bg-white p-6 text-center shadow-sm transition-all hover:shadow-lg hover:border-rose-200 dark:border-gray-800 dark:bg-gray-900 dark:hover:border-rose-800 animate-fade-in-up" style={{ animationDelay: `${0.1 + i * 0.05}s` }}>
                 <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-xl bg-gradient-to-br from-rose-50 to-red-50 text-rose-600 group-hover:from-rose-100 group-hover:to-red-100 transition-colors dark:from-rose-900/30 dark:to-red-900/30 dark:text-rose-400">
                   <dept.icon className="h-7 w-7" />
                 </div>
@@ -175,7 +175,7 @@ export default function HomePage({ setPage }: { setPage: (p: string) => void }) 
       <section className="px-4 py-20 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-7xl">
           <div className="text-center">
-            <h2 className="text-3xl font-bold text-gray-900 dark:text-white">Our Services</h2>
+            <h2 className="text-3xl font-bold text-gray-900 dark:text-white animate-fade-in-up">Our Services</h2>
             <p className="mt-2 text-gray-500 dark:text-gray-400">Comprehensive healthcare services under one roof</p>
           </div>
           <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
@@ -188,8 +188,8 @@ export default function HomePage({ setPage }: { setPage: (p: string) => void }) 
               { name: 'ICU', desc: 'Advanced intensive care unit with modern monitoring equipment and skilled staff.', icon: Monitor },
               { name: 'Surgery', desc: 'State-of-the-art operation theaters for general and specialized surgeries.', icon: Syringe },
               { name: 'Health Checkup', desc: 'Comprehensive health checkup packages tailored for all age groups.', icon: Heart },
-            ].map((service) => (
-              <div key={service.name} className="group rounded-2xl border border-gray-100 bg-white p-6 shadow-sm transition-all hover:shadow-lg hover:border-rose-200 dark:border-gray-800 dark:bg-gray-900 dark:hover:border-rose-800">
+            ].map((service, i) => (
+              <div key={service.name} className="group rounded-2xl border border-gray-100 bg-white p-6 shadow-sm transition-all hover:shadow-lg hover:border-rose-200 dark:border-gray-800 dark:bg-gray-900 dark:hover:border-rose-800 animate-fade-in-up" style={{ animationDelay: `${0.1 + i * 0.05}s` }}>
                 <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-blue-50 to-cyan-50 text-blue-600 group-hover:from-blue-100 group-hover:to-cyan-100 transition-colors dark:from-blue-900/30 dark:to-cyan-900/30 dark:text-blue-400">
                   <service.icon className="h-6 w-6" />
                 </div>
@@ -205,12 +205,12 @@ export default function HomePage({ setPage }: { setPage: (p: string) => void }) 
       <section className="bg-gray-50 px-4 py-20 dark:bg-gray-900/50 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-7xl">
           <div className="text-center">
-            <h2 className="text-3xl font-bold text-gray-900 dark:text-white">Meet Our Doctors</h2>
+            <h2 className="text-3xl font-bold text-gray-900 dark:text-white animate-fade-in-up">Meet Our Doctors</h2>
             <p className="mt-2 text-gray-500 dark:text-gray-400">Experienced specialists dedicated to your health</p>
           </div>
           <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {data.doctors.map((d: any) => (
-              <div key={d.id} className="rounded-2xl border border-gray-100 bg-white p-6 text-center shadow-sm transition-all hover:shadow-lg dark:border-gray-800 dark:bg-gray-900">
+            {data.doctors.map((d: any, i: number) => (
+              <div key={d.id} className="rounded-2xl border border-gray-100 bg-white p-6 text-center shadow-sm transition-all hover:shadow-lg dark:border-gray-800 dark:bg-gray-900 animate-fade-in-up" style={{ animationDelay: `${0.1 + i * 0.1}s` }}>
                 <div className="mx-auto flex h-20 w-20 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-rose-100 to-red-100 text-2xl font-bold text-rose-700 dark:from-rose-900/40 dark:to-red-900/40 dark:text-rose-400">
                   {d.profile_photo_url ? (
                     <img src={d.profile_photo_url} alt={`Dr. ${d.first_name} ${d.last_name}`} className="h-full w-full object-cover" />
@@ -241,7 +241,7 @@ export default function HomePage({ setPage }: { setPage: (p: string) => void }) 
         <div className="mx-auto max-w-7xl">
           <div className="grid gap-12 lg:grid-cols-2 items-center">
             <div>
-              <h2 className="text-3xl font-bold text-gray-900 dark:text-white">Book an Appointment</h2>
+              <h2 className="text-3xl font-bold text-gray-900 dark:text-white animate-fade-in-up">Book an Appointment</h2>
               <p className="mt-2 text-gray-500 dark:text-gray-400">Schedule your visit with our specialists. We'll confirm your appointment shortly.</p>
               <div className="mt-8 space-y-4">
                 {[
@@ -312,7 +312,7 @@ export default function HomePage({ setPage }: { setPage: (p: string) => void }) 
       <section className="bg-gray-50 px-4 py-20 dark:bg-gray-900/50 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-7xl">
           <div className="text-center">
-            <h2 className="text-3xl font-bold text-gray-900 dark:text-white">Why Choose Us</h2>
+            <h2 className="text-3xl font-bold text-gray-900 dark:text-white animate-fade-in-up">Why Choose Us</h2>
             <p className="mt-2 text-gray-500 dark:text-gray-400">We are committed to providing the best healthcare experience</p>
           </div>
           <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -323,8 +323,8 @@ export default function HomePage({ setPage }: { setPage: (p: string) => void }) 
               { name: 'Affordable Treatment', desc: 'Quality healthcare at competitive prices with transparent billing.', icon: DollarSign },
               { name: 'Online Reports', desc: 'Access your test results and medical records online anytime.', icon: FileText },
               { name: 'Quality Healthcare', desc: 'Compassionate care delivered with the highest standards of excellence.', icon: Shield },
-            ].map((feature) => (
-              <div key={feature.name} className="group rounded-2xl border border-gray-100 bg-white p-6 shadow-sm transition-all hover:shadow-lg hover:border-rose-200 dark:border-gray-800 dark:bg-gray-900 dark:hover:border-rose-800">
+            ].map((feature, i) => (
+              <div key={feature.name} className="group rounded-2xl border border-gray-100 bg-white p-6 shadow-sm transition-all hover:shadow-lg hover:border-rose-200 dark:border-gray-800 dark:bg-gray-900 dark:hover:border-rose-800 animate-fade-in-up" style={{ animationDelay: `${0.1 + i * 0.05}s` }}>
                 <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-50 to-green-50 text-emerald-600 group-hover:from-emerald-100 group-hover:to-green-100 transition-colors dark:from-emerald-900/30 dark:to-green-900/30 dark:text-emerald-400">
                   <feature.icon className="h-6 w-6" />
                 </div>
@@ -341,12 +341,12 @@ export default function HomePage({ setPage }: { setPage: (p: string) => void }) 
         <section className="px-4 py-20 sm:px-6 lg:px-8">
           <div className="mx-auto max-w-7xl">
             <div className="text-center">
-              <h2 className="text-3xl font-bold text-gray-900 dark:text-white">What Our Patients Say</h2>
+              <h2 className="text-3xl font-bold text-gray-900 dark:text-white animate-fade-in-up">What Our Patients Say</h2>
               <p className="mt-2 text-gray-500 dark:text-gray-400">Real stories from real people</p>
             </div>
             <div className="mt-10 grid gap-6 md:grid-cols-3">
-              {data.testimonials.map((t: any) => (
-                <div key={t.id} className="relative rounded-2xl border border-gray-100 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-900">
+              {data.testimonials.map((t: any, i: number) => (
+                <div key={t.id} className="relative rounded-2xl border border-gray-100 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-900 animate-fade-in-up" style={{ animationDelay: `${0.1 + i * 0.1}s` }}>
                   <Quote className="absolute right-4 top-4 h-8 w-8 text-rose-100 dark:text-rose-900/30" />
                   <div className="flex items-center gap-1">
                     {Array.from({ length: t.rating }).map((_, i) => (
@@ -375,12 +375,12 @@ export default function HomePage({ setPage }: { setPage: (p: string) => void }) 
         <section className="bg-gray-50 px-4 py-20 dark:bg-gray-900/50 sm:px-6 lg:px-8">
           <div className="mx-auto max-w-7xl">
             <div className="text-center">
-              <h2 className="text-3xl font-bold text-gray-900 dark:text-white">Latest News & Health Tips</h2>
+              <h2 className="text-3xl font-bold text-gray-900 dark:text-white animate-fade-in-up">Latest News & Health Tips</h2>
               <p className="mt-2 text-gray-500 dark:text-gray-400">Health articles, hospital announcements, and medical tips</p>
             </div>
             <div className="mt-10 grid gap-6 md:grid-cols-3">
-              {data.blogPosts.map((post: any) => (
-                <div key={post.id} className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm transition-all hover:shadow-lg dark:border-gray-800 dark:bg-gray-900">
+              {data.blogPosts.map((post: any, i: number) => (
+                <div key={post.id} className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm transition-all hover:shadow-lg dark:border-gray-800 dark:bg-gray-900 animate-fade-in-up" style={{ animationDelay: `${0.1 + i * 0.1}s` }}>
                   <p className="text-xs font-medium text-rose-600 dark:text-rose-400 uppercase tracking-wider">{post.category || 'General'}</p>
                   <h3 className="mt-2 font-semibold text-gray-900 dark:text-white line-clamp-2">{post.title}</h3>
                   <p className="mt-1 text-sm text-gray-500 dark:text-gray-400 line-clamp-2">{post.excerpt || post.content}</p>
@@ -404,12 +404,12 @@ export default function HomePage({ setPage }: { setPage: (p: string) => void }) 
         <section className="px-4 py-20 sm:px-6 lg:px-8">
           <div className="mx-auto max-w-7xl">
             <div className="text-center">
-              <h2 className="text-3xl font-bold text-gray-900 dark:text-white">Upcoming Events</h2>
+              <h2 className="text-3xl font-bold text-gray-900 dark:text-white animate-fade-in-up">Upcoming Events</h2>
               <p className="mt-2 text-gray-500 dark:text-gray-400">Health camps, workshops, and community programs</p>
             </div>
             <div className="mt-10 grid gap-6 sm:grid-cols-2">
-              {data.events.map((e: any) => (
-                <div key={e.id} className="flex gap-4 rounded-2xl border border-gray-100 bg-white p-5 shadow-sm transition-all hover:shadow-lg dark:border-gray-800 dark:bg-gray-900">
+              {data.events.map((e: any, i: number) => (
+                <div key={e.id} className="flex gap-4 rounded-2xl border border-gray-100 bg-white p-5 shadow-sm transition-all hover:shadow-lg dark:border-gray-800 dark:bg-gray-900 animate-fade-in-up" style={{ animationDelay: `${0.1 + i * 0.1}s` }}>
                   <div className="flex h-14 w-14 shrink-0 flex-col items-center justify-center rounded-xl bg-rose-50 text-center dark:bg-rose-900/30">
                     <span className="text-lg font-bold text-rose-600 dark:text-rose-400">{new Date(e.event_date).getDate()}</span>
                     <span className="text-[10px] font-medium text-rose-500 uppercase">{new Date(e.event_date).toLocaleString('default', { month: 'short' })}</span>
@@ -438,32 +438,32 @@ export default function HomePage({ setPage }: { setPage: (p: string) => void }) 
       <section className="bg-gray-50 px-4 py-20 dark:bg-gray-900/50 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-7xl">
           <div className="text-center">
-            <h2 className="text-3xl font-bold text-gray-900 dark:text-white">Contact Us</h2>
+            <h2 className="text-3xl font-bold text-gray-900 dark:text-white animate-fade-in-up">Contact Us</h2>
             <p className="mt-2 text-gray-500 dark:text-gray-400">Get in touch with us for any inquiries or assistance</p>
           </div>
           <div className="mt-10 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
-            <div className="rounded-2xl border border-gray-100 bg-white p-6 text-center shadow-sm dark:border-gray-800 dark:bg-gray-900">
+            <div className="rounded-2xl border border-gray-100 bg-white p-6 text-center shadow-sm dark:border-gray-800 dark:bg-gray-900 animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
               <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-rose-50 text-rose-600 dark:bg-rose-900/30 dark:text-rose-400">
                 <MapPin className="h-6 w-6" />
               </div>
               <h3 className="mt-4 font-semibold text-gray-900 dark:text-white">Address</h3>
               <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">{s.hospital_address || '123 Medical Center Blvd, City'}</p>
             </div>
-            <div className="rounded-2xl border border-gray-100 bg-white p-6 text-center shadow-sm dark:border-gray-800 dark:bg-gray-900">
+            <div className="rounded-2xl border border-gray-100 bg-white p-6 text-center shadow-sm dark:border-gray-800 dark:bg-gray-900 animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
               <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-rose-50 text-rose-600 dark:bg-rose-900/30 dark:text-rose-400">
                 <Phone className="h-6 w-6" />
               </div>
               <h3 className="mt-4 font-semibold text-gray-900 dark:text-white">Phone</h3>
               <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">{s.hospital_phone || '+1 234 567 890'}</p>
             </div>
-            <div className="rounded-2xl border border-gray-100 bg-white p-6 text-center shadow-sm dark:border-gray-800 dark:bg-gray-900">
+            <div className="rounded-2xl border border-gray-100 bg-white p-6 text-center shadow-sm dark:border-gray-800 dark:bg-gray-900 animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
               <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-rose-50 text-rose-600 dark:bg-rose-900/30 dark:text-rose-400">
                 <Mail className="h-6 w-6" />
               </div>
               <h3 className="mt-4 font-semibold text-gray-900 dark:text-white">Email</h3>
               <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">{s.hospital_email || 'info@medicare.com'}</p>
             </div>
-            <div className="rounded-2xl border border-gray-100 bg-white p-6 text-center shadow-sm dark:border-gray-800 dark:bg-gray-900">
+            <div className="rounded-2xl border border-gray-100 bg-white p-6 text-center shadow-sm dark:border-gray-800 dark:bg-gray-900 animate-fade-in-up" style={{ animationDelay: '0.4s' }}>
               <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-rose-50 text-rose-600 dark:bg-rose-900/30 dark:text-rose-400">
                 <Clock className="h-6 w-6" />
               </div>
