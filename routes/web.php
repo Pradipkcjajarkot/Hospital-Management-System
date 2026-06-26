@@ -28,7 +28,7 @@ Route::get('/', function () {
 
 Route::get('/dashboard', function () {
     return view('dashboard');
-})->middleware('auth');
+})->middleware(['auth', 'admin']);
 
 Route::post('/api/login', [AuthController::class, 'login']);
 Route::post('/api/register', [AuthController::class, 'register']);
@@ -63,7 +63,7 @@ Route::middleware('portal.auth')->group(function () {
     Route::put('/api/portal/profile', [PortalController::class, 'updateProfile']);
 });
 
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/api/patients', [PatientController::class, 'index']);
     Route::post('/api/patients', [PatientController::class, 'store']);
     Route::get('/api/patients/{patient}', [PatientController::class, 'show']);

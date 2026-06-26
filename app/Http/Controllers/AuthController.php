@@ -29,6 +29,10 @@ class AuthController extends Controller
             return response()->json(['message' => 'Invalid email or password'], 401);
         }
 
+        if ($user->role !== 'admin') {
+            return response()->json(['message' => 'Unauthorized. Admin access only.'], 403);
+        }
+
         Auth::login($user, $request->boolean('remember'));
 
         return response()->json(['message' => 'Login successful']);
