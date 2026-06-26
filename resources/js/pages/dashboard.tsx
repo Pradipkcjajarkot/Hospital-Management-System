@@ -20,12 +20,13 @@ import ContactManagement from '@/components/ContactManagement'
 import CareerManagement from '@/components/CareerManagement'
 import OPDManagement from '@/components/OPDManagement'
 import MessagingPanel from '@/components/MessagingPanel'
+import OtpManagement from '@/components/OtpManagement'
 import {
   LayoutDashboard, UserPlus, Users, Stethoscope, CalendarRange, Building2, BedDouble,
   FlaskConical, Pill, Receipt, BarChart3, Settings, Bell, LogOut,
   Menu, Plus, Search, ChevronRight, Activity, Clock,
   CalendarPlus, DoorOpen, FileText, Beaker, ChevronDown, Moon, Sun,
-  Image, Star, MessageSquare, Calendar, Briefcase
+  Image, Star, MessageSquare, Calendar, Briefcase, Shield
 } from "lucide-react"
 
 const menuItems = [
@@ -45,11 +46,12 @@ const menuItems = [
   { label: 'Testimonials', icon: Star },
   { label: 'Careers', icon: Briefcase },
   { label: 'Contacts', icon: MessageSquare },
-  { label: 'Billing', icon: Receipt },
+  { label: 'Billing & Finance', icon: Receipt },
   { label: 'Reports', icon: BarChart3 },
   { label: 'Users', icon: Users },
   { label: 'Settings', icon: Settings },
   { label: 'Notifications', icon: Bell },
+  { label: 'OTP Logs', icon: Shield },
   { label: 'Messages', icon: MessageSquare },
   { label: 'Logout', icon: LogOut },
 ]
@@ -69,7 +71,7 @@ const sectionContent: Record<string, { title: string; items: string[] }> = {
   Doctors: { title: 'Doctor Management', items: ['Doctor List', 'Department-wise Doctors', 'Doctor Schedule', 'Doctor Availability'] },
   Appointments: { title: 'Appointment Management', items: ["Today's Appointments", 'Upcoming Appointments', 'Pending Appointments', 'Cancelled Appointments'] },
   'Beds & Wards': { title: 'Bed & Ward Management', items: ['Total Beds', 'Occupied Beds', 'Available Beds', 'Ward Information'] },
-  Billing: { title: 'Billing & Finance', items: ['Patient Bills', 'Payments Received', 'Pending Payments', 'Revenue Report'] },
+  'Billing & Finance': { title: 'Billing & Finance', items: ['Patient Bills', 'Payments Received', 'Pending Payments', 'Revenue Report'] },
   Pharmacy: { title: 'Pharmacy', items: ['Medicine Inventory', 'Low Stock Medicines', 'Medicine Sales'] },
   Laboratory: { title: 'Laboratory', items: ['Lab Test Requests', 'Test Results', 'Pending Reports'] },
   Blog: { title: 'Blog Management', items: ['All Posts', 'Published Posts', 'Draft Posts', 'Categories'] },
@@ -271,7 +273,7 @@ export default function Dashboard() {
                 { label: 'Register Patient', target: 'Register Patient', icon: UserPlus, color: 'bg-blue-50 text-blue-600 hover:bg-blue-100 dark:bg-blue-900/30 dark:text-blue-400 dark:hover:bg-blue-900/50' },
                 { label: 'Book Appointment', target: 'Appointments', icon: CalendarPlus, color: 'bg-violet-50 text-violet-600 hover:bg-violet-100 dark:bg-violet-900/30 dark:text-violet-400 dark:hover:bg-violet-900/50' },
                 { label: 'Admit Patient', target: 'Beds & Wards', icon: DoorOpen, color: 'bg-amber-50 text-amber-600 hover:bg-amber-100 dark:bg-amber-900/30 dark:text-amber-400 dark:hover:bg-amber-900/50' },
-                { label: 'Create Bill', target: 'Billing', icon: FileText, color: 'bg-emerald-50 text-emerald-600 hover:bg-emerald-100 dark:bg-emerald-900/30 dark:text-emerald-400 dark:hover:bg-emerald-900/50' },
+                { label: 'Create Bill', target: 'Billing & Finance', icon: FileText, color: 'bg-emerald-50 text-emerald-600 hover:bg-emerald-100 dark:bg-emerald-900/30 dark:text-emerald-400 dark:hover:bg-emerald-900/50' },
                 { label: 'Lab Request', target: 'Laboratory', icon: Beaker, color: 'bg-rose-50 text-rose-600 hover:bg-rose-100 dark:bg-rose-900/30 dark:text-rose-400 dark:hover:bg-rose-900/50' },
                 { label: 'New Event', target: 'Events', icon: Calendar, color: 'bg-purple-50 text-purple-600 hover:bg-purple-100 dark:bg-purple-900/30 dark:text-purple-400 dark:hover:bg-purple-900/50' },
               ].map((action) => {
@@ -349,7 +351,7 @@ export default function Dashboard() {
       return <CareerManagement />
     }
 
-    if (active === 'Billing') {
+    if (active === 'Billing & Finance') {
       return <BillingManagement />
     }
 
@@ -367,6 +369,10 @@ export default function Dashboard() {
 
     if (active === 'Notifications') {
       return <NotificationsPage />
+    }
+
+    if (active === 'OTP Logs') {
+      return <OtpManagement />
     }
 
     if (active === 'Messages') {

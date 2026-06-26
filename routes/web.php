@@ -181,4 +181,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/api/messages/conversations/{conversation}', [App\Http\Controllers\MessageController::class, 'show']);
     Route::post('/api/messages/conversations/{conversation}/reply', [App\Http\Controllers\MessageController::class, 'reply']);
     Route::get('/api/messages/unread-count', [App\Http\Controllers\MessageController::class, 'unreadCount']);
+
+    Route::get('/api/admin/otps', [App\Http\Controllers\AdminOtpController::class, 'index']);
+    Route::get('/api/admin/otps/{id}', [App\Http\Controllers\AdminOtpController::class, 'show']);
+    Route::post('/api/admin/otps/{id}/resend', [App\Http\Controllers\AdminOtpController::class, 'resend']);
 });

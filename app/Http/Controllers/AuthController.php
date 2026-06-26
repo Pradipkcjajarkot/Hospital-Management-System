@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Mail\OtpMail;
+use App\Models\OtpLog;
 use App\Models\Setting;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
@@ -52,6 +53,13 @@ class AuthController extends Controller
 
         $otp = str_pad((string) random_int(0, 9999), 4, '0', STR_PAD_LEFT);
         Cache::put('otp_signup_' . $request->email, $otp, now()->addMinutes(10));
+        OtpLog::create([
+            'email' => $request->email,
+            'otp' => $otp,
+            'purpose' => 'signup',
+            'status' => 'sent',
+            'expires_at' => now()->addMinutes(10),
+        ]);
         Mail::to($request->email)->send(new OtpMail($otp));
 
         return response()->json(['message' => 'Verification code sent to your email'], 201);
@@ -71,6 +79,9 @@ class AuthController extends Controller
         }
 
         Cache::forget('otp_signup_' . $request->email);
+
+        OtpLog::where('email', $request->email)->where('otp', $request->otp)->latest()->first()
+            ?->update(['status' => 'verified', 'verified_at' => now()]);
 
         $user = User::where('email', $request->email)->first();
         $user->update(['email_verified_at' => now()]);
@@ -95,6 +106,13 @@ class AuthController extends Controller
         $otp = str_pad((string) random_int(0, 9999), 4, '0', STR_PAD_LEFT);
 
         Cache::put('otp_' . $user->email, $otp, now()->addMinutes(10));
+        OtpLog::create([
+            'email' => $user->email,
+            'otp' => $otp,
+            'purpose' => 'login',
+            'status' => 'sent',
+            'expires_at' => now()->addMinutes(10),
+        ]);
 
         Mail::to($user->email)->send(new OtpMail($otp));
 
@@ -115,6 +133,9 @@ class AuthController extends Controller
         }
 
         Cache::forget('otp_' . $request->email);
+
+        OtpLog::where('email', $request->email)->where('otp', $request->otp)->latest()->first()
+            ?->update(['status' => 'verified', 'verified_at' => now()]);
 
         $user = User::where('email', $request->email)->first();
         Auth::login($user);
