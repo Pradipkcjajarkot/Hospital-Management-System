@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Search, Receipt, Edit3, Trash2, X, ArrowLeft, Plus, User, DollarSign, Calendar, CreditCard, FileText, Calculator, Percent, Minus, GripVertical } from "lucide-react"
+import { Search, Receipt, Edit3, Trash2, X, ArrowLeft, Plus, User, DollarSign, Calendar, CreditCard, FileText, Calculator, Percent, Minus, GripVertical, Printer } from "lucide-react"
 
 interface Bill {
   id: number
@@ -205,6 +205,110 @@ export default function BillingManagement() {
     refunded: { bg: 'bg-red-50 text-red-700 dark:bg-red-900/30 dark:text-red-400', dot: 'bg-red-500' },
   }
 
+  function printInvoice(b: Bill) {
+    const win = window.open('', '_blank')
+    if (!win) return
+    const items = b.items ? b.items.split('\n').filter(l => l.trim()).map(l => '<tr><td class="py-2 px-4 border-b border-gray-200">' + l + '</td><td class="py-2 px-4 border-b border-gray-200 text-right"></td><td class="py-2 px-4 border-b border-gray-200 text-right"></td><td class="py-2 px-4 border-b border-gray-200 text-right"></td></tr>').join('') : ''
+    const billDate = new Date(b.bill_date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
+    const statusClass = 'status-' + b.payment_status
+    const pm = b.payment_method ? b.payment_method.charAt(0).toUpperCase() + b.payment_method.slice(1) : '\u2014'
+    win.document.write(`
+      <html>
+      <head>
+        <title>Invoice - ${b.invoice_number}</title>
+        <style>
+          @page { margin: 15mm; }
+          body { font-family: 'Segoe UI', Arial, sans-serif; color: #1a1a2e; margin: 0; padding: 20px; }
+          .invoice-box { max-width: 800px; margin: 0 auto; border: 1px solid #e2e8f0; border-radius: 12px; padding: 40px; }
+          .header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid #1a1a2e; padding-bottom: 20px; margin-bottom: 20px; }
+          .hospital-name { font-size: 24px; font-weight: 800; color: #1a1a2e; letter-spacing: -0.5px; }
+          .hospital-sub { font-size: 11px; color: #64748b; margin-top: 2px; }
+          .invoice-title { font-size: 28px; font-weight: 700; color: #1a1a2e; }
+          .invoice-meta { margin: 20px 0; display: flex; justify-content: space-between; }
+          .meta-left p, .meta-right p { margin: 4px 0; font-size: 13px; color: #475569; }
+          .meta-label { font-weight: 600; color: #1e293b; }
+          table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+          th { background: #f8fafc; text-align: left; padding: 10px 12px; font-size: 12px; font-weight: 600; text-transform: uppercase; color: #64748b; border-bottom: 2px solid #e2e8f0; }
+          td { padding: 10px 12px; font-size: 14px; border-bottom: 1px solid #f1f5f9; }
+          .total-table { margin-top: 20px; }
+          .total-table td { border: none; padding: 6px 12px; font-size: 14px; }
+          .total-table .grand-total td { font-size: 18px; font-weight: 700; border-top: 2px solid #1a1a2e; padding-top: 10px; }
+          .status-badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; text-transform: capitalize; }
+          .status-paid { background: #dcfce7; color: #166534; }
+          .status-partial { background: #fef3c7; color: #92400e; }
+          .status-pending { background: #dbeafe; color: #1e40af; }
+          .status-cancelled { background: #f1f5f9; color: #64748b; }
+          .status-refunded { background: #fee2e2; color: #991b1b; }
+          .footer { margin-top: 30px; padding-top: 20px; border-top: 1px solid #e2e8f0; text-align: center; font-size: 11px; color: #94a3b8; }
+          @media print { body { padding: 0; } .invoice-box { border: none; box-shadow: none; } .no-print { display: none; } }
+          .no-print { text-align: center; margin-bottom: 20px; }
+          .no-print button { padding: 10px 24px; background: #059669; color: white; border: none; border-radius: 8px; font-size: 14px; cursor: pointer; }
+        </style>
+      </head>
+      <body>
+        <div class="no-print"><button onclick="window.print()">Print Invoice</button></div>
+        <div class="invoice-box">
+          <div class="header">
+            <div>
+              <div class="hospital-name">City Hospital</div>
+              <div class="hospital-sub">123 Healthcare Avenue, Medical District</div>
+              <div class="hospital-sub">Phone: (555) 123-4567 | Email: info@cityhospital.com</div>
+            </div>
+            <div class="invoice-title">INVOICE</div>
+          </div>
+
+          <div class="invoice-meta">
+            <div class="meta-left">
+              <p><span class="meta-label">Invoice No:</span> ${b.invoice_number}</p>
+              <p><span class="meta-label">Date:</span> ${billDate}</p>
+              <p><span class="meta-label">Status:</span> <span class="status-badge ${statusClass}">${b.payment_status}</span></p>
+            </div>
+            <div class="meta-right">
+              <p><span class="meta-label">Patient:</span> ${b.patient.first_name} ${b.patient.last_name}</p>
+              <p><span class="meta-label">Payment Method:</span> ${pm}</p>
+            </div>
+          </div>
+
+          <table>
+            <thead>
+              <tr>
+                <th>Description</th>
+                <th class="text-right">Price</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${items || '<tr><td colspan="2" class="text-center" style="color:#94a3b8;padding:20px;">No line items</td></tr>'}
+            </tbody>
+          </table>
+
+          <table class="total-table">
+            <tr>
+              <td style="text-align:right;width:80%"><span class="meta-label">Total Amount:</span></td>
+              <td style="text-align:right;width:20%;font-weight:600">$${Number(b.total_amount).toFixed(2)}</td>
+            </tr>
+            <tr>
+              <td style="text-align:right"><span class="meta-label">Paid Amount:</span></td>
+              <td style="text-align:right;color:#059669;font-weight:600">$${Number(b.paid_amount).toFixed(2)}</td>
+            </tr>
+            <tr class="grand-total">
+              <td style="text-align:right"><span class="meta-label">Due Amount:</span></td>
+              <td style="text-align:right;color:#dc2626;font-weight:700">$${(Number(b.total_amount) - Number(b.paid_amount)).toFixed(2)}</td>
+            </tr>
+          </table>
+
+          ${b.description ? '<div style="margin-top:20px;padding-top:16px;border-top:1px solid #e2e8f0"><p style="font-size:12px;font-weight:600;color:#64748b;text-transform:uppercase;letter-spacing:0.5px;">Notes</p><p style="font-size:13px;color:#475569;margin-top:4px;">' + b.description + '</p></div>' : ''}
+
+          <div class="footer">
+            <p>Thank you for your visit. This is a computer-generated invoice.</p>
+            <p>City Hospital &bull; www.cityhospital.com</p>
+          </div>
+        </div>
+      </body>
+      </html>
+    `)
+    win.document.close()
+  }
+
   function DetailView(b: Bill) {
     return (
       <div className="space-y-6">
@@ -230,6 +334,9 @@ export default function BillingManagement() {
                 </div>
               </div>
               <div className="flex items-center gap-2">
+                <button onClick={() => printInvoice(b)} className="rounded-lg p-2 text-gray-400 hover:bg-gray-100 hover:text-blue-600 dark:hover:bg-gray-800 dark:hover:text-blue-400" title="Print">
+                  <Printer className="h-4 w-4" />
+                </button>
                 <button onClick={() => openEdit(b)} className="rounded-lg p-2 text-gray-400 hover:bg-gray-100 hover:text-amber-600 dark:hover:bg-gray-800 dark:hover:text-amber-400" title="Edit">
                   <Edit3 className="h-4 w-4" />
                 </button>
@@ -327,10 +434,13 @@ export default function BillingManagement() {
               </span>
             </button>
             <div className="absolute right-3 top-3 hidden gap-1 group-hover:flex">
-              <button onClick={() => openEdit(b)} className="rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 hover:text-amber-600 dark:hover:bg-gray-700 dark:hover:text-amber-400" title="Edit">
+              <button onClick={(e) => { e.stopPropagation(); printInvoice(b) }} className="rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 hover:text-blue-600 dark:hover:bg-gray-700 dark:hover:text-blue-400" title="Print">
+                <Printer className="h-3.5 w-3.5" />
+              </button>
+              <button onClick={(e) => { e.stopPropagation(); openEdit(b) }} className="rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 hover:text-amber-600 dark:hover:bg-gray-700 dark:hover:text-amber-400" title="Edit">
                 <Edit3 className="h-3.5 w-3.5" />
               </button>
-              <button onClick={() => handleDelete(b.id)} className="rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 hover:text-red-600 dark:hover:bg-gray-700 dark:hover:text-red-400" title="Delete">
+              <button onClick={(e) => { e.stopPropagation(); handleDelete(b.id) }} className="rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 hover:text-red-600 dark:hover:bg-gray-700 dark:hover:text-red-400" title="Delete">
                 <Trash2 className="h-3.5 w-3.5" />
               </button>
             </div>
