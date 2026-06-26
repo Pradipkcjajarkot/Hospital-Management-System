@@ -51,17 +51,17 @@ export default function HomePage({ setPage }: { setPage: (p: string) => void }) 
         <div className="absolute inset-0 bg-gradient-to-r from-gray-900/90 via-gray-900/70 to-gray-900/50" />
         <div className="relative mx-auto max-w-7xl">
           <div className="max-w-2xl">
-            <div className="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-1.5 text-sm text-gray-300 backdrop-blur-sm animate-fade-in">
+            <div className="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-1.5 text-sm text-gray-300 backdrop-blur-sm animate-pulse-glow">
               <Activity className="h-4 w-4 text-rose-400" /> Trusted Healthcare Since 2010
             </div>
-            <h1 className="mt-6 text-3xl font-bold leading-tight text-white sm:text-5xl lg:text-6xl animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
+            <h1 className="mt-6 text-3xl font-bold leading-tight text-white sm:text-5xl lg:text-6xl animate-float">
               Your Health Is Our<br />
               <span className="bg-gradient-to-r from-rose-400 to-rose-300 bg-clip-text text-transparent">Top Priority</span>
             </h1>
-            <p className="mt-4 max-w-xl text-lg text-gray-300 animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
+            <p className="mt-4 max-w-xl text-lg text-gray-300 animate-float" style={{ animationDelay: '0.5s' }}>
               {s.hospital_name || 'MediCare Hospital'} offers world-class healthcare services with cutting-edge technology, experienced doctors, and compassionate staff.
             </p>
-            <div className="mt-8 flex flex-wrap gap-4 animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
+            <div className="mt-8 flex flex-wrap gap-4 animate-breathe">
               <button onClick={() => setPage('booking')} className="flex items-center gap-2 rounded-xl bg-rose-600 px-6 py-3 text-sm font-medium text-white shadow-lg shadow-rose-600/25 hover:bg-rose-700 transition-all">
                 <Calendar className="h-4 w-4" /> Book Appointment
               </button>
@@ -84,7 +84,7 @@ export default function HomePage({ setPage }: { setPage: (p: string) => void }) 
               { label: 'Hospital Beds', value: '200+', icon: Bed },
               { label: 'Years Experience', value: data.stats.years + '+', icon: Award },
             ].map((stat, i) => (
-              <div key={stat.label} className="text-center animate-scale-in" style={{ animationDelay: `${0.1 + i * 0.1}s` }}>
+              <div key={stat.label} className="text-center animate-float" style={{ animationDelay: `${0.1 + i * 0.1}s` }}>
                 <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-rose-50 text-rose-600 dark:bg-rose-900/30 dark:text-rose-400">
                   <stat.icon className="h-6 w-6" />
                 </div>
