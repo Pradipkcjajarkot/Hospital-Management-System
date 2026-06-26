@@ -55,10 +55,12 @@ export default function PublicLayout({ page, setPage, onLogin, children }: Publi
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
           <button onClick={() => { setPage('home'); setMobileOpen(false) }} className="flex items-center gap-2.5">
             {logo ? (
-              <img src={logo} alt="Hospital Logo" className="h-10 w-auto max-w-[180px] object-contain" />
+              <div className="h-10 w-10 overflow-hidden rounded-full border-2 border-white/30 shadow-sm ring-1 ring-rose-200/50">
+                <img src={logo} alt="Hospital Logo" className="h-full w-full object-cover" />
+              </div>
             ) : (
               <>
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-rose-500 to-red-600 shadow-lg">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-rose-500 to-red-600 shadow-lg">
                   <HeartPulse className="h-5 w-5 text-white" />
                 </div>
                 <span className="text-xl font-bold text-gray-900 dark:text-white">{t('hospitalName')}</span>
