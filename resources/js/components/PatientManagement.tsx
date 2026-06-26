@@ -78,9 +78,9 @@ export default function PatientManagement() {
         await fetchPatients()
       } else {
         const data = await res.json()
-        alert(Object.values(data.errors || { message: data.message || 'Error' }).flat().join('\n'))
+        alert(Object.values(data.errors || { message: data.message || t('error') }).flat().join('\n'))
       }
-    } catch { alert('Update failed') }
+    } catch { alert(t('updateFailed')) }
     finally { setSaving(false) }
   }
 
@@ -92,7 +92,7 @@ export default function PatientManagement() {
         if (selected?.id === id) setSelected(null)
         await fetchPatients()
       }
-    } catch { alert('Delete failed') }
+    } catch { alert(t('deleteFailed')) }
   }
 
   const filtered = patients.filter((p) => {
@@ -132,12 +132,12 @@ export default function PatientManagement() {
                   'bg-gray-50 text-gray-600 dark:bg-gray-800 dark:text-gray-400'
                 }`}>
                   <span className={`h-1.5 w-1.5 rounded-full ${p.status === 'active' ? 'bg-emerald-500' : p.status === 'discharged' ? 'bg-blue-500' : 'bg-gray-400'}`} />
-                  {p.status}
+                  {p.status === 'active' ? t('active') : p.status === 'discharged' ? t('discharged') : t('inactive')}
                 </span>
-                <button onClick={() => openEdit(p)} className="rounded-lg p-2 text-gray-400 hover:bg-gray-100 hover:text-blue-600 dark:hover:bg-gray-800 dark:hover:text-blue-400" title="Edit">
+                <button onClick={() => openEdit(p)}                 className="rounded-lg p-2 text-gray-400 hover:bg-gray-100 hover:text-blue-600 dark:hover:bg-gray-800 dark:hover:text-blue-400" title={t('edit')}>
                   <Edit3 className="h-4 w-4" />
                 </button>
-                <button onClick={() => handleDelete(p.id)} className="rounded-lg p-2 text-gray-400 hover:bg-gray-100 hover:text-red-600 dark:hover:bg-gray-800 dark:hover:text-red-400" title="Delete">
+                <button onClick={() => handleDelete(p.id)} className="rounded-lg p-2 text-gray-400 hover:bg-gray-100 hover:text-red-600 dark:hover:bg-gray-800 dark:hover:text-red-400" title={t('delete')}>
                   <Trash2 className="h-4 w-4" />
                 </button>
               </div>
@@ -244,21 +244,21 @@ export default function PatientManagement() {
                 p.status === 'discharged' ? 'bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400' :
                 'bg-gray-50 text-gray-600 dark:bg-gray-800 dark:text-gray-400'
               }`}>
-                {p.status}
+                {p.status === 'active' ? t('active') : p.status === 'discharged' ? t('discharged') : t('inactive')}
               </span>
             </button>
             <div className="absolute right-3 top-3 hidden gap-1 group-hover:flex">
               <button
                 onClick={() => openEdit(p)}
                 className="rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 hover:text-blue-600 dark:hover:bg-gray-700 dark:hover:text-blue-400"
-                title="Edit"
+                title={t('edit')}
               >
                 <Edit3 className="h-3.5 w-3.5" />
               </button>
               <button
                 onClick={() => handleDelete(p.id)}
                 className="rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 hover:text-red-600 dark:hover:bg-gray-700 dark:hover:text-red-400"
-                title="Delete"
+                title={t('delete')}
               >
                 <Trash2 className="h-3.5 w-3.5" />
               </button>
@@ -310,16 +310,16 @@ export default function PatientManagement() {
                   { label: t('patientEmail'), key: 'email', type: 'email' },
                   { label: t('patientPhone'), key: 'phone' },
                   { label: t('dateOfBirth'), key: 'dob', type: 'date' },
-                  { label: t('patientGender'), key: 'gender', type: 'select', options: ['', 'male', 'female', 'other'] },
+                  { label: t('patientGender'), key: 'gender', type: 'select', options: ['', 'male', 'female', 'other'], labels: { 'male': t('male'), 'female': t('female'), 'other': t('other') } },
                   { label: t('patientBloodGroup'), key: 'blood_group', type: 'select', options: ['', 'A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'] },
-                  { label: t('userStatus'), key: 'status', type: 'select', options: ['active', 'inactive', 'discharged'] },
+                  { label: t('userStatus'), key: 'status', type: 'select', options: ['active', 'inactive', 'discharged'], labels: { 'active': t('active'), 'inactive': t('inactive'), 'discharged': t('discharged') } },
                 ].map((f) => (
                   <div key={f.key}>
                     <label className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">{f.label}</label>
                     {f.type === 'select' ? (
                       <select value={(form as any)[f.key]} onChange={(e) => setForm({ ...form, [f.key]: e.target.value })}
                         className="w-full rounded-xl border border-gray-200 bg-gray-50 px-3 py-2.5 text-sm text-gray-900 outline-none focus:outline-2 focus:outline-offset-0 focus:outline-blue-500/25 focus:border-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100">
-                        {f.options.map((o) => <option key={o} value={o}>{o || t('select')}</option>)}
+                        {f.options.map((o) => <option key={o} value={o}>{o ? ((f as any).labels?.[o] || o) : t('select')}</option>)}
                       </select>
                     ) : (
                       <input type={f.type || 'text'} value={(form as any)[f.key]} onChange={(e) => setForm({ ...form, [f.key]: e.target.value })}

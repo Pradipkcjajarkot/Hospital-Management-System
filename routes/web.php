@@ -34,8 +34,6 @@ Route::post('/api/login', [AuthController::class, 'login']);
 Route::post('/api/register', [AuthController::class, 'register']);
 Route::post('/api/verify-signup-otp', [AuthController::class, 'verifySignupOtp']);
 Route::post('/api/upload-profile-photo', [AuthController::class, 'uploadProfilePhoto']);
-Route::post('/api/upload-logo', [AuthController::class, 'uploadLogo']);
-
 Route::get('/api/public/home', [PublicController::class, 'home']);
 Route::get('/api/public/doctors', [PublicController::class, 'doctors']);
 Route::get('/api/public/departments', [PublicController::class, 'departments']);
