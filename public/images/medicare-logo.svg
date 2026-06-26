@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 60" fill="none">
+  <defs>
+    <linearGradient id="primary" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#e11d48"/>
+      <stop offset="100%" stop-color="#be123c"/>
+    </linearGradient>
+  </defs>
+  <rect x="0" y="0" width="60" height="60" rx="14" fill="url(#primary)"/>
+  <path d="M30 18v24M18 30h24" stroke="white" stroke-width="3.5" stroke-linecap="round"/>
+  <text x="72" y="38" font-family="'Segoe UI', Arial, Helvetica, sans-serif" font-size="28" font-weight="700" fill="oklch(0.2 0.04 260)" letter-spacing="-0.5">Medi</text>
+  <text x="72" y="54" font-family="'Segoe UI', Arial, Helvetica, sans-serif" font-size="16" font-weight="400" fill="oklch(0.55 0.15 355)" letter-spacing="1">CARE</text>
+</svg>

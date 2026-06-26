@@ -5,6 +5,7 @@ export function LoginForm() {
     const [gmail, setGmail] = useState('')
     const [password, setPassword] = useState('')
     const [showPassword, setShowPassword] = useState(false)
+    const [remember, setRemember] = useState(false)
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState('')
 
@@ -16,7 +17,8 @@ export function LoginForm() {
             const res = await fetch('/api/login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
-                body: JSON.stringify({ email: gmail, password }),
+                credentials: 'include',
+                body: JSON.stringify({ email: gmail, password, remember }),
             })
             const data = await res.json()
             if (!res.ok) throw new Error(data.message)
@@ -91,6 +93,10 @@ export function LoginForm() {
                         </button>
                     </div>
                 </div>
+                <label className="flex items-center gap-2 cursor-pointer">
+                    <input type="checkbox" checked={remember} onChange={(e) => setRemember(e.target.checked)} className="h-4 w-4 rounded border-gray-300 text-red-600 focus:ring-red-500" />
+                    <span className="text-sm text-gray-600">Remember me</span>
+                </label>
                 <button type="submit" disabled={loading} className="rounded-lg bg-red-600 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-red-700 disabled:opacity-50">
                     {loading ? 'Signing in...' : 'Sign in'}
                 </button>

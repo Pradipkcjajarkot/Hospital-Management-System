@@ -4,11 +4,28 @@ import DoctorManagement from '@/components/DoctorManagement'
 import AppointmentManagement from '@/components/AppointmentManagement'
 import DepartmentManagement from '@/components/DepartmentManagement'
 import RegisterPatient from '@/components/RegisterPatient'
+import BedWardManagement from '@/components/BedWardManagement'
+import LaboratoryManagement from '@/components/LaboratoryManagement'
+import PharmacyManagement from '@/components/PharmacyManagement'
+import BillingManagement from '@/components/BillingManagement'
+import ReportsAnalytics from '@/components/ReportsAnalytics'
+import UserManagement from '@/components/UserManagement'
+import SettingsPage from '@/components/SettingsPage'
+import NotificationsPage from '@/components/NotificationsPage'
+import BlogManagement from '@/components/BlogManagement'
+import GalleryManagement from '@/components/GalleryManagement'
+import EventManagement from '@/components/EventManagement'
+import TestimonialManagement from '@/components/TestimonialManagement'
+import ContactManagement from '@/components/ContactManagement'
+import CareerManagement from '@/components/CareerManagement'
+import OPDManagement from '@/components/OPDManagement'
+import MessagingPanel from '@/components/MessagingPanel'
 import {
   LayoutDashboard, UserPlus, Users, Stethoscope, CalendarRange, Building2, BedDouble,
   FlaskConical, Pill, Receipt, BarChart3, Settings, Bell, LogOut,
   Menu, Plus, Search, ChevronRight, Activity, Clock,
-  CalendarPlus, DoorOpen, FileText, Beaker, ChevronDown, Moon, Sun
+  CalendarPlus, DoorOpen, FileText, Beaker, ChevronDown, Moon, Sun,
+  Image, Star, MessageSquare, Calendar, Briefcase
 } from "lucide-react"
 
 const menuItems = [
@@ -18,14 +35,22 @@ const menuItems = [
   { label: 'Doctors', icon: Stethoscope },
   { label: 'Appointments', icon: CalendarRange },
   { label: 'Departments', icon: Building2 },
+  { label: 'OPD', icon: Activity },
   { label: 'Beds & Wards', icon: BedDouble },
   { label: 'Laboratory', icon: FlaskConical },
   { label: 'Pharmacy', icon: Pill },
+  { label: 'Blog', icon: FileText },
+  { label: 'Gallery', icon: Image },
+  { label: 'Events', icon: Calendar },
+  { label: 'Testimonials', icon: Star },
+  { label: 'Careers', icon: Briefcase },
+  { label: 'Contacts', icon: MessageSquare },
   { label: 'Billing', icon: Receipt },
   { label: 'Reports', icon: BarChart3 },
   { label: 'Users', icon: Users },
   { label: 'Settings', icon: Settings },
   { label: 'Notifications', icon: Bell },
+  { label: 'Messages', icon: MessageSquare },
   { label: 'Logout', icon: LogOut },
 ]
 
@@ -47,8 +72,16 @@ const sectionContent: Record<string, { title: string; items: string[] }> = {
   Billing: { title: 'Billing & Finance', items: ['Patient Bills', 'Payments Received', 'Pending Payments', 'Revenue Report'] },
   Pharmacy: { title: 'Pharmacy', items: ['Medicine Inventory', 'Low Stock Medicines', 'Medicine Sales'] },
   Laboratory: { title: 'Laboratory', items: ['Lab Test Requests', 'Test Results', 'Pending Reports'] },
+  Blog: { title: 'Blog Management', items: ['All Posts', 'Published Posts', 'Draft Posts', 'Categories'] },
+  Gallery: { title: 'Gallery Management', items: ['All Images', 'Add New Image', 'Albums'] },
+  Events: { title: 'Event Management', items: ['Upcoming Events', 'Past Events', 'All Events', 'Add New Event'] },
+  Testimonials: { title: 'Testimonial Management', items: ['All Testimonials', 'Add New Testimonial'] },
+  Careers: { title: 'Career Management', items: ['Job Listings', 'Applications'] },
+  OPD: { title: 'OPD Management', items: ['New Registration', 'Waiting Patients', 'In Consultation', 'Completed'] },
+  Contacts: { title: 'Contact Management', items: ['All Messages', 'Unread Messages', 'Feedback'] },
   Reports: { title: 'Reports & Analytics', items: ['Daily Report', 'Monthly Report', 'Patient Statistics', 'Revenue Chart'] },
   Notifications: { title: 'Notifications', items: ['New Appointments', 'Emergency Alerts', 'Low Medicine Stock Alerts', 'Important Announcements'] },
+  Messages: { title: 'Messages', items: ['Inbox', 'Patient Conversations', 'Sent Messages'] },
 }
 
 interface User {
@@ -101,10 +134,23 @@ const activityIcons: Record<string, typeof Activity> = {
 export default function Dashboard() {
   const [active, setActive] = useState('Dashboard')
   const [sidebarOpen, setSidebarOpen] = useState(true)
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [photoUrl, setPhotoUrl] = useState<string | null>(user.profile_photo_path ? `/storage/${user.profile_photo_path}` : null)
   const [uploading, setUploading] = useState(false)
   const [profileOpen, setProfileOpen] = useState(false)
   const [dark, setDark] = useState(() => localStorage.getItem('theme') === 'dark')
+  const [unreadCount, setUnreadCount] = useState(0)
+  const [logoUrl, setLogoUrl] = useState('')
+
+  useEffect(() => { fetchUnreadCount(); fetchLogo(); const interval = setInterval(fetchUnreadCount, 30000); return () => clearInterval(interval) }, [])
+
+  async function fetchUnreadCount() {
+    try { const r = await fetch('/api/notifications/unread-count'); const d = await r.json(); setUnreadCount(d.count ?? 0) } catch { /* ignore */ }
+  }
+
+  async function fetchLogo() {
+    try { const r = await fetch('/api/settings'); const d = await r.json(); const s = d.settings ?? {}; if (s.hospital_logo) setLogoUrl(s.hospital_logo) } catch { /* ignore */ }
+  }
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
@@ -144,7 +190,7 @@ export default function Dashboard() {
             <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">Welcome back, {user.name}. Here's what's happening today.</p>
           </div>
 
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {summaryCards.map((card) => {
               const Icon = card.icon
               return (
@@ -167,7 +213,7 @@ export default function Dashboard() {
             })}
           </div>
 
-          <div className="grid gap-6 lg:grid-cols-2">
+          <div className="grid gap-6 sm:grid-cols-2">
             <div className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-900">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="font-semibold text-gray-900 dark:text-white">Today's Appointments</h3>
@@ -222,15 +268,16 @@ export default function Dashboard() {
             <h3 className="font-semibold text-gray-900 dark:text-white mb-4">Quick Actions</h3>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
               {[
-                { label: 'Register Patient', icon: UserPlus, color: 'bg-blue-50 text-blue-600 hover:bg-blue-100 dark:bg-blue-900/30 dark:text-blue-400 dark:hover:bg-blue-900/50' },
-                { label: 'Book Appointment', icon: CalendarPlus, color: 'bg-violet-50 text-violet-600 hover:bg-violet-100 dark:bg-violet-900/30 dark:text-violet-400 dark:hover:bg-violet-900/50' },
-                { label: 'Admit Patient', icon: DoorOpen, color: 'bg-amber-50 text-amber-600 hover:bg-amber-100 dark:bg-amber-900/30 dark:text-amber-400 dark:hover:bg-amber-900/50' },
-                { label: 'Create Bill', icon: FileText, color: 'bg-emerald-50 text-emerald-600 hover:bg-emerald-100 dark:bg-emerald-900/30 dark:text-emerald-400 dark:hover:bg-emerald-900/50' },
-                { label: 'Lab Request', icon: Beaker, color: 'bg-rose-50 text-rose-600 hover:bg-rose-100 dark:bg-rose-900/30 dark:text-rose-400 dark:hover:bg-rose-900/50' },
+                { label: 'Register Patient', target: 'Register Patient', icon: UserPlus, color: 'bg-blue-50 text-blue-600 hover:bg-blue-100 dark:bg-blue-900/30 dark:text-blue-400 dark:hover:bg-blue-900/50' },
+                { label: 'Book Appointment', target: 'Appointments', icon: CalendarPlus, color: 'bg-violet-50 text-violet-600 hover:bg-violet-100 dark:bg-violet-900/30 dark:text-violet-400 dark:hover:bg-violet-900/50' },
+                { label: 'Admit Patient', target: 'Beds & Wards', icon: DoorOpen, color: 'bg-amber-50 text-amber-600 hover:bg-amber-100 dark:bg-amber-900/30 dark:text-amber-400 dark:hover:bg-amber-900/50' },
+                { label: 'Create Bill', target: 'Billing', icon: FileText, color: 'bg-emerald-50 text-emerald-600 hover:bg-emerald-100 dark:bg-emerald-900/30 dark:text-emerald-400 dark:hover:bg-emerald-900/50' },
+                { label: 'Lab Request', target: 'Laboratory', icon: Beaker, color: 'bg-rose-50 text-rose-600 hover:bg-rose-100 dark:bg-rose-900/30 dark:text-rose-400 dark:hover:bg-rose-900/50' },
+                { label: 'New Event', target: 'Events', icon: Calendar, color: 'bg-purple-50 text-purple-600 hover:bg-purple-100 dark:bg-purple-900/30 dark:text-purple-400 dark:hover:bg-purple-900/50' },
               ].map((action) => {
                 const Icon = action.icon
                 return (
-                  <button key={action.label} className={`flex items-center gap-2.5 rounded-xl px-4 py-3.5 text-sm font-medium transition-all ${action.color}`}>
+                  <button key={action.label} onClick={() => setActive(action.target)} className={`flex items-center gap-2.5 rounded-xl px-4 py-3.5 text-sm font-medium transition-all ${action.color}`}>
                     <Icon className="h-4 w-4" />
                     {action.label}
                   </button>
@@ -262,113 +309,68 @@ export default function Dashboard() {
       return <DepartmentManagement />
     }
 
+    if (active === 'OPD') {
+      return <OPDManagement />
+    }
+
+    if (active === 'Beds & Wards') {
+      return <BedWardManagement />
+    }
+
+    if (active === 'Laboratory') {
+      return <LaboratoryManagement />
+    }
+
+    if (active === 'Pharmacy') {
+      return <PharmacyManagement />
+    }
+
+    if (active === 'Blog') {
+      return <BlogManagement />
+    }
+
+    if (active === 'Gallery') {
+      return <GalleryManagement />
+    }
+
+    if (active === 'Events') {
+      return <EventManagement />
+    }
+
+    if (active === 'Testimonials') {
+      return <TestimonialManagement />
+    }
+
+    if (active === 'Contacts') {
+      return <ContactManagement />
+    }
+
+    if (active === 'Careers') {
+      return <CareerManagement />
+    }
+
+    if (active === 'Billing') {
+      return <BillingManagement />
+    }
+
+    if (active === 'Reports') {
+      return <ReportsAnalytics />
+    }
+
     if (active === 'Users') {
-      const users = [
-        { name: 'Admin User', email: 'admin@medicare.com', role: 'Administrator', status: 'Active' },
-        { name: 'Dr. John Smith', email: 'john.smith@medicare.com', role: 'Doctor', status: 'Active' },
-        { name: 'Nurse Emily', email: 'emily@medicare.com', role: 'Nurse', status: 'Active' },
-        { name: 'Receptionist', email: 'reception@medicare.com', role: 'Staff', status: 'Active' },
-      ]
-      return (
-        <div className="space-y-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Users</h1>
-              <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">Manage system users and their roles.</p>
-            </div>
-            <button className="flex items-center gap-2 rounded-xl bg-rose-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-rose-700 transition-all dark:bg-rose-500 dark:hover:bg-rose-600">
-              <Plus className="h-4 w-4" /> Add User
-            </button>
-          </div>
-          <div className="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900">
-            <table className="w-full text-left text-sm">
-              <thead>
-                <tr className="border-b border-gray-100 bg-gray-50/50 dark:border-gray-800 dark:bg-gray-800/50">
-                  <th className="px-5 py-3.5 font-semibold text-gray-600 dark:text-gray-400">Name</th>
-                  <th className="px-5 py-3.5 font-semibold text-gray-600 dark:text-gray-400">Email</th>
-                  <th className="px-5 py-3.5 font-semibold text-gray-600 dark:text-gray-400">Role</th>
-                  <th className="px-5 py-3.5 font-semibold text-gray-600 dark:text-gray-400">Status</th>
-                  <th className="px-5 py-3.5 font-semibold text-gray-600 dark:text-gray-400">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-50 dark:divide-gray-800">
-                {users.map((u) => (
-                  <tr key={u.email} className="hover:bg-gray-50/50 transition-colors dark:hover:bg-gray-800/30">
-                    <td className="px-5 py-4">
-                      <div className="flex items-center gap-3">
-                        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-rose-100 to-red-100 text-xs font-semibold text-rose-700 dark:from-rose-900/40 dark:to-red-900/40 dark:text-rose-400">
-                          {getInitials(u.name)}
-                        </div>
-                        <span className="font-medium text-gray-900 dark:text-gray-100">{u.name}</span>
-                      </div>
-                    </td>
-                    <td className="px-5 py-4 text-gray-600 dark:text-gray-400">{u.email}</td>
-                    <td className="px-5 py-4 text-gray-600 dark:text-gray-400">{u.role}</td>
-                    <td className="px-5 py-4">
-                      <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400">
-                        <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-                        {u.status}
-                      </span>
-                    </td>
-                    <td className="px-5 py-4">
-                      <button className="rounded-lg px-3 py-1.5 text-xs font-medium text-rose-600 hover:bg-rose-50 transition-colors dark:text-rose-400 dark:hover:bg-rose-900/20">Edit</button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )
+      return <UserManagement />
     }
 
     if (active === 'Settings') {
-      return (
-        <div className="space-y-6">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Settings</h1>
-            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">Manage hospital and system settings.</p>
-          </div>
-          <div className="grid gap-6 lg:grid-cols-2">
-            <div className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-900">
-              <h3 className="font-semibold text-gray-900 dark:text-white mb-4">General Settings</h3>
-              <div className="space-y-4">
-                {[
-                  { label: 'Hospital Name', value: 'MediCare Hospital' },
-                  { label: 'Email', value: 'info@medicare.com' },
-                  { label: 'Phone', value: '+1 234 567 890' },
-                  { label: 'Address', value: '123 Medical Center Blvd' },
-                ].map((item) => (
-                  <div key={item.label} className="flex items-center justify-between rounded-xl bg-gray-50 px-4 py-3 dark:bg-gray-800/50">
-                    <span className="text-sm text-gray-600 dark:text-gray-400">{item.label}</span>
-                    <span className="text-sm font-medium text-gray-900 dark:text-gray-100">{item.value}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-            <div className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-900">
-              <h3 className="font-semibold text-gray-900 dark:text-white mb-4">Security</h3>
-              <div className="space-y-4">
-                {[
-                  { label: 'Two-Factor Auth', value: 'Enabled', badge: true },
-                  { label: 'Last Password Change', value: '2 weeks ago' },
-                  { label: 'Session Timeout', value: '30 minutes' },
-                  { label: 'Password Policy', value: 'Strong' },
-                ].map((item) => (
-                  <div key={item.label} className="flex items-center justify-between rounded-xl bg-gray-50 px-4 py-3 dark:bg-gray-800/50">
-                    <span className="text-sm text-gray-600 dark:text-gray-400">{item.label}</span>
-                    {item.badge ? (
-                      <span className="rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-medium text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400">{item.value}</span>
-                    ) : (
-                      <span className="text-sm font-medium text-gray-900 dark:text-gray-100">{item.value}</span>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      )
+      return <SettingsPage />
+    }
+
+    if (active === 'Notifications') {
+      return <NotificationsPage />
+    }
+
+    if (active === 'Messages') {
+      return <MessagingPanel />
     }
 
     if (active === 'Logout') {
@@ -420,22 +422,31 @@ export default function Dashboard() {
 
   return (
     <div className="flex h-screen bg-slate-50 dark:bg-slate-950">
-      <aside className={`flex flex-col transition-all duration-300 ease-in-out ${sidebarOpen ? 'w-64' : 'w-16'} bg-gradient-to-b from-[#0a1628] via-[#0d1f3c] to-[#0f2847] border-r border-blue-900/40 shadow-2xl`}>
+      {mobileMenuOpen && <div className="fixed inset-0 z-30 bg-black/50 md:hidden" onClick={() => setMobileMenuOpen(false)} />}
+      <aside className={`fixed inset-y-0 left-0 z-40 flex flex-col transition-transform duration-300 ease-in-out md:relative md:translate-x-0 md:transition-all md:duration-300 md:ease-in-out ${
+        mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
+      } ${sidebarOpen ? 'md:w-64' : 'md:w-16'} bg-gradient-to-b from-[#0a1628] via-[#0d1f3c] to-[#0f2847] border-r border-blue-900/40 shadow-2xl`}>
         <div className={`flex h-16 items-center ${sidebarOpen ? 'gap-3 px-4' : 'justify-center px-2'} border-b border-blue-900/30`}>
-          <button onClick={() => setSidebarOpen(!sidebarOpen)} className="shrink-0 rounded-lg p-1.5 text-blue-300/60 hover:bg-blue-800/40 hover:text-blue-200 transition-colors" title={sidebarOpen ? 'Collapse sidebar' : 'Expand sidebar'}>
+          <button onClick={() => { const isMobile = window.innerWidth < 768; isMobile ? setMobileMenuOpen(!mobileMenuOpen) : setSidebarOpen(!sidebarOpen) }} className="shrink-0 rounded-lg p-1.5 text-blue-300/60 hover:bg-blue-800/40 hover:text-blue-200 transition-colors" title={sidebarOpen ? 'Collapse sidebar' : 'Expand sidebar'}>
             <Menu className="h-5 w-5" />
           </button>
           {sidebarOpen && (
             <div className="flex items-center gap-2.5 animate-fade-in">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 text-white shadow-lg shadow-blue-500/25">
-                <svg fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" className="h-4 w-4">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
-                </svg>
-              </div>
-              <div>
-                <span className="font-bold text-white tracking-tight">MediCare</span>
-                <p className="text-[10px] text-blue-400/70 -mt-0.5">Hospital Management</p>
-              </div>
+              {logoUrl ? (
+                <img src={logoUrl} alt="Logo" className="h-8 w-auto max-w-[120px] object-contain" />
+              ) : (
+                <>
+                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 text-white shadow-lg shadow-blue-500/25">
+                    <svg fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" className="h-4 w-4">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+                    </svg>
+                  </div>
+                  <div>
+                    <span className="font-bold text-white tracking-tight">MediCare</span>
+                    <p className="text-[10px] text-blue-400/70 -mt-0.5">Hospital Management</p>
+                  </div>
+                </>
+              )}
             </div>
           )}
         </div>
@@ -472,7 +483,7 @@ export default function Dashboard() {
               <div className="h-px flex-1 bg-blue-900/30" />
             </div>
           )}
-          {menuItems.slice(6, 12).map((item) => {
+          {menuItems.slice(6, 17).map((item) => {
             const Icon = item.icon
             const isActive = active === item.label
             return (
@@ -500,7 +511,7 @@ export default function Dashboard() {
               <div className="h-px flex-1 bg-blue-900/30" />
             </div>
           )}
-          {menuItems.slice(12).map((item) => {
+          {menuItems.slice(17).map((item) => {
             const Icon = item.icon
             const isActive = active === item.label
             const isLogout = item.label === 'Logout'
@@ -549,14 +560,17 @@ export default function Dashboard() {
       </aside>
 
       <div className="flex flex-1 flex-col min-w-0">
-        <header className="flex h-16 items-center justify-between border-b border-slate-200/80 bg-white/95 backdrop-blur-sm px-6 dark:border-blue-900/30 dark:bg-[#0b1a30]/95">
-          <div className="flex items-center gap-4">
+        <header className="flex h-16 items-center justify-between border-b border-slate-200/80 bg-white/95 backdrop-blur-sm px-3 sm:px-6 dark:border-blue-900/30 dark:bg-[#0b1a30]/95">
+            <button onClick={() => setMobileMenuOpen(true)} className="rounded-xl p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors md:hidden dark:hover:bg-gray-800 dark:hover:text-gray-300">
+              <Menu className="h-5 w-5" />
+            </button>
+            <div className="flex items-center gap-4">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 dark:text-gray-500" />
               <input
                 type="text"
-                placeholder="Search patients, doctors..."
-                className="w-64 rounded-xl border border-gray-200 bg-gray-50 py-2 pl-9 pr-4 text-sm text-gray-900 placeholder-gray-400 outline-none focus:border-rose-300 focus:bg-white focus:ring-1 focus:ring-rose-200 transition-all dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500 dark:focus:border-rose-500 dark:focus:bg-gray-800 dark:focus:ring-rose-800"
+                placeholder="Search..."
+                className="w-36 sm:w-48 md:w-64 rounded-xl border border-gray-200 bg-gray-50 py-2 pl-9 pr-4 text-sm text-gray-900 placeholder-gray-400 outline-none focus:border-rose-300 focus:bg-white focus:ring-1 focus:ring-rose-200 transition-all dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500 dark:focus:border-rose-500 dark:focus:bg-gray-800 dark:focus:ring-rose-800"
               />
             </div>
           </div>
@@ -569,9 +583,13 @@ export default function Dashboard() {
             >
               {dark ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
             </button>
-            <button className="relative rounded-xl p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors dark:hover:bg-gray-800 dark:hover:text-gray-300">
+            <button onClick={() => setActive('Notifications')} className="relative rounded-xl p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors dark:hover:bg-gray-800 dark:hover:text-gray-300">
               <Bell className="h-5 w-5" />
-              <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-rose-500 ring-2 ring-white dark:ring-gray-900" />
+              {unreadCount > 0 && (
+                <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-rose-500 px-1 text-[10px] font-bold text-white ring-2 ring-white dark:ring-gray-900">
+                  {unreadCount > 99 ? '99+' : unreadCount}
+                </span>
+              )}
             </button>
             <div className="relative">
               <button
@@ -585,15 +603,11 @@ export default function Dashboard() {
                     getInitials(user.name)
                   )}
                 </div>
-                {sidebarOpen && (
-                  <>
-                    <div className="text-left">
-                      <p className="text-sm font-medium text-gray-900 leading-tight dark:text-gray-100">{user.name}</p>
-                      <p className="text-xs text-gray-400 dark:text-gray-500">Administrator</p>
-                    </div>
-                    <ChevronDown className="h-4 w-4 text-gray-400 dark:text-gray-500" />
-                  </>
-                )}
+                <div className="hidden sm:block text-left">
+                  <p className="text-sm font-medium text-gray-900 leading-tight dark:text-gray-100">{user.name}</p>
+                  <p className="text-xs text-gray-400 dark:text-gray-500">Administrator</p>
+                </div>
+                <ChevronDown className="hidden sm:block h-4 w-4 text-gray-400 dark:text-gray-500" />
               </button>
 
               {profileOpen && (
@@ -636,7 +650,7 @@ export default function Dashboard() {
           </div>
         </header>
 
-        <main className="flex-1 overflow-y-auto p-6 lg:p-8 dark:text-gray-100">
+        <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 dark:text-gray-100">
           {renderContent()}
         </main>
       </div>

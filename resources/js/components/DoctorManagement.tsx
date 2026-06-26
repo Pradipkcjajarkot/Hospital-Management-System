@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react'
-import { Search, Edit3, Trash2, X, Phone, Mail, User, ArrowLeft, GraduationCap, Stethoscope, BadgeDollarSign, Clock, MapPin, Plus } from "lucide-react"
+import { useState, useEffect, useRef } from 'react'
+import { Search, Edit3, Trash2, X, Phone, Mail, User, ArrowLeft, GraduationCap, Stethoscope, BadgeDollarSign, Clock, MapPin, Plus, Camera } from "lucide-react"
 
 interface Doctor {
   id: number
@@ -22,6 +22,8 @@ interface Doctor {
   pincode: string | null
   status: string
   full_name: string
+  profile_photo_path: string | null
+  profile_photo_url: string | null
   created_at: string
 }
 
@@ -133,6 +135,8 @@ export default function DoctorManagement() {
   const [form, setForm] = useState(emptyForm)
   const [saving, setSaving] = useState(false)
   const [showAddForm, setShowAddForm] = useState(false)
+  const [photoUploading, setPhotoUploading] = useState(false)
+  const photoInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => { fetchDoctors() }, [])
 
@@ -227,6 +231,21 @@ export default function DoctorManagement() {
     } catch { alert('Delete failed') }
   }
 
+  async function handlePhotoUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    if (!file || !editing) return
+    setPhotoUploading(true)
+    const formData = new FormData()
+    formData.append('photo', file)
+    try {
+      const res = await fetch(`/api/doctors/${editing.id}/upload-photo`, { method: 'POST', body: formData })
+      const d = await res.json()
+      if (res.ok) { await fetchDoctors() }
+      else alert(d.message || 'Upload failed')
+    } catch { alert('Upload failed') }
+    finally { setPhotoUploading(false); if (photoInputRef.current) photoInputRef.current.value = '' }
+  }
+
   const filtered = doctors.filter((d) => {
     const q = search.toLowerCase()
     return d.full_name.toLowerCase().includes(q) || d.email.toLowerCase().includes(q) || (d.phone || '').includes(q) || (d.specialization || '').toLowerCase().includes(q)
@@ -243,8 +262,12 @@ export default function DoctorManagement() {
           <div className="p-6">
             <div className="flex items-start justify-between">
               <div className="flex items-center gap-5">
-                <div className="flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-violet-100 to-purple-100 text-xl font-bold text-violet-700 dark:from-violet-900/40 dark:to-purple-900/40 dark:text-violet-400">
-                  {d.first_name[0]}{d.last_name[0]}
+                <div className="flex h-16 w-16 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-violet-100 to-purple-100 text-xl font-bold text-violet-700 dark:from-violet-900/40 dark:to-purple-900/40 dark:text-violet-400">
+                  {d.profile_photo_url ? (
+                    <img src={d.profile_photo_url} alt={d.full_name} className="h-full w-full object-cover" />
+                  ) : (
+                    <>{d.first_name[0]}{d.last_name[0]}</>
+                  )}
                 </div>
                 <div>
                   <div className="flex items-center gap-3">
@@ -365,8 +388,12 @@ export default function DoctorManagement() {
               onClick={() => setSelected(d)}
               className="flex w-full items-center gap-4 p-4 text-left"
             >
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-violet-100 to-purple-100 text-sm font-bold text-violet-700 dark:from-violet-900/40 dark:to-purple-900/40 dark:text-violet-400">
-                {d.first_name[0]}{d.last_name[0]}
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-violet-100 to-purple-100 text-sm font-bold text-violet-700 dark:from-violet-900/40 dark:to-purple-900/40 dark:text-violet-400">
+                {d.profile_photo_url ? (
+                  <img src={d.profile_photo_url} alt={d.full_name} className="h-full w-full object-cover" />
+                ) : (
+                  <>{d.first_name[0]}{d.last_name[0]}</>
+                )}
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
@@ -388,7 +415,7 @@ export default function DoctorManagement() {
                 {d.status.replace('_', ' ')}
               </span>
             </button>
-            <div className="absolute right-3 top-3 hidden gap-1 group-hover:flex">
+            <div className="absolute right-3 top-3 flex gap-1 sm:hidden sm:group-hover:flex">
               <button onClick={() => openEdit(d)} className="rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 hover:text-blue-600 dark:hover:bg-gray-700 dark:hover:text-blue-400" title="Edit">
                 <Edit3 className="h-3.5 w-3.5" />
               </button>
@@ -445,6 +472,27 @@ export default function DoctorManagement() {
               <h2 className="text-lg font-bold text-gray-900 dark:text-white">Edit Doctor</h2>
               <button onClick={() => setEditing(null)} className="rounded-lg p-1 text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700"><X className="h-5 w-5" /></button>
             </div>
+
+            <div className="mb-6 rounded-xl border-2 border-dashed border-gray-200 bg-gray-50 p-4 dark:border-gray-700 dark:bg-gray-800/50">
+              <div className="flex items-center gap-4">
+                <div className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-violet-100 to-purple-100 text-lg font-bold text-violet-700 dark:from-violet-900/40 dark:to-purple-900/40 dark:text-violet-400">
+                  {editing.profile_photo_url ? (
+                    <img src={editing.profile_photo_url} alt={editing.full_name} className="h-full w-full object-cover" />
+                  ) : (
+                    <>{editing.first_name[0]}{editing.last_name[0]}</>
+                  )}
+                </div>
+                <div className="flex-1">
+                  <p className="text-sm font-medium text-gray-900 dark:text-white">Doctor Photo</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">PNG, JPG or WebP (max 2MB)</p>
+                </div>
+                <button onClick={() => photoInputRef.current?.click()} disabled={photoUploading}
+                  className="flex items-center gap-2 rounded-xl bg-rose-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-rose-700 disabled:opacity-50 transition-all">
+                  <Camera className="h-4 w-4" /> {photoUploading ? 'Uploading...' : 'Upload Photo'}
+                </button>
+              </div>
+            </div>
+
             <DoctorForm
               form={form}
               setForm={setForm}
@@ -454,6 +502,18 @@ export default function DoctorManagement() {
               title="Edit Doctor"
               submitLabel="Update Doctor"
             />
+          </div>
+        </div>
+      )}
+
+      <input ref={photoInputRef} type="file" accept="image/png,image/jpeg,image/jpg,image/webp" className="hidden" onChange={handlePhotoUpload} />
+      {photoUploading && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/20 backdrop-blur-sm">
+          <div className="rounded-2xl bg-white p-6 shadow-xl dark:bg-gray-800">
+            <div className="flex items-center gap-3">
+              <div className="h-5 w-5 animate-spin rounded-full border-2 border-rose-600 border-t-transparent" />
+              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Uploading photo...</span>
+            </div>
           </div>
         </div>
       )}

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 
 class Doctor extends Model
 {
@@ -13,10 +14,15 @@ class Doctor extends Model
         'address', 'city', 'state', 'pincode', 'profile_photo_path', 'status',
     ];
 
-    protected $appends = ['full_name'];
+    protected $appends = ['full_name', 'profile_photo_url'];
 
     public function getFullNameAttribute(): string
     {
         return "{$this->first_name} {$this->last_name}";
+    }
+
+    public function getProfilePhotoUrlAttribute(): ?string
+    {
+        return $this->profile_photo_path ? Storage::disk('public')->url($this->profile_photo_path) : null;
     }
 }

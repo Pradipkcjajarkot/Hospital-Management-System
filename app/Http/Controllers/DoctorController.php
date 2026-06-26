@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Doctor;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class DoctorController extends Controller
 {
@@ -75,7 +76,29 @@ class DoctorController extends Controller
 
     public function destroy(Doctor $doctor): JsonResponse
     {
+        if ($doctor->profile_photo_path) {
+            Storage::disk('public')->delete($doctor->profile_photo_path);
+        }
         $doctor->delete();
         return response()->json(['message' => 'Doctor deleted successfully']);
+    }
+
+    public function uploadPhoto(Request $request, Doctor $doctor): JsonResponse
+    {
+        $request->validate([
+            'photo' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+        ]);
+
+        if ($doctor->profile_photo_path) {
+            Storage::disk('public')->delete($doctor->profile_photo_path);
+        }
+
+        $path = $request->file('photo')->store('doctor-photos', 'public');
+        $doctor->update(['profile_photo_path' => $path]);
+
+        return response()->json([
+            'doctor' => $doctor->fresh(),
+            'message' => 'Photo uploaded successfully',
+        ]);
     }
 }

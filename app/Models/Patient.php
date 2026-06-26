@@ -10,8 +10,10 @@ class Patient extends Model
         'first_name', 'last_name', 'email', 'phone', 'dob', 'gender', 'blood_group',
         'address', 'city', 'state', 'pincode',
         'emergency_contact_name', 'emergency_contact_phone',
-        'medical_history', 'allergies', 'status',
+        'medical_history', 'allergies', 'status', 'password', 'api_token',
     ];
+
+    protected $hidden = ['password', 'api_token'];
 
     protected $appends = ['full_name'];
 

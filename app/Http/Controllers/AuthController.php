@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Mail\OtpMail;
+use App\Models\Setting;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -19,6 +20,7 @@ class AuthController extends Controller
         $request->validate([
             'email' => 'required|email',
             'password' => 'required',
+            'remember' => 'boolean',
         ]);
 
         $user = User::where('email', $request->email)->first();
@@ -27,7 +29,7 @@ class AuthController extends Controller
             return response()->json(['message' => 'Invalid email or password'], 401);
         }
 
-        Auth::login($user);
+        Auth::login($user, $request->boolean('remember'));
 
         return response()->json(['message' => 'Login successful']);
     }
@@ -144,6 +146,23 @@ class AuthController extends Controller
             'message' => 'Profile photo uploaded successfully',
             'url' => $url,
             'path' => $path,
+        ]);
+    }
+
+    public function uploadLogo(Request $request): JsonResponse
+    {
+        $request->validate([
+            'logo' => 'required|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
+        ]);
+
+        $path = $request->file('logo')->store('logos', 'public');
+        $url = Storage::disk('public')->url($path);
+
+        Setting::setValue('hospital_logo', $url);
+
+        return response()->json([
+            'message' => 'Logo uploaded successfully',
+            'url' => $url,
         ]);
     }
 }
