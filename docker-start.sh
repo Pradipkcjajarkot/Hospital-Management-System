@@ -4,7 +4,7 @@ set -e
 cat > .env << EOF
 APP_KEY=$(grep ^APP_KEY .env | head -1)
 APP_ENV=production
-APP_DEBUG=false
+APP_DEBUG=true
 APP_URL=https://${RAILWAY_PUBLIC_DOMAIN:-localhost}
 DB_CONNECTION=mysql
 DB_HOST=${MYSQLHOST:-mysql}
