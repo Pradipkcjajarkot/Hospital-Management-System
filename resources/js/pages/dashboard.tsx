@@ -441,7 +441,7 @@ export default function Dashboard() {
           {sidebarOpen && (
             <div className="flex items-center gap-2.5 animate-fade-in">
               {logoUrl ? (
-                <img src={logoUrl} alt="Logo" className="h-8 w-auto max-w-[120px] object-contain" />
+                <img src={logoUrl} alt="Logo" className="h-8 w-8 rounded-full object-cover" />
               ) : (
                 <>
                   <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 text-white shadow-lg shadow-blue-500/25">
