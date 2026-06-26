@@ -441,10 +441,12 @@ export default function Dashboard() {
           {sidebarOpen && (
             <div className="flex items-center gap-2.5 animate-fade-in">
               {logoUrl ? (
-                <img src={logoUrl} alt="Logo" className="h-8 w-8 rounded-full object-cover" />
+                <div className="h-10 w-10 overflow-hidden rounded-full border-2 border-white/20 shadow-sm">
+                  <img src={logoUrl} alt="Logo" className="h-full w-full object-cover" />
+                </div>
               ) : (
                 <>
-                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 text-white shadow-lg shadow-blue-500/25">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-blue-600 text-white shadow-lg shadow-blue-500/25">
                     <svg fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" className="h-4 w-4">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
                     </svg>
