@@ -206,13 +206,20 @@ export default function BillingManagement() {
   }
 
   function printInvoice(b: Bill) {
-    const win = window.open('', '_blank')
-    if (!win) return
+    const iframe = document.createElement('iframe')
+    iframe.style.position = 'fixed'
+    iframe.style.top = '-9999px'
+    iframe.style.left = '-9999px'
+    iframe.style.width = '800px'
+    iframe.style.height = '600px'
+    document.body.appendChild(iframe)
+
     const items = b.items ? b.items.split('\n').filter(l => l.trim()).map(l => '<tr><td class="py-2 px-4 border-b border-gray-200">' + l + '</td><td class="py-2 px-4 border-b border-gray-200 text-right"></td><td class="py-2 px-4 border-b border-gray-200 text-right"></td><td class="py-2 px-4 border-b border-gray-200 text-right"></td></tr>').join('') : ''
     const billDate = new Date(b.bill_date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
     const statusClass = 'status-' + b.payment_status
     const pm = b.payment_method ? b.payment_method.charAt(0).toUpperCase() + b.payment_method.slice(1) : '\u2014'
-    win.document.write(`
+
+    iframe.contentDocument?.write(`
       <html>
       <head>
         <title>Invoice - ${b.invoice_number}</title>
@@ -240,13 +247,10 @@ export default function BillingManagement() {
           .status-cancelled { background: #f1f5f9; color: #64748b; }
           .status-refunded { background: #fee2e2; color: #991b1b; }
           .footer { margin-top: 30px; padding-top: 20px; border-top: 1px solid #e2e8f0; text-align: center; font-size: 11px; color: #94a3b8; }
-          @media print { body { padding: 0; } .invoice-box { border: none; box-shadow: none; } .no-print { display: none; } }
-          .no-print { text-align: center; margin-bottom: 20px; }
-          .no-print button { padding: 10px 24px; background: #059669; color: white; border: none; border-radius: 8px; font-size: 14px; cursor: pointer; }
+          @media print { body { padding: 0; } .invoice-box { border: none; box-shadow: none; } }
         </style>
       </head>
       <body>
-        <div class="no-print"><button onclick="window.print()">Print Invoice</button></div>
         <div class="invoice-box">
           <div class="header">
             <div>
@@ -256,7 +260,6 @@ export default function BillingManagement() {
             </div>
             <div class="invoice-title">INVOICE</div>
           </div>
-
           <div class="invoice-meta">
             <div class="meta-left">
               <p><span class="meta-label">Invoice No:</span> ${b.invoice_number}</p>
@@ -268,45 +271,27 @@ export default function BillingManagement() {
               <p><span class="meta-label">Payment Method:</span> ${pm}</p>
             </div>
           </div>
-
           <table>
-            <thead>
-              <tr>
-                <th>Description</th>
-                <th class="text-right">Price</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${items || '<tr><td colspan="2" class="text-center" style="color:#94a3b8;padding:20px;">No line items</td></tr>'}
-            </tbody>
+            <thead><tr><th>Description</th><th class="text-right">Price</th></tr></thead>
+            <tbody>${items || '<tr><td colspan="2" class="text-center" style="color:#94a3b8;padding:20px;">No line items</td></tr>'}</tbody>
           </table>
-
           <table class="total-table">
-            <tr>
-              <td style="text-align:right;width:80%"><span class="meta-label">Total Amount:</span></td>
-              <td style="text-align:right;width:20%;font-weight:600">$${Number(b.total_amount).toFixed(2)}</td>
-            </tr>
-            <tr>
-              <td style="text-align:right"><span class="meta-label">Paid Amount:</span></td>
-              <td style="text-align:right;color:#059669;font-weight:600">$${Number(b.paid_amount).toFixed(2)}</td>
-            </tr>
-            <tr class="grand-total">
-              <td style="text-align:right"><span class="meta-label">Due Amount:</span></td>
-              <td style="text-align:right;color:#dc2626;font-weight:700">$${(Number(b.total_amount) - Number(b.paid_amount)).toFixed(2)}</td>
-            </tr>
+            <tr><td style="text-align:right;width:80%"><span class="meta-label">Total Amount:</span></td><td style="text-align:right;width:20%;font-weight:600">$${Number(b.total_amount).toFixed(2)}</td></tr>
+            <tr><td style="text-align:right"><span class="meta-label">Paid Amount:</span></td><td style="text-align:right;color:#059669;font-weight:600">$${Number(b.paid_amount).toFixed(2)}</td></tr>
+            <tr class="grand-total"><td style="text-align:right"><span class="meta-label">Due Amount:</span></td><td style="text-align:right;color:#dc2626;font-weight:700">$${(Number(b.total_amount) - Number(b.paid_amount)).toFixed(2)}</td></tr>
           </table>
-
           ${b.description ? '<div style="margin-top:20px;padding-top:16px;border-top:1px solid #e2e8f0"><p style="font-size:12px;font-weight:600;color:#64748b;text-transform:uppercase;letter-spacing:0.5px;">Notes</p><p style="font-size:13px;color:#475569;margin-top:4px;">' + b.description + '</p></div>' : ''}
-
-          <div class="footer">
-            <p>Thank you for your visit. This is a computer-generated invoice.</p>
-            <p>City Hospital &bull; www.cityhospital.com</p>
-          </div>
+          <div class="footer"><p>Thank you for your visit. This is a computer-generated invoice.</p><p>City Hospital &bull; www.cityhospital.com</p></div>
         </div>
       </body>
       </html>
     `)
-    win.document.close()
+    iframe.contentDocument?.close()
+
+    setTimeout(() => {
+      iframe.contentWindow?.print()
+      setTimeout(() => document.body.removeChild(iframe), 500)
+    }, 250)
   }
 
   function DetailView(b: Bill) {
