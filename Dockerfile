@@ -24,8 +24,6 @@ RUN php artisan key:generate
 
 RUN npm ci && npm run build
 
-RUN php artisan route:cache && php artisan view:cache
-
 RUN chown -R www-data:www-data /app/storage /app/bootstrap/cache
 
 FROM base AS runtime
