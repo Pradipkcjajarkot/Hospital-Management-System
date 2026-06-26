@@ -34,4 +34,6 @@ for i in $(seq 1 30); do
   sleep 2
 done
 
+php artisan db:seed --force 2>/dev/null
+
 php artisan serve --host=0.0.0.0 --port=${PORT:-8080}
