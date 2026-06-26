@@ -62,6 +62,7 @@ Route::middleware('portal.auth')->group(function () {
 });
 
 Route::middleware('auth')->group(function () {
+    Route::post('/api/upload-logo', [AuthController::class, 'uploadLogo']);
     Route::get('/api/patients', [PatientController::class, 'index']);
     Route::post('/api/patients', [PatientController::class, 'store']);
     Route::get('/api/patients/{patient}', [PatientController::class, 'show']);
