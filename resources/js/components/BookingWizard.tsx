@@ -1,13 +1,14 @@
 import { useState, useEffect } from 'react'
 import { CheckCircle2, Calendar, Clock, User, Stethoscope, ChevronRight, ChevronLeft, Loader2, Building2, Check } from "lucide-react"
+import { useLanguage } from '@/contexts/LanguageContext'
 
 interface Department { id: number; name: string }
 interface Doctor { id: number; first_name: string; last_name: string; full_name: string; specialization: string; consultation_fee: number; department: string; profile_photo_url: string | null }
 interface BookingWizardProps { setPage: (p: string) => void }
 
-const steps = ['Department', 'Doctor', 'Date & Time', 'Details', 'Confirm']
-
 export default function BookingWizard({ setPage }: BookingWizardProps) {
+  const { t } = useLanguage()
+  const steps = [t('department'), t('doctor'), t('dateTime'), t('details'), t('confirm')]
   const [step, setStep] = useState(0)
   const [departments, setDepartments] = useState<Department[]>([])
   const [doctors, setDoctors] = useState<Doctor[]>([])
@@ -72,10 +73,10 @@ export default function BookingWizard({ setPage }: BookingWizardProps) {
         <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-green-100">
           <CheckCircle2 className="h-10 w-10 text-green-600" />
         </div>
-        <h2 className="mb-2 text-2xl font-bold text-gray-900 dark:text-white">Appointment Booked!</h2>
-        <p className="mb-2 text-gray-600 dark:text-gray-400">Your appointment with <strong>{selectedDoctor?.full_name}</strong> on <strong>{selectedDate}</strong> at <strong>{selectedTime}</strong> has been scheduled.</p>
-        <p className="mb-8 text-sm text-gray-500 dark:text-gray-400">We will contact you at {email} or {phone} for confirmation.</p>
-        <button onClick={() => setPage('home')} className="rounded-xl bg-rose-600 px-8 py-3 text-white hover:bg-rose-700 transition-all">Back to Home</button>
+        <h2 className="mb-2 text-2xl font-bold text-gray-900 dark:text-white">{t('bookingConfirmed')}</h2>
+        <p className="mb-2 text-gray-600 dark:text-gray-400">{t('appointmentSummary', { doctor: selectedDoctor?.full_name, date: selectedDate, time: selectedTime })}</p>
+        <p className="mb-8 text-sm text-gray-500 dark:text-gray-400">{t('contactForConfirmation', { email, phone })}</p>
+        <button onClick={() => setPage('home')} className="rounded-xl bg-rose-600 px-8 py-3 text-white hover:bg-rose-700 transition-all">{t('backToHome')}</button>
       </div>
     )
   }
@@ -83,8 +84,8 @@ export default function BookingWizard({ setPage }: BookingWizardProps) {
   return (
     <div className="mx-auto max-w-3xl px-4 py-12">
       <div className="mb-8 text-center">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Book an Appointment</h1>
-        <p className="mt-2 text-gray-500 dark:text-gray-400">Schedule your visit in just a few steps</p>
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">{t('bookingWizard')}</h1>
+        <p className="mt-2 text-gray-500 dark:text-gray-400">{t('bookingSubtitle')}</p>
       </div>
 
       <div className="mb-8 flex items-center justify-center gap-0">
@@ -107,7 +108,7 @@ export default function BookingWizard({ setPage }: BookingWizardProps) {
           <div>
             <div className="mb-6 flex items-center gap-3">
               <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-rose-100 text-rose-600"><Building2 className="h-5 w-5" /></div>
-              <div><h2 className="text-lg font-bold text-gray-900 dark:text-white">Select Department</h2><p className="text-sm text-gray-500">Choose the department you need</p></div>
+              <div><h2 className="text-lg font-bold text-gray-900 dark:text-white">{t('selectDepartment')}</h2><p className="text-sm text-gray-500">{t('chooseDepartment')}</p></div>
             </div>
             <div className="grid gap-3 sm:grid-cols-2">
               {departments.map((dept) => (
@@ -126,10 +127,10 @@ export default function BookingWizard({ setPage }: BookingWizardProps) {
           <div>
             <div className="mb-6 flex items-center gap-3">
               <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-rose-100 text-rose-600"><Stethoscope className="h-5 w-5" /></div>
-              <div><h2 className="text-lg font-bold text-gray-900 dark:text-white">Select Doctor</h2><p className="text-sm text-gray-500">Choose a specialist</p></div>
+              <div><h2 className="text-lg font-bold text-gray-900 dark:text-white">{t('selectDoctor')}</h2><p className="text-sm text-gray-500">{t('chooseSpecialist')}</p></div>
             </div>
             {doctors.length === 0 ? (
-              <p className="py-8 text-center text-gray-500">No doctors available in this department.</p>
+              <p className="py-8 text-center text-gray-500">{t('noDoctors')}</p>
             ) : (
               <div className="grid gap-3 sm:grid-cols-2">
                 {doctors.map((doc) => (
@@ -158,10 +159,10 @@ export default function BookingWizard({ setPage }: BookingWizardProps) {
           <div>
             <div className="mb-6 flex items-center gap-3">
               <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-rose-100 text-rose-600"><Calendar className="h-5 w-5" /></div>
-              <div><h2 className="text-lg font-bold text-gray-900 dark:text-white">Select Date & Time</h2><p className="text-sm text-gray-500">Pick your preferred slot</p></div>
+              <div><h2 className="text-lg font-bold text-gray-900 dark:text-white">{t('selectDate')}</h2><p className="text-sm text-gray-500">{t('pickSlot')}</p></div>
             </div>
             <div className="mb-6">
-              <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Date</label>
+                <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">{t('date')}</label>
               <input type="date" value={selectedDate} min={today}
                 onChange={e => { setSelectedDate(e.target.value); setSelectedTime('') }}
                 className="w-full rounded-xl border border-gray-300 px-4 py-3 text-sm focus:border-rose-500 focus:ring-2 focus:ring-rose-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white" />
@@ -170,9 +171,9 @@ export default function BookingWizard({ setPage }: BookingWizardProps) {
               <div className="flex items-center justify-center py-8"><Loader2 className="h-6 w-6 animate-spin text-rose-500" /></div>
             ) : selectedDate && (
               <div>
-                <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Available Slots</label>
+                <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">{t('availableSlots')}</label>
                 {slots.length === 0 ? (
-                  <p className="py-4 text-center text-gray-500">No available slots for this date.</p>
+                  <p className="py-4 text-center text-gray-500">{t('noSlots')}</p>
                 ) : (
                   <div className="grid grid-cols-3 gap-2 sm:grid-cols-4">
                     {slots.map((time) => (
@@ -195,27 +196,27 @@ export default function BookingWizard({ setPage }: BookingWizardProps) {
           <div>
             <div className="mb-6 flex items-center gap-3">
               <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-rose-100 text-rose-600"><User className="h-5 w-5" /></div>
-              <div><h2 className="text-lg font-bold text-gray-900 dark:text-white">Your Details</h2><p className="text-sm text-gray-500">We'll use this to confirm your appointment</p></div>
+              <div><h2 className="text-lg font-bold text-gray-900 dark:text-white">{t('patientInfo')}</h2><p className="text-sm text-gray-500">{t('detailsForConfirmation')}</p></div>
             </div>
             <div className="grid gap-4 sm:grid-cols-2">
               <div>
-                <label className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-300">First Name *</label>
-                <input value={firstName} onChange={e => setFirstName(e.target.value)} className="w-full rounded-xl border border-gray-300 px-4 py-3 text-sm focus:border-rose-500 focus:ring-2 focus:ring-rose-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white" placeholder="John" />
+                <label className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-300">{t('firstName')} *</label>
+                <input value={firstName} onChange={e => setFirstName(e.target.value)} className="w-full rounded-xl border border-gray-300 px-4 py-3 text-sm focus:border-rose-500 focus:ring-2 focus:ring-rose-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white" placeholder={t('firstNamePlaceholder')} />
               </div>
               <div>
-                <label className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-300">Last Name *</label>
+                <label className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-300">{t('lastName')} *</label>
                 <input value={lastName} onChange={e => setLastName(e.target.value)} className="w-full rounded-xl border border-gray-300 px-4 py-3 text-sm focus:border-rose-500 focus:ring-2 focus:ring-rose-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white" placeholder="Doe" />
               </div>
               <div>
-                <label className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-300">Email *</label>
+                <label className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-300">{t('email')} *</label>
                 <input type="email" value={email} onChange={e => setEmail(e.target.value)} className="w-full rounded-xl border border-gray-300 px-4 py-3 text-sm focus:border-rose-500 focus:ring-2 focus:ring-rose-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white" placeholder="john@example.com" />
               </div>
               <div>
-                <label className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-300">Phone *</label>
+                <label className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-300">{t('phone')} *</label>
                 <input value={phone} onChange={e => setPhone(e.target.value)} className="w-full rounded-xl border border-gray-300 px-4 py-3 text-sm focus:border-rose-500 focus:ring-2 focus:ring-rose-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white" placeholder="+1 234 567 890" />
               </div>
               <div className="sm:col-span-2">
-                <label className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-300">Reason for Visit (optional)</label>
+                <label className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-300">{t('reasonForVisit')}</label>
                 <textarea value={purpose} onChange={e => setPurpose(e.target.value)} rows={3} className="w-full rounded-xl border border-gray-300 px-4 py-3 text-sm focus:border-rose-500 focus:ring-2 focus:ring-rose-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white" placeholder="Brief description of your symptoms or reason..." />
               </div>
             </div>
@@ -226,17 +227,17 @@ export default function BookingWizard({ setPage }: BookingWizardProps) {
           <div>
             <div className="mb-6 flex items-center gap-3">
               <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-rose-100 text-rose-600"><CheckCircle2 className="h-5 w-5" /></div>
-              <div><h2 className="text-lg font-bold text-gray-900 dark:text-white">Confirm Appointment</h2><p className="text-sm text-gray-500">Review your details before confirming</p></div>
+              <div><h2 className="text-lg font-bold text-gray-900 dark:text-white">{t('confirmBooking')}</h2><p className="text-sm text-gray-500">{t('reviewDetails')}</p></div>
             </div>
             <div className="space-y-3 rounded-xl bg-gray-50 p-5 dark:bg-gray-700/50">
-              <div className="flex justify-between border-b border-gray-200 pb-2 dark:border-gray-600"><span className="text-sm text-gray-500">Department</span><span className="text-sm font-medium text-gray-900 dark:text-white">{selectedDept}</span></div>
-              <div className="flex justify-between border-b border-gray-200 pb-2 dark:border-gray-600"><span className="text-sm text-gray-500">Doctor</span><span className="text-sm font-medium text-gray-900 dark:text-white">{selectedDoctor?.full_name}</span></div>
-              <div className="flex justify-between border-b border-gray-200 pb-2 dark:border-gray-600"><span className="text-sm text-gray-500">Date</span><span className="text-sm font-medium text-gray-900 dark:text-white">{selectedDate}</span></div>
-              <div className="flex justify-between border-b border-gray-200 pb-2 dark:border-gray-600"><span className="text-sm text-gray-500">Time</span><span className="text-sm font-medium text-gray-900 dark:text-white">{selectedTime}</span></div>
-              <div className="flex justify-between border-b border-gray-200 pb-2 dark:border-gray-600"><span className="text-sm text-gray-500">Patient</span><span className="text-sm font-medium text-gray-900 dark:text-white">{firstName} {lastName}</span></div>
-              <div className="flex justify-between border-b border-gray-200 pb-2 dark:border-gray-600"><span className="text-sm text-gray-500">Email</span><span className="text-sm font-medium text-gray-900 dark:text-white">{email}</span></div>
-              <div className="flex justify-between border-b border-gray-200 pb-2 dark:border-gray-600"><span className="text-sm text-gray-500">Phone</span><span className="text-sm font-medium text-gray-900 dark:text-white">{phone}</span></div>
-              {purpose && <div className="flex justify-between"><span className="text-sm text-gray-500">Reason</span><span className="text-sm font-medium text-gray-900 dark:text-white">{purpose}</span></div>}
+              <div className="flex justify-between border-b border-gray-200 pb-2 dark:border-gray-600"><span className="text-sm text-gray-500">{t('department')}</span><span className="text-sm font-medium text-gray-900 dark:text-white">{selectedDept}</span></div>
+              <div className="flex justify-between border-b border-gray-200 pb-2 dark:border-gray-600"><span className="text-sm text-gray-500">{t('doctor')}</span><span className="text-sm font-medium text-gray-900 dark:text-white">{selectedDoctor?.full_name}</span></div>
+              <div className="flex justify-between border-b border-gray-200 pb-2 dark:border-gray-600"><span className="text-sm text-gray-500">{t('date')}</span><span className="text-sm font-medium text-gray-900 dark:text-white">{selectedDate}</span></div>
+              <div className="flex justify-between border-b border-gray-200 pb-2 dark:border-gray-600"><span className="text-sm text-gray-500">{t('time')}</span><span className="text-sm font-medium text-gray-900 dark:text-white">{selectedTime}</span></div>
+              <div className="flex justify-between border-b border-gray-200 pb-2 dark:border-gray-600"><span className="text-sm text-gray-500">{t('patient')}</span><span className="text-sm font-medium text-gray-900 dark:text-white">{firstName} {lastName}</span></div>
+              <div className="flex justify-between border-b border-gray-200 pb-2 dark:border-gray-600"><span className="text-sm text-gray-500">{t('email')}</span><span className="text-sm font-medium text-gray-900 dark:text-white">{email}</span></div>
+              <div className="flex justify-between border-b border-gray-200 pb-2 dark:border-gray-600"><span className="text-sm text-gray-500">{t('phone')}</span><span className="text-sm font-medium text-gray-900 dark:text-white">{phone}</span></div>
+              {purpose && <div className="flex justify-between"><span className="text-sm text-gray-500">{t('reason')}</span><span className="text-sm font-medium text-gray-900 dark:text-white">{purpose}</span></div>}
             </div>
           </div>
         )}
@@ -244,17 +245,17 @@ export default function BookingWizard({ setPage }: BookingWizardProps) {
         <div className="mt-8 flex items-center justify-between">
           <button onClick={() => step > 0 ? setStep(s => s - 1) : setPage('home')}
             className="flex items-center gap-2 rounded-xl border border-gray-300 px-6 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-all dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700">
-            <ChevronLeft className="h-4 w-4" /> {step === 0 ? 'Cancel' : 'Back'}
+            <ChevronLeft className="h-4 w-4" /> {step === 0 ? t('cancel') : t('back')}
           </button>
           {step < 4 ? (
             <button onClick={() => canProceed() && setStep(s => s + 1)} disabled={!canProceed()}
               className="flex items-center gap-2 rounded-xl bg-rose-600 px-8 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-rose-700 disabled:opacity-50 transition-all">
-              Next <ChevronRight className="h-4 w-4" />
+              {t('next')} <ChevronRight className="h-4 w-4" />
             </button>
           ) : (
             <button onClick={handleSubmit} disabled={submitting}
               className="flex items-center gap-2 rounded-xl bg-rose-600 px-8 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-rose-700 disabled:opacity-50 transition-all">
-              {submitting ? <><Loader2 className="h-4 w-4 animate-spin" /> Booking...</> : <><CheckCircle2 className="h-4 w-4" /> Confirm Booking</>}
+              {submitting ? <><Loader2 className="h-4 w-4 animate-spin" /> {t('booking')}...</> : <><CheckCircle2 className="h-4 w-4" /> {t('confirmBooking')}</>}
             </button>
           )}
         </div>

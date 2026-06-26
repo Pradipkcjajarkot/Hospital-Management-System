@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useLanguage } from '@/contexts/LanguageContext'
 import { Search, Plus, X, Star, Quote } from "lucide-react"
 
 interface Testimonial {
@@ -11,6 +12,7 @@ interface Testimonial {
 }
 
 export default function TestimonialManagement() {
+  const { t } = useLanguage()
   const [items, setItems] = useState<Testimonial[]>([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
@@ -57,17 +59,17 @@ export default function TestimonialManagement() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <div><h1 className="text-2xl font-bold text-gray-900 dark:text-white">Testimonial Management</h1><p className="mt-1 text-sm text-gray-500 dark:text-gray-400">{items.length} testimonials</p></div>
-        <button onClick={() => { setShowAdd(true); setEditing(null); setForm({ name: '', role: '', content: '', rating: 5 }) }} className="flex items-center gap-2 rounded-xl bg-rose-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-rose-700 transition-all"><Plus className="h-4 w-4" /> Add Testimonial</button>
+        <div><h1 className="text-2xl font-bold text-gray-900 dark:text-white">{t('testimonialManagement')}</h1><p className="mt-1 text-sm text-gray-500 dark:text-gray-400">{items.length} {t('testimonials')}</p></div>
+        <button onClick={() => { setShowAdd(true); setEditing(null); setForm({ name: '', role: '', content: '', rating: 5 }) }} className="flex items-center gap-2 rounded-xl bg-rose-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-rose-700 transition-all"><Plus className="h-4 w-4" /> {t('addTestimonial')}</button>
       </div>
 
       <div className="relative">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-        <input type="text" placeholder="Search testimonials..." value={search} onChange={e => setSearch(e.target.value)} className="w-full rounded-xl border border-gray-200 py-2.5 pl-10 pr-4 text-sm focus:border-rose-400 focus:outline-none focus:ring-2 focus:ring-rose-100 dark:border-gray-700 dark:bg-gray-800 dark:text-white" />
+        <input type="text" placeholder={t('search')} value={search} onChange={e => setSearch(e.target.value)} className="w-full rounded-xl border border-gray-200 py-2.5 pl-10 pr-4 text-sm focus:border-rose-400 focus:outline-none focus:ring-2 focus:ring-rose-100 dark:border-gray-700 dark:bg-gray-800 dark:text-white" />
       </div>
 
       {filtered.length === 0 ? (
-        <div className="rounded-2xl border border-gray-100 bg-white p-12 text-center text-gray-500 dark:border-gray-800 dark:bg-gray-900">No testimonials found.</div>
+        <div className="rounded-2xl border border-gray-100 bg-white p-12 text-center text-gray-500 dark:border-gray-800 dark:bg-gray-900">{t('noTestimonials')}</div>
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {filtered.map(item => (
@@ -88,8 +90,8 @@ export default function TestimonialManagement() {
                   {item.role && <p className="text-xs text-gray-500 dark:text-gray-400">{item.role}</p>}
                 </div>
                 <div className="flex gap-1">
-                  <button onClick={() => openEdit(item)} className="rounded-lg px-2 py-1 text-xs font-medium text-rose-600 hover:bg-rose-50 dark:text-rose-400 dark:hover:bg-rose-900/20">Edit</button>
-                  <button onClick={() => handleDelete(item.id)} className="rounded-lg px-2 py-1 text-xs font-medium text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20">Delete</button>
+                  <button onClick={() => openEdit(item)} className="rounded-lg px-2 py-1 text-xs font-medium text-rose-600 hover:bg-rose-50 dark:text-rose-400 dark:hover:bg-rose-900/20">{t('editTestimonial')}</button>
+                  <button onClick={() => handleDelete(item.id)} className="rounded-lg px-2 py-1 text-xs font-medium text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20">{t('delete')}</button>
                 </div>
               </div>
             </div>
@@ -101,19 +103,19 @@ export default function TestimonialManagement() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm p-4" onClick={() => { if (!saving) { setShowAdd(false); setEditing(null) } }}>
           <div className="w-full max-w-lg rounded-2xl bg-white p-6 shadow-xl dark:bg-gray-800" onClick={e => e.stopPropagation()}>
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">{editing ? 'Edit Testimonial' : 'Add Testimonial'}</h2>
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">{editing ? t('editTestimonial') : t('addTestimonial')}</h2>
               <button onClick={() => { setShowAdd(false); setEditing(null) }} className="rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700"><X className="h-5 w-5" /></button>
             </div>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="grid gap-4 sm:grid-cols-2">
-                <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Name *</label><input type="text" required value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} className="mt-1 w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm focus:border-rose-400 focus:outline-none focus:ring-2 focus:ring-rose-100 dark:border-gray-700 dark:bg-gray-800 dark:text-white" /></div>
+                <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300">{t('patientName')} *</label><input type="text" required value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} className="mt-1 w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm focus:border-rose-400 focus:outline-none focus:ring-2 focus:ring-rose-100 dark:border-gray-700 dark:bg-gray-800 dark:text-white" /></div>
                 <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Role</label><input type="text" value={form.role} onChange={e => setForm({ ...form, role: e.target.value })} className="mt-1 w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm focus:border-rose-400 focus:outline-none focus:ring-2 focus:ring-rose-100 dark:border-gray-700 dark:bg-gray-800 dark:text-white" placeholder="e.g. Patient" /></div>
               </div>
-              <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Content *</label><textarea rows={4} required value={form.content} onChange={e => setForm({ ...form, content: e.target.value })} className="mt-1 w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm focus:border-rose-400 focus:outline-none focus:ring-2 focus:ring-rose-100 dark:border-gray-700 dark:bg-gray-800 dark:text-white" /></div>
-              <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Rating</label><div className="mt-1 flex gap-1">{Array.from({ length: 5 }).map((_, i) => (<button key={i} type="button" onClick={() => setForm({ ...form, rating: i + 1 })}><Star className={`h-6 w-6 ${i < form.rating ? 'fill-amber-400 text-amber-400' : 'text-gray-300 dark:text-gray-600'}`} /></button>))}</div></div>
+              <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300">{t('testimonialContent')} *</label><textarea rows={4} required value={form.content} onChange={e => setForm({ ...form, content: e.target.value })} className="mt-1 w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm focus:border-rose-400 focus:outline-none focus:ring-2 focus:ring-rose-100 dark:border-gray-700 dark:bg-gray-800 dark:text-white" /></div>
+              <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300">{t('rating')}</label><div className="mt-1 flex gap-1">{Array.from({ length: 5 }).map((_, i) => (<button key={i} type="button" onClick={() => setForm({ ...form, rating: i + 1 })}><Star className={`h-6 w-6 ${i < form.rating ? 'fill-amber-400 text-amber-400' : 'text-gray-300 dark:text-gray-600'}`} /></button>))}</div></div>
               <div className="flex justify-end gap-3 pt-2">
-                <button type="button" onClick={() => { setShowAdd(false); setEditing(null) }} className="rounded-xl border border-gray-200 px-5 py-2.5 text-sm font-medium text-gray-600 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700">Cancel</button>
-                <button type="submit" disabled={saving} className="rounded-xl bg-rose-600 px-5 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-rose-700 disabled:opacity-50">{saving ? 'Saving...' : editing ? 'Update' : 'Create'}</button>
+                <button type="button" onClick={() => { setShowAdd(false); setEditing(null) }} className="rounded-xl border border-gray-200 px-5 py-2.5 text-sm font-medium text-gray-600 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700">{t('cancel')}</button>
+                <button type="submit" disabled={saving} className="rounded-xl bg-rose-600 px-5 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-rose-700 disabled:opacity-50">{saving ? 'Saving...' : t('save')}</button>
               </div>
             </form>
           </div>

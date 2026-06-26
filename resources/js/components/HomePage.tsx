@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useLanguage } from '@/contexts/LanguageContext'
 import { ArrowRight, Calendar, User, Stethoscope, Building2, Activity, Star, Quote, Clock, MapPin, Ambulance, Bed, FlaskConical, Pill, Heart, Baby, Eye, Shield, Award, DollarSign, FileText, Phone, Mail, CheckCircle, Ambulance as Emergency, Syringe, Monitor, Brain } from "lucide-react"
 
 interface HomeData {
@@ -12,6 +13,7 @@ interface HomeData {
 }
 
 export default function HomePage({ setPage }: { setPage: (p: string) => void }) {
+  const { t } = useLanguage()
   const [data, setData] = useState<HomeData | null>(null)
   const [aptForm, setAptForm] = useState({ name: '', phone: '', department: '', doctor: '', date: '', time: '', notes: '' })
   const [aptSaving, setAptSaving] = useState(false)
@@ -52,21 +54,21 @@ export default function HomePage({ setPage }: { setPage: (p: string) => void }) 
         <div className="relative mx-auto max-w-7xl">
           <div className="max-w-2xl">
             <div className="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-1.5 text-sm text-gray-300 backdrop-blur-sm animate-pulse-glow">
-              <Activity className="h-4 w-4 text-rose-400" /> Trusted Healthcare Since 2010
+              <Activity className="h-4 w-4 text-rose-400" /> {t('getStarted')} Healthcare
             </div>
             <h1 className="mt-6 text-3xl font-bold leading-tight text-white sm:text-5xl lg:text-6xl animate-float">
               Your Health Is Our<br />
               <span className="bg-gradient-to-r from-rose-400 to-rose-300 bg-clip-text text-transparent">Top Priority</span>
             </h1>
             <p className="mt-4 max-w-xl text-lg text-gray-300 animate-float" style={{ animationDelay: '0.5s' }}>
-              {s.hospital_name || 'MediCare Hospital'} offers world-class healthcare services with cutting-edge technology, experienced doctors, and compassionate staff.
+              {s.hospital_name || t('hospitalName')}. {t('heroSubtitle')}
             </p>
             <div className="mt-8 flex flex-wrap gap-4 animate-breathe">
               <button onClick={() => setPage('booking')} className="flex items-center gap-2 rounded-xl bg-rose-600 px-6 py-3 text-sm font-medium text-white shadow-lg shadow-rose-600/25 hover:bg-rose-700 transition-all">
-                <Calendar className="h-4 w-4" /> Book Appointment
+                <Calendar className="h-4 w-4" /> {t('bookAppointment')}
               </button>
               <button onClick={() => setPage('doctors')} className="flex items-center gap-2 rounded-xl border border-gray-600 px-6 py-3 text-sm font-medium text-gray-200 hover:bg-white/10 transition-all">
-                <Stethoscope className="h-4 w-4" /> Find a Doctor
+                <Stethoscope className="h-4 w-4" /> {t('searchDoctor')}
               </button>
             </div>
           </div>
@@ -78,10 +80,10 @@ export default function HomePage({ setPage }: { setPage: (p: string) => void }) 
         <div className="mx-auto max-w-7xl">
           <div className="grid grid-cols-2 gap-4 rounded-2xl bg-white p-6 shadow-xl sm:grid-cols-3 sm:p-8 lg:grid-cols-5 dark:bg-gray-900 dark:shadow-gray-900/50">
             {[
-              { label: 'Expert Doctors', value: data.stats.doctors, icon: Stethoscope },
-              { label: 'Happy Patients', value: data.stats.patients.toLocaleString(), icon: User },
-              { label: 'Departments', value: data.stats.departments, icon: Building2 },
-              { label: 'Hospital Beds', value: '200+', icon: Bed },
+              { label: t('ourDoctors'), value: data.stats.doctors, icon: Stethoscope },
+              { label: t('totalPatients'), value: data.stats.patients.toLocaleString(), icon: User },
+              { label: t('departments'), value: data.stats.departments, icon: Building2 },
+              { label: t('bedWardTitle'), value: '200+', icon: Bed },
               { label: 'Years Experience', value: data.stats.years + '+', icon: Award },
             ].map((stat, i) => (
               <div key={stat.label} className="text-center animate-float" style={{ animationDelay: `${0.1 + i * 0.1}s` }}>
@@ -112,7 +114,7 @@ export default function HomePage({ setPage }: { setPage: (p: string) => void }) 
               </div>
             </div>
             <div>
-              <h2 className="text-3xl font-bold text-gray-900 dark:text-white animate-fade-in-up">About {s.hospital_name || 'MediCare Hospital'}</h2>
+              <h2 className="text-3xl font-bold text-gray-900 dark:text-white animate-fade-in-up">{t('getStarted')} {s.hospital_name || t('hospitalName')}</h2>
               <p className="mt-4 text-gray-600 dark:text-gray-400 leading-relaxed animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
                 We are committed to providing compassionate, high-quality healthcare services to our community. 
                 With state-of-the-art facilities and a team of dedicated medical professionals, we ensure every patient receives personalized care.
@@ -130,7 +132,7 @@ export default function HomePage({ setPage }: { setPage: (p: string) => void }) 
                 </div>
               </div>
               <button onClick={() => setPage('departments')} className="mt-6 inline-flex items-center gap-2 rounded-xl bg-rose-600 px-6 py-3 text-sm font-medium text-white shadow-sm hover:bg-rose-700 transition-all">
-                Read More <ArrowRight className="h-4 w-4" />
+                {t('readMore')} <ArrowRight className="h-4 w-4" />
               </button>
             </div>
           </div>
@@ -141,7 +143,7 @@ export default function HomePage({ setPage }: { setPage: (p: string) => void }) 
       <section className="bg-gray-50 px-4 py-20 dark:bg-gray-900/50 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-7xl">
           <div className="text-center">
-            <h2 className="text-3xl font-bold text-gray-900 dark:text-white animate-fade-in-up">Our Departments</h2>
+            <h2 className="text-3xl font-bold text-gray-900 dark:text-white animate-fade-in-up">{t('ourDepartments')}</h2>
             <p className="mt-2 text-gray-500 dark:text-gray-400">Comprehensive medical care across all specialties</p>
           </div>
           <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
@@ -165,7 +167,7 @@ export default function HomePage({ setPage }: { setPage: (p: string) => void }) 
           </div>
           <div className="mt-8 text-center">
             <button onClick={() => setPage('departments')} className="inline-flex items-center gap-2 text-sm font-medium text-rose-600 hover:text-rose-700 dark:text-rose-400 dark:hover:text-rose-300">
-              View All Departments <ArrowRight className="h-4 w-4" />
+              {t('viewAll')} {t('departments')} <ArrowRight className="h-4 w-4" />
             </button>
           </div>
         </div>
@@ -205,7 +207,7 @@ export default function HomePage({ setPage }: { setPage: (p: string) => void }) 
       <section className="bg-gray-50 px-4 py-20 dark:bg-gray-900/50 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-7xl">
           <div className="text-center">
-            <h2 className="text-3xl font-bold text-gray-900 dark:text-white animate-fade-in-up">Meet Our Doctors</h2>
+            <h2 className="text-3xl font-bold text-gray-900 dark:text-white animate-fade-in-up">{t('ourDoctors')}</h2>
             <p className="mt-2 text-gray-500 dark:text-gray-400">Experienced specialists dedicated to your health</p>
           </div>
           <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
@@ -222,15 +224,15 @@ export default function HomePage({ setPage }: { setPage: (p: string) => void }) 
                 <p className="text-sm text-rose-600 dark:text-rose-400">{d.specialization}</p>
                 <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">{d.experience_years} years experience</p>
                 <div className="mt-4 flex gap-2 justify-center">
-                  <button onClick={() => setPage('doctors')} className="rounded-lg border border-gray-200 px-3 py-1.5 text-xs font-medium text-gray-600 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-800">View Profile</button>
-                  <button onClick={() => setPage('booking')} className="rounded-lg bg-rose-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-rose-700">Book Appointment</button>
+                  <button onClick={() => setPage('doctors')} className="rounded-lg border border-gray-200 px-3 py-1.5 text-xs font-medium text-gray-600 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-800">{t('viewDetails')}</button>
+                  <button onClick={() => setPage('booking')} className="rounded-lg bg-rose-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-rose-700">{t('bookAppointment')}</button>
                 </div>
               </div>
             ))}
           </div>
           <div className="mt-8 text-center">
             <button onClick={() => setPage('doctors')} className="inline-flex items-center gap-2 text-sm font-medium text-rose-600 hover:text-rose-700 dark:text-rose-400 dark:hover:text-rose-300">
-              View All Doctors <ArrowRight className="h-4 w-4" />
+              {t('viewAll')} <ArrowRight className="h-4 w-4" />
             </button>
           </div>
         </div>
@@ -241,7 +243,7 @@ export default function HomePage({ setPage }: { setPage: (p: string) => void }) 
         <div className="mx-auto max-w-7xl">
           <div className="grid gap-12 lg:grid-cols-2 items-center">
             <div>
-              <h2 className="text-3xl font-bold text-gray-900 dark:text-white animate-fade-in-up">Book an Appointment</h2>
+              <h2 className="text-3xl font-bold text-gray-900 dark:text-white animate-fade-in-up">{t('bookingWizard')}</h2>
               <p className="mt-2 text-gray-500 dark:text-gray-400">Schedule your visit with our specialists. We'll confirm your appointment shortly.</p>
               <div className="mt-8 space-y-4">
                 {[
@@ -262,15 +264,15 @@ export default function HomePage({ setPage }: { setPage: (p: string) => void }) 
             <form onSubmit={handleAppointment} className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-900">
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="sm:col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Full Name *</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">{t('fullName')} *</label>
                   <input type="text" required value={aptForm.name} onChange={e => setAptForm({ ...aptForm, name: e.target.value })} className="mt-1 w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm focus:border-rose-400 focus:outline-none focus:ring-2 focus:ring-rose-100 dark:border-gray-700 dark:bg-gray-800 dark:text-white" placeholder="Enter your name" />
                 </div>
                 <div className="sm:col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Phone *</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">{t('phone')} *</label>
                   <input type="tel" required value={aptForm.phone} onChange={e => setAptForm({ ...aptForm, phone: e.target.value })} className="mt-1 w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm focus:border-rose-400 focus:outline-none focus:ring-2 focus:ring-rose-100 dark:border-gray-700 dark:bg-gray-800 dark:text-white" placeholder="Enter phone number" />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Department</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">{t('departments')}</label>
                   <select value={aptForm.department} onChange={e => setAptForm({ ...aptForm, department: e.target.value })} className="mt-1 w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm focus:border-rose-400 focus:outline-none focus:ring-2 focus:ring-rose-100 dark:border-gray-700 dark:bg-gray-800 dark:text-white">
                     <option value="">Select Department</option>
                     {data.departments.map((d: any) => (
@@ -279,7 +281,7 @@ export default function HomePage({ setPage }: { setPage: (p: string) => void }) 
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Doctor</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">{t('doctors')}</label>
                   <select value={aptForm.doctor} onChange={e => setAptForm({ ...aptForm, doctor: e.target.value })} className="mt-1 w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm focus:border-rose-400 focus:outline-none focus:ring-2 focus:ring-rose-100 dark:border-gray-700 dark:bg-gray-800 dark:text-white">
                     <option value="">Select Doctor</option>
                     {data.doctors.map((d: any) => (
@@ -288,7 +290,7 @@ export default function HomePage({ setPage }: { setPage: (p: string) => void }) 
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Preferred Date *</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">{t('selectDate')} *</label>
                   <input type="date" required value={aptForm.date} onChange={e => setAptForm({ ...aptForm, date: e.target.value })} className="mt-1 w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm focus:border-rose-400 focus:outline-none focus:ring-2 focus:ring-rose-100 dark:border-gray-700 dark:bg-gray-800 dark:text-white" />
                 </div>
                 <div>
@@ -301,7 +303,7 @@ export default function HomePage({ setPage }: { setPage: (p: string) => void }) 
                 </div>
               </div>
               <button type="submit" disabled={aptSaving} className="mt-4 w-full rounded-xl bg-rose-600 px-6 py-3 text-sm font-medium text-white shadow-sm hover:bg-rose-700 disabled:opacity-50 transition-all">
-                {aptSaving ? 'Booking...' : 'Book Now'}
+                {aptSaving ? t('loading') : t('bookAppointment')}
               </button>
             </form>
           </div>
@@ -375,7 +377,7 @@ export default function HomePage({ setPage }: { setPage: (p: string) => void }) 
         <section className="bg-gray-50 px-4 py-20 dark:bg-gray-900/50 sm:px-6 lg:px-8">
           <div className="mx-auto max-w-7xl">
             <div className="text-center">
-              <h2 className="text-3xl font-bold text-gray-900 dark:text-white animate-fade-in-up">Latest News & Health Tips</h2>
+              <h2 className="text-3xl font-bold text-gray-900 dark:text-white animate-fade-in-up">{t('ourBlog')}</h2>
               <p className="mt-2 text-gray-500 dark:text-gray-400">Health articles, hospital announcements, and medical tips</p>
             </div>
             <div className="mt-10 grid gap-6 md:grid-cols-3">
@@ -385,14 +387,14 @@ export default function HomePage({ setPage }: { setPage: (p: string) => void }) 
                   <h3 className="mt-2 font-semibold text-gray-900 dark:text-white line-clamp-2">{post.title}</h3>
                   <p className="mt-1 text-sm text-gray-500 dark:text-gray-400 line-clamp-2">{post.excerpt || post.content}</p>
                   <button onClick={() => setPage('blog')} className="mt-4 text-sm font-medium text-rose-600 hover:text-rose-700 dark:text-rose-400">
-                    Read More →
+                    {t('readMore')} →
                   </button>
                 </div>
               ))}
             </div>
             <div className="mt-8 text-center">
               <button onClick={() => setPage('blog')} className="inline-flex items-center gap-2 text-sm font-medium text-rose-600 hover:text-rose-700 dark:text-rose-400 dark:hover:text-rose-300">
-                View All Posts <ArrowRight className="h-4 w-4" />
+                {t('viewAll')} <ArrowRight className="h-4 w-4" />
               </button>
             </div>
           </div>
@@ -404,7 +406,7 @@ export default function HomePage({ setPage }: { setPage: (p: string) => void }) 
         <section className="px-4 py-20 sm:px-6 lg:px-8">
           <div className="mx-auto max-w-7xl">
             <div className="text-center">
-              <h2 className="text-3xl font-bold text-gray-900 dark:text-white animate-fade-in-up">Upcoming Events</h2>
+              <h2 className="text-3xl font-bold text-gray-900 dark:text-white animate-fade-in-up">{t('upcomingEvents')}</h2>
               <p className="mt-2 text-gray-500 dark:text-gray-400">Health camps, workshops, and community programs</p>
             </div>
             <div className="mt-10 grid gap-6 sm:grid-cols-2">
@@ -427,7 +429,7 @@ export default function HomePage({ setPage }: { setPage: (p: string) => void }) 
             </div>
             <div className="mt-8 text-center">
               <button onClick={() => setPage('events')} className="inline-flex items-center gap-2 text-sm font-medium text-rose-600 hover:text-rose-700 dark:text-rose-400 dark:hover:text-rose-300">
-                View All Events <ArrowRight className="h-4 w-4" />
+                {t('viewAll')} <ArrowRight className="h-4 w-4" />
               </button>
             </div>
           </div>
@@ -438,7 +440,7 @@ export default function HomePage({ setPage }: { setPage: (p: string) => void }) 
       <section className="bg-gray-50 px-4 py-20 dark:bg-gray-900/50 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-7xl">
           <div className="text-center">
-            <h2 className="text-3xl font-bold text-gray-900 dark:text-white animate-fade-in-up">Contact Us</h2>
+            <h2 className="text-3xl font-bold text-gray-900 dark:text-white animate-fade-in-up">{t('contactUs')}</h2>
             <p className="mt-2 text-gray-500 dark:text-gray-400">Get in touch with us for any inquiries or assistance</p>
           </div>
           <div className="mt-10 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
@@ -446,21 +448,21 @@ export default function HomePage({ setPage }: { setPage: (p: string) => void }) 
               <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-rose-50 text-rose-600 dark:bg-rose-900/30 dark:text-rose-400">
                 <MapPin className="h-6 w-6" />
               </div>
-              <h3 className="mt-4 font-semibold text-gray-900 dark:text-white">Address</h3>
+              <h3 className="mt-4 font-semibold text-gray-900 dark:text-white">{t('address')}</h3>
               <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">{s.hospital_address || '123 Medical Center Blvd, City'}</p>
             </div>
             <div className="rounded-2xl border border-gray-100 bg-white p-6 text-center shadow-sm dark:border-gray-800 dark:bg-gray-900 animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
               <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-rose-50 text-rose-600 dark:bg-rose-900/30 dark:text-rose-400">
                 <Phone className="h-6 w-6" />
               </div>
-              <h3 className="mt-4 font-semibold text-gray-900 dark:text-white">Phone</h3>
+              <h3 className="mt-4 font-semibold text-gray-900 dark:text-white">{t('phone')}</h3>
               <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">{s.hospital_phone || '+1 234 567 890'}</p>
             </div>
             <div className="rounded-2xl border border-gray-100 bg-white p-6 text-center shadow-sm dark:border-gray-800 dark:bg-gray-900 animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
               <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-rose-50 text-rose-600 dark:bg-rose-900/30 dark:text-rose-400">
                 <Mail className="h-6 w-6" />
               </div>
-              <h3 className="mt-4 font-semibold text-gray-900 dark:text-white">Email</h3>
+              <h3 className="mt-4 font-semibold text-gray-900 dark:text-white">{t('email')}</h3>
               <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">{s.hospital_email || 'info@medicare.com'}</p>
             </div>
             <div className="rounded-2xl border border-gray-100 bg-white p-6 text-center shadow-sm dark:border-gray-800 dark:bg-gray-900 animate-fade-in-up" style={{ animationDelay: '0.4s' }}>
@@ -473,7 +475,7 @@ export default function HomePage({ setPage }: { setPage: (p: string) => void }) 
           </div>
           <div className="mt-8 text-center">
             <button onClick={() => setPage('contact')} className="inline-flex items-center gap-2 rounded-xl bg-rose-600 px-6 py-3 text-sm font-medium text-white shadow-sm hover:bg-rose-700 transition-all">
-              <Mail className="h-4 w-4" /> Send us a Message
+              <Mail className="h-4 w-4" /> {t('sendMessage')}
             </button>
           </div>
         </div>
@@ -486,10 +488,10 @@ export default function HomePage({ setPage }: { setPage: (p: string) => void }) 
           <p className="mt-3 text-base text-rose-100 sm:text-lg">Visit our hospital or contact us to book an appointment.</p>
           <div className="mt-8 flex flex-wrap justify-center gap-4">
             <button onClick={() => setPage('booking')} className="rounded-xl bg-white px-8 py-3 text-sm font-medium text-rose-600 shadow-lg hover:bg-gray-50 transition-all">
-              Book Appointment
+              {t('bookAppointment')}
             </button>
             <button onClick={() => setPage('contact')} className="rounded-xl border border-white/40 px-8 py-3 text-sm font-medium text-white hover:bg-white/10 transition-all">
-              Contact Us
+              {t('contactUs')}
             </button>
           </div>
         </div>

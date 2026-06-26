@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useLanguage } from '@/contexts/LanguageContext'
 import { Search, X, Mail, Phone, MessageSquare, CheckCircle } from "lucide-react"
 
 interface Contact {
@@ -13,6 +14,7 @@ interface Contact {
 }
 
 export default function ContactManagement() {
+  const { t } = useLanguage()
   const [items, setItems] = useState<Contact[]>([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
@@ -60,7 +62,7 @@ export default function ContactManagement() {
               <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">From {selected.name} &lt;{selected.email}&gt;</p>
             </div>
             <div className="flex gap-2">
-              <button onClick={() => handleDelete(selected.id)} className="rounded-xl border border-red-200 px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50 dark:border-red-900/30 dark:text-red-400 dark:hover:bg-red-900/20">Delete</button>
+              <button onClick={() => handleDelete(selected.id)} className="rounded-xl border border-red-200 px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50 dark:border-red-900/30 dark:text-red-400 dark:hover:bg-red-900/20">{t('delete')}</button>
             </div>
           </div>
           <div className="mt-4 flex flex-wrap gap-4 text-sm text-gray-500 dark:text-gray-400">
@@ -79,20 +81,20 @@ export default function ContactManagement() {
 
   return (
     <div className="space-y-6">
-      <div><h1 className="text-2xl font-bold text-gray-900 dark:text-white">Contact Messages</h1><p className="mt-1 text-sm text-gray-500 dark:text-gray-400">{items.length} total ({unread.length} unread)</p></div>
+      <div><h1 className="text-2xl font-bold text-gray-900 dark:text-white">{t('contactManagement')}</h1><p className="mt-1 text-sm text-gray-500 dark:text-gray-400">{items.length} {t('total')} ({unread.length} {t('unread')})</p></div>
 
       <div className="relative">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-        <input type="text" placeholder="Search messages..." value={search} onChange={e => setSearch(e.target.value)} className="w-full rounded-xl border border-gray-200 py-2.5 pl-10 pr-4 text-sm focus:border-rose-400 focus:outline-none focus:ring-2 focus:ring-rose-100 dark:border-gray-700 dark:bg-gray-800 dark:text-white" />
+        <input type="text" placeholder={t('search')} value={search} onChange={e => setSearch(e.target.value)} className="w-full rounded-xl border border-gray-200 py-2.5 pl-10 pr-4 text-sm focus:border-rose-400 focus:outline-none focus:ring-2 focus:ring-rose-100 dark:border-gray-700 dark:bg-gray-800 dark:text-white" />
       </div>
 
       {filtered.length === 0 ? (
-        <div className="rounded-2xl border border-gray-100 bg-white p-12 text-center text-gray-500 dark:border-gray-800 dark:bg-gray-900">No messages found.</div>
+        <div className="rounded-2xl border border-gray-100 bg-white p-12 text-center text-gray-500 dark:border-gray-800 dark:bg-gray-900">{t('noContacts')}</div>
       ) : (
         <div className="space-y-6">
           {unread.length > 0 && (
             <div>
-              <h3 className="mb-3 text-sm font-semibold text-rose-600 dark:text-rose-400">Unread</h3>
+              <h3 className="mb-3 text-sm font-semibold text-rose-600 dark:text-rose-400">{t('unread')}</h3>
               <div className="space-y-3">
                 {unread.map(item => <ContactCard key={item.id} item={item} onSelect={() => { setSelected(item); if (!item.is_read) markRead(item.id) }} onDelete={handleDelete} />)}
               </div>
@@ -100,7 +102,7 @@ export default function ContactManagement() {
           )}
           {read.length > 0 && (
             <div>
-              <h3 className="mb-3 text-sm font-semibold text-gray-500 dark:text-gray-400">Read</h3>
+              <h3 className="mb-3 text-sm font-semibold text-gray-500 dark:text-gray-400">{t('read')}</h3>
               <div className="space-y-3">
                 {read.map(item => <ContactCard key={item.id} item={item} onSelect={() => setSelected(item)} onDelete={handleDelete} />)}
               </div>
@@ -113,6 +115,7 @@ export default function ContactManagement() {
 }
 
 function ContactCard({ item, onSelect, onDelete }: { item: Contact; onSelect: () => void; onDelete: (id: number) => void }) {
+  const { t } = useLanguage()
   return (
     <div className="flex items-start gap-4 rounded-2xl border border-gray-100 bg-white p-4 shadow-sm hover:shadow-md cursor-pointer transition-all dark:border-gray-800 dark:bg-gray-900" onClick={onSelect}>
       <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full ${item.is_read ? 'bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-400' : 'bg-rose-100 text-rose-700 dark:bg-rose-900/30 dark:text-rose-400'}`}>

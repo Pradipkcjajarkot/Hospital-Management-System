@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Bell, CheckCheck, Trash2, Info, Calendar, Clock, X, AlertTriangle, CheckCircle2 } from "lucide-react"
+import { useLanguage } from '@/contexts/LanguageContext'
 
 interface Notification {
   id: string
@@ -10,6 +11,7 @@ interface Notification {
 }
 
 export default function NotificationsPage() {
+  const { t } = useLanguage()
   const [notifications, setNotifications] = useState<Notification[]>([])
   const [loading, setLoading] = useState(true)
   const [unreadOnly, setUnreadOnly] = useState(false)

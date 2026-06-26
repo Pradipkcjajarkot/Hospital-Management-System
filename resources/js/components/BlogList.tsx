@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react'
 import { Calendar, User, ArrowRight, ChevronLeft } from "lucide-react"
+import { useLanguage } from '@/contexts/LanguageContext'
 
 export default function BlogList({ setPage, pageParams }: { setPage: (p: string, params?: any) => void, pageParams?: any }) {
   const [posts, setPosts] = useState<any[]>([])
   const [selected, setSelected] = useState<any>(null)
   const [loading, setLoading] = useState(true)
   const slug = pageParams?.slug
+  const { t } = useLanguage()
 
   useEffect(() => {
     if (slug) {
@@ -36,7 +38,7 @@ export default function BlogList({ setPage, pageParams }: { setPage: (p: string,
       <div className="px-4 py-12 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-3xl">
           <button onClick={() => { setPage('blog'); setSelected(null) }} className="mb-6 flex items-center gap-2 text-sm text-gray-500 hover:text-rose-600 dark:text-gray-400">
-            <ChevronLeft className="h-4 w-4" /> Back to Blog
+            <ChevronLeft className="h-4 w-4" /> {t('backToBlog')}
           </button>
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white">{selected.title}</h1>
           <div className="mt-3 flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400">
@@ -54,11 +56,11 @@ export default function BlogList({ setPage, pageParams }: { setPage: (p: string,
     <div className="px-4 py-12 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl">
         <div className="text-center">
-          <h1 className="text-4xl font-bold text-gray-900 dark:text-white">Our Blog</h1>
+          <h1 className="text-4xl font-bold text-gray-900 dark:text-white">{t('ourBlog')}</h1>
           <p className="mt-2 text-gray-500 dark:text-gray-400">Health tips, medical insights, and hospital updates</p>
         </div>
         {posts.length === 0 ? (
-          <div className="mt-12 text-center text-gray-500 dark:text-gray-400">No posts published yet.</div>
+          <div className="mt-12 text-center text-gray-500 dark:text-gray-400">{t('noBlogPosts')}</div>
         ) : (
           <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {posts.map((post: any) => (
@@ -71,7 +73,7 @@ export default function BlogList({ setPage, pageParams }: { setPage: (p: string,
                 <div className="mt-4 flex items-center justify-between text-sm">
                   <span className="text-xs text-gray-400">{new Date(post.created_at).toLocaleDateString()}</span>
                   <button onClick={() => setSelected(post)} className="flex items-center gap-1 font-medium text-rose-600 hover:text-rose-700 dark:text-rose-400">
-                    Read More <ArrowRight className="h-3 w-3" />
+                    {t('readMore')} <ArrowRight className="h-3 w-3" />
                   </button>
                 </div>
               </div>

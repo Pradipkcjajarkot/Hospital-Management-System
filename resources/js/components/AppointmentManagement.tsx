@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Search, CalendarRange, Clock, User, Stethoscope, Edit3, Trash2, X, ArrowLeft, Plus, FileText, MessageSquare } from "lucide-react"
+import { useLanguage } from '@/contexts/LanguageContext'
 
 interface Patient {
   id: number; first_name: string; last_name: string; full_name: string
@@ -57,6 +58,7 @@ function AppointmentForm({ form, setForm, saving, onCancel, onSubmit, title, sub
   patients: Patient[]
   doctors: Doctor[]
 }) {
+  const { t } = useLanguage()
   return (
     <div className="space-y-6">
       <div>
@@ -67,45 +69,45 @@ function AppointmentForm({ form, setForm, saving, onCancel, onSubmit, title, sub
         <div className="space-y-6">
           <div className="grid gap-4 sm:grid-cols-2">
             <div>
-              <label className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">Patient <span className="text-rose-500">*</span></label>
+              <label className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">{t('patient')} <span className="text-rose-500">*</span></label>
               <select value={form.patient_id} onChange={(e) => setForm({ ...form, patient_id: e.target.value })} required
                 className="w-full rounded-xl border border-gray-200 bg-gray-50 px-3 py-2.5 text-sm text-gray-900 outline-none focus:outline-2 focus:outline-offset-0 focus:outline-blue-500/25 focus:border-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100">
-                <option value="">Select patient...</option>
+                <option value="">{t('selectPatient')}</option>
                 {patients.map((p) => <option key={p.id} value={p.id}>{p.full_name}</option>)}
               </select>
             </div>
             <div>
-              <label className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">Doctor <span className="text-rose-500">*</span></label>
+              <label className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">{t('doctors')} <span className="text-rose-500">*</span></label>
               <select value={form.doctor_id} onChange={(e) => setForm({ ...form, doctor_id: e.target.value })} required
                 className="w-full rounded-xl border border-gray-200 bg-gray-50 px-3 py-2.5 text-sm text-gray-900 outline-none focus:outline-2 focus:outline-offset-0 focus:outline-blue-500/25 focus:border-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100">
-                <option value="">Select doctor...</option>
+                <option value="">{t('selectDoctor')}</option>
                 {doctors.map((d) => <option key={d.id} value={d.id}>{d.full_name}{d.specialization ? ` (${d.specialization})` : ''}</option>)}
               </select>
             </div>
             <div>
-              <label className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">Date <span className="text-rose-500">*</span></label>
+              <label className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">{t('selectDate')} <span className="text-rose-500">*</span></label>
               <input type="date" value={form.appointment_date} onChange={(e) => setForm({ ...form, appointment_date: e.target.value })} required
                 className="w-full rounded-xl border border-gray-200 bg-gray-50 px-3 py-2.5 text-sm text-gray-900 outline-none focus:outline-2 focus:outline-offset-0 focus:outline-blue-500/25 focus:border-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100" />
             </div>
             <div>
-              <label className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">Time <span className="text-rose-500">*</span></label>
+              <label className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">{t('appointmentTime')} <span className="text-rose-500">*</span></label>
               <input type="time" value={form.appointment_time} onChange={(e) => setForm({ ...form, appointment_time: e.target.value })} required
                 className="w-full rounded-xl border border-gray-200 bg-gray-50 px-3 py-2.5 text-sm text-gray-900 outline-none focus:outline-2 focus:outline-offset-0 focus:outline-blue-500/25 focus:border-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100" />
             </div>
             <div>
-              <label className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">Purpose</label>
+              <label className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">{t('purpose')}</label>
               <input value={form.purpose} onChange={(e) => setForm({ ...form, purpose: e.target.value })} placeholder="e.g. General checkup"
                 className="w-full rounded-xl border border-gray-200 bg-gray-50 px-3 py-2.5 text-sm text-gray-900 outline-none focus:outline-2 focus:outline-offset-0 focus:outline-blue-500/25 focus:border-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100" />
             </div>
             <div>
-              <label className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">Status</label>
+              <label className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">{t('appointmentStatus')}</label>
               <select value={form.status} onChange={(e) => setForm({ ...form, status: e.target.value })}
                 className="w-full rounded-xl border border-gray-200 bg-gray-50 px-3 py-2.5 text-sm text-gray-900 outline-none focus:outline-2 focus:outline-offset-0 focus:outline-blue-500/25 focus:border-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100">
                 {['scheduled', 'confirmed', 'checked_in', 'completed', 'cancelled', 'no_show'].map((s) => <option key={s} value={s}>{s.replace('_', ' ')}</option>)}
               </select>
             </div>
             <div className="sm:col-span-2">
-              <label className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">Notes</label>
+              <label className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">{t('notes')}</label>
               <textarea value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} rows={2} placeholder="Additional notes..."
                 className="w-full rounded-xl border border-gray-200 bg-gray-50 px-3 py-2.5 text-sm text-gray-900 outline-none focus:outline-2 focus:outline-offset-0 focus:outline-blue-500/25 focus:border-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100" />
             </div>
@@ -114,11 +116,11 @@ function AppointmentForm({ form, setForm, saving, onCancel, onSubmit, title, sub
         <div className="mt-8 flex justify-end gap-3 border-t border-gray-100 pt-6 dark:border-gray-800">
           <button type="button" onClick={onCancel}
             className="rounded-xl bg-rose-600 px-5 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-rose-700 dark:bg-rose-500 dark:hover:bg-rose-600">
-            Cancel
+            {t('cancel')}
           </button>
           <button type="submit" disabled={saving}
             className="rounded-xl bg-emerald-600 px-6 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-emerald-700 disabled:opacity-50 dark:bg-emerald-500 dark:hover:bg-emerald-600">
-            {saving ? 'Saving...' : submitLabel}
+            {saving ? t('saving') : submitLabel}
           </button>
         </div>
       </form>
@@ -127,6 +129,7 @@ function AppointmentForm({ form, setForm, saving, onCancel, onSubmit, title, sub
 }
 
 export default function AppointmentManagement() {
+  const { t } = useLanguage()
   const [appointments, setAppointments] = useState<Appointment[]>([])
   const [patients, setPatients] = useState<Patient[]>([])
   const [doctors, setDoctors] = useState<Doctor[]>([])
@@ -199,7 +202,7 @@ export default function AppointmentManagement() {
   }
 
   async function handleDelete(id: number) {
-    if (!confirm('Delete this appointment?')) return
+    if (!confirm(t('deleteConfirm'))) return
     try {
       const res = await fetch(`/api/appointments/${id}`, { method: 'DELETE' })
       if (res.ok) { if (selected?.id === id) setSelected(null); await fetchAppointments() }
@@ -215,7 +218,7 @@ export default function AppointmentManagement() {
     return (
       <div className="space-y-6">
         <button onClick={() => setSelected(null)} className="flex items-center gap-2 text-sm font-medium text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
-          <ArrowLeft className="h-4 w-4" /> Back to all appointments
+          <ArrowLeft className="h-4 w-4" /> {t('backToAll')}
         </button>
 
         <div className="rounded-2xl border border-gray-100 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900">
@@ -252,25 +255,25 @@ export default function AppointmentManagement() {
             <div className="mt-6 grid gap-6 sm:grid-cols-2">
               <div className="rounded-xl bg-gray-50 p-4 dark:bg-gray-800/50">
                 <div className="flex items-center gap-2 text-xs font-medium text-gray-500 dark:text-gray-400">
-                  <User className="h-3.5 w-3.5" /> Patient
+                  <User className="h-3.5 w-3.5" /> {t('patient')}
                 </div>
                 <p className="mt-1 text-sm font-medium text-gray-900 dark:text-white">{a.patient.full_name}</p>
               </div>
               <div className="rounded-xl bg-gray-50 p-4 dark:bg-gray-800/50">
                 <div className="flex items-center gap-2 text-xs font-medium text-gray-500 dark:text-gray-400">
-                  <Stethoscope className="h-3.5 w-3.5" /> Doctor
+                  <Stethoscope className="h-3.5 w-3.5" /> {t('doctors')}
                 </div>
                 <p className="mt-1 text-sm font-medium text-gray-900 dark:text-white">{a.doctor.full_name}{a.doctor.specialization ? ` (${a.doctor.specialization})` : ''}</p>
               </div>
               <div className="rounded-xl bg-gray-50 p-4 dark:bg-gray-800/50">
                 <div className="flex items-center gap-2 text-xs font-medium text-gray-500 dark:text-gray-400">
-                  <FileText className="h-3.5 w-3.5" /> Purpose
+                  <FileText className="h-3.5 w-3.5" /> {t('purpose')}
                 </div>
                 <p className="mt-1 text-sm font-medium text-gray-900 dark:text-white">{a.purpose || '—'}</p>
               </div>
               <div className="rounded-xl bg-gray-50 p-4 dark:bg-gray-800/50">
                 <div className="flex items-center gap-2 text-xs font-medium text-gray-500 dark:text-gray-400">
-                  <CalendarRange className="h-3.5 w-3.5" /> Created
+                  <CalendarRange className="h-3.5 w-3.5" /> {t('userCreated')}
                 </div>
                 <p className="mt-1 text-sm font-medium text-gray-900 dark:text-white">{new Date(a.created_at).toLocaleDateString()}</p>
               </div>
@@ -278,7 +281,7 @@ export default function AppointmentManagement() {
 
             {a.notes && (
               <div className="mt-6">
-                <h3 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Notes</h3>
+                <h3 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">{t('notes')}</h3>
                 <div className="mt-1 flex items-start gap-1.5 text-sm text-gray-600 dark:text-gray-400">
                   <MessageSquare className="mt-0.5 h-4 w-4 shrink-0" />
                   <span>{a.notes}</span>
@@ -298,8 +301,8 @@ export default function AppointmentManagement() {
           <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-gray-50 dark:bg-gray-800">
             <CalendarRange className="h-8 w-8 text-gray-400" />
           </div>
-          <h3 className="mt-4 text-lg font-semibold text-gray-900 dark:text-white">No appointments found</h3>
-          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">Click "New Appointment" to schedule one.</p>
+          <h3 className="mt-4 text-lg font-semibold text-gray-900 dark:text-white">{t('noAppointments')}</h3>
+          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">{t('clickAddToCreate')}</p>
         </div>
       )
     }
@@ -353,8 +356,8 @@ export default function AppointmentManagement() {
         saving={saving}
         onCancel={() => setShowAddForm(false)}
         onSubmit={handleAdd}
-        title="New Appointment"
-        submitLabel="Create Appointment"
+        title={t('newAppointment')}
+        submitLabel={t('save')}
         patients={patients}
         doctors={doctors}
       />
@@ -365,17 +368,17 @@ export default function AppointmentManagement() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Appointments</h1>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{t('appointments')}</h1>
           <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">{appointments.length} total appointments</p>
         </div>
         <button onClick={openAddForm} className="flex items-center gap-2 rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600">
-          <Plus className="h-4 w-4" /> New Appointment
+          <Plus className="h-4 w-4" /> {t('newAppointment')}
         </button>
       </div>
 
       <div className="relative">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 dark:text-gray-500" />
-        <input type="text" placeholder="Search by patient, doctor, purpose or status..."
+        <input type="text" placeholder={t('search')}
           value={search} onChange={(e) => setSearch(e.target.value)}
           className="w-full rounded-xl border border-gray-200 bg-white py-2.5 pl-9 pr-4 text-sm text-gray-900 placeholder-gray-400 outline-none focus:outline-2 focus:outline-offset-0 focus:outline-blue-500/25 focus:border-blue-500 transition-all dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500 dark:focus:border-blue-500 dark:focus:outline-blue-500/25"
         />
@@ -387,7 +390,7 @@ export default function AppointmentManagement() {
         <div className="fixed inset-0 z-40 flex items-start justify-center overflow-y-auto bg-black/30 backdrop-blur-sm py-10">
           <div className="relative w-full max-w-2xl rounded-2xl border border-gray-100 bg-white p-6 shadow-xl dark:border-gray-700 dark:bg-gray-800">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-lg font-bold text-gray-900 dark:text-white">Edit Appointment</h2>
+              <h2 className="text-lg font-bold text-gray-900 dark:text-white">{t('editAppointment')}</h2>
               <button onClick={() => setEditing(null)} className="rounded-lg p-1 text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700"><X className="h-5 w-5" /></button>
             </div>
             <AppointmentForm
@@ -396,8 +399,8 @@ export default function AppointmentManagement() {
               saving={saving}
               onCancel={() => setEditing(null)}
               onSubmit={handleSave}
-              title="Edit Appointment"
-              submitLabel="Update Appointment"
+              title={t('editAppointment')}
+              submitLabel={t('save')}
               patients={patients}
               doctors={doctors}
             />

@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react'
 import { ImageIcon } from "lucide-react"
+import { useLanguage } from '@/contexts/LanguageContext'
 
 export default function GalleryPage() {
   const [items, setItems] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [selected, setSelected] = useState<any>(null)
+  const { t } = useLanguage()
 
   useEffect(() => {
     fetch('/api/public/gallery')
@@ -26,11 +28,11 @@ export default function GalleryPage() {
     <div className="px-4 py-12 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl">
         <div className="text-center">
-          <h1 className="text-4xl font-bold text-gray-900 dark:text-white">Gallery</h1>
+          <h1 className="text-4xl font-bold text-gray-900 dark:text-white">{t('photoGallery')}</h1>
           <p className="mt-2 text-gray-500 dark:text-gray-400">A glimpse into our facilities and events</p>
         </div>
         {items.length === 0 ? (
-          <div className="mt-12 text-center text-gray-500 dark:text-gray-400">No gallery items yet.</div>
+          <div className="mt-12 text-center text-gray-500 dark:text-gray-400">{t('noGallery')}</div>
         ) : (
           <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {items.map((item: any) => (

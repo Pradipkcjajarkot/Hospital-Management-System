@@ -1,3 +1,4 @@
+import { useLanguage } from '@/contexts/LanguageContext'
 import { GalleryVerticalEnd } from "lucide-react"
 
 import { SignUpForm } from "@/components/signup-form"
@@ -8,6 +9,7 @@ interface SignUpPageProps {
 }
 
 export default function SignUpPage({ onLogin, onBack }: SignUpPageProps) {
+  const { t } = useLanguage()
   return (
     <div className="flex min-h-svh flex-col items-center justify-center gap-6 bg-muted p-6 md:p-10">
       <div className="flex w-full max-w-sm flex-col gap-6">
@@ -15,13 +17,13 @@ export default function SignUpPage({ onLogin, onBack }: SignUpPageProps) {
           <div className="flex size-6 items-center justify-center rounded-md bg-primary text-primary-foreground">
             <GalleryVerticalEnd className="size-4" />
           </div>
-          Acme Inc.
+          {t('hospitalName')}
         </a>
         <SignUpForm />
         <p className="text-center text-sm text-muted-foreground">
-          Already have an account?{" "}
+          {t('alreadyHaveAccount')}{" "}
           <button type="button" onClick={onLogin} className="font-medium text-primary underline hover:text-primary/80">
-            Sign in
+            {t('signIn')}
           </button>
         </p>
         {onBack && (
@@ -29,7 +31,7 @@ export default function SignUpPage({ onLogin, onBack }: SignUpPageProps) {
             onClick={onBack}
             className="text-sm text-muted-foreground underline hover:text-foreground"
           >
-            Back to home
+            {t('backToHome')}
           </button>
         )}
       </div>

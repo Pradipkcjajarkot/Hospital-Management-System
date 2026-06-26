@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react'
 import { Search, Stethoscope, Award, Clock, MapPin, Mail, Star, Phone, GraduationCap, BadgeDollarSign, CalendarDays, ArrowLeft, CalendarCheck } from "lucide-react"
+import { useLanguage } from '@/contexts/LanguageContext'
 
 export default function DoctorDirectory({ setPage }: { setPage: (p: string) => void }) {
+  const { t } = useLanguage()
   const [doctors, setDoctors] = useState<any[]>([])
   const [depts, setDepts] = useState<any[]>([])
   const [search, setSearch] = useState('')
@@ -39,7 +41,7 @@ export default function DoctorDirectory({ setPage }: { setPage: (p: string) => v
     const d = selectedDoctor
     return (
       <div className="mx-auto max-w-3xl px-4 py-12">
-        <button onClick={() => setSelectedDoctor(null)} className="mb-6 flex items-center gap-2 text-sm text-gray-500 hover:text-rose-600 transition-all"><ArrowLeft className="h-4 w-4" /> Back to all doctors</button>
+        <button onClick={() => setSelectedDoctor(null)} className="mb-6 flex items-center gap-2 text-sm text-gray-500 hover:text-rose-600 transition-all"><ArrowLeft className="h-4 w-4" /> {t('back')} to all doctors</button>
 
         <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-gray-800">
           <div className="bg-gradient-to-r from-rose-500 to-red-600 p-8 text-white">
@@ -56,7 +58,7 @@ export default function DoctorDirectory({ setPage }: { setPage: (p: string) => v
                 <p className="mt-1 text-rose-100">{d.specialization}</p>
                 <div className="mt-3 flex flex-wrap gap-2">
                   {d.department && <span className="rounded-full bg-white/20 px-3 py-1 text-xs font-medium backdrop-blur-sm">{d.department}</span>}
-                  {d.status === 'active' && <span className="rounded-full bg-green-400/30 px-3 py-1 text-xs font-medium backdrop-blur-sm">Available</span>}
+                  {d.status === 'active' && <span className="rounded-full bg-green-400/30 px-3 py-1 text-xs font-medium backdrop-blur-sm">{t('userActive')}</span>}
                 </div>
               </div>
             </div>
@@ -110,13 +112,13 @@ export default function DoctorDirectory({ setPage }: { setPage: (p: string) => v
               {d.email && (
                 <div className="flex items-start gap-3">
                   <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-indigo-100 text-indigo-600 dark:bg-indigo-900/30 dark:text-indigo-400"><Mail className="h-4 w-4" /></div>
-                  <div><p className="text-sm font-medium text-gray-900 dark:text-white">Email</p><p className="text-sm text-gray-500 dark:text-gray-400">{d.email}</p></div>
+                  <div><p className="text-sm font-medium text-gray-900 dark:text-white">{t('email')}</p><p className="text-sm text-gray-500 dark:text-gray-400">{d.email}</p></div>
                 </div>
               )}
               {d.phone && (
                 <div className="flex items-start gap-3">
                   <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-orange-100 text-orange-600 dark:bg-orange-900/30 dark:text-orange-400"><Phone className="h-4 w-4" /></div>
-                  <div><p className="text-sm font-medium text-gray-900 dark:text-white">Phone</p><p className="text-sm text-gray-500 dark:text-gray-400">{d.phone}</p></div>
+                  <div><p className="text-sm font-medium text-gray-900 dark:text-white">{t('phone')}</p><p className="text-sm text-gray-500 dark:text-gray-400">{d.phone}</p></div>
                 </div>
               )}
               {d.address && (
@@ -130,7 +132,7 @@ export default function DoctorDirectory({ setPage }: { setPage: (p: string) => v
 
           <div className="border-t border-gray-100 p-6 dark:border-gray-700">
             <button onClick={() => { setSelectedDoctor(null); setPage('booking') }} className="flex w-full items-center justify-center gap-2 rounded-xl bg-rose-600 px-6 py-3 text-sm font-medium text-white shadow-sm hover:bg-rose-700 transition-all">
-              <CalendarCheck className="h-4 w-4" /> Book Appointment with Dr. {d.first_name} {d.last_name}
+              <CalendarCheck className="h-4 w-4" /> {t('bookAppointment')} with Dr. {d.first_name} {d.last_name}
             </button>
           </div>
         </div>
@@ -142,7 +144,7 @@ export default function DoctorDirectory({ setPage }: { setPage: (p: string) => v
     <div className="px-4 py-12 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl">
         <div className="text-center">
-          <h1 className="text-4xl font-bold text-gray-900 dark:text-white">Our Doctors</h1>
+          <h1 className="text-4xl font-bold text-gray-900 dark:text-white">{t('ourDoctors')}</h1>
           <p className="mt-2 text-gray-500 dark:text-gray-400">Meet our team of experienced medical professionals</p>
         </div>
 
@@ -150,14 +152,14 @@ export default function DoctorDirectory({ setPage }: { setPage: (p: string) => v
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
             <input
-              type="text" placeholder="Search by name, specialization or department..."
+              type="text" placeholder={t('searchDoctor')}
               value={search} onChange={(e) => setSearch(e.target.value)}
               className="w-full rounded-xl border border-gray-200 py-3 pl-10 pr-4 text-sm focus:border-rose-400 focus:outline-none focus:ring-2 focus:ring-rose-100 dark:border-gray-700 dark:bg-gray-800 dark:text-white dark:focus:border-rose-500 dark:focus:ring-rose-900/30"
             />
           </div>
           <select value={deptFilter} onChange={(e) => setDeptFilter(e.target.value)}
             className="rounded-xl border border-gray-200 px-4 py-3 text-sm focus:border-rose-400 focus:outline-none focus:ring-2 focus:ring-rose-100 dark:border-gray-700 dark:bg-gray-800 dark:text-white">
-            <option value="">All Departments</option>
+            <option value="">{t('ourDepartments')}</option>
             {depts.map((d: any) => (
               <option key={d.id} value={d.id}>{d.name}</option>
             ))}
@@ -165,7 +167,7 @@ export default function DoctorDirectory({ setPage }: { setPage: (p: string) => v
         </div>
 
         {filtered.length === 0 ? (
-          <div className="mt-12 text-center text-gray-500 dark:text-gray-400">No doctors found matching your criteria.</div>
+          <div className="mt-12 text-center text-gray-500 dark:text-gray-400">{t('noDoctors')}</div>
         ) : (
           <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {filtered.map((d: any) => (

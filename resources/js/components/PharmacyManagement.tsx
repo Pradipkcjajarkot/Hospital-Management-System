@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useLanguage } from '@/contexts/LanguageContext'
 import { Search, Pill, Edit3, Trash2, X, ArrowLeft, Plus, DollarSign, Calendar, Activity, Package, AlertTriangle } from "lucide-react"
 
 interface Medicine {
@@ -35,6 +36,7 @@ function MedicineForm({ form, setForm, saving, onCancel, onSubmit, title, submit
   title: string
   submitLabel: string
 }) {
+  const { t } = useLanguage()
   return (
     <div className="space-y-6">
       <div>
@@ -44,7 +46,7 @@ function MedicineForm({ form, setForm, saving, onCancel, onSubmit, title, submit
       <form onSubmit={onSubmit} className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-900">
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="sm:col-span-2">
-            <label className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">Medicine Name <span className="text-rose-500">*</span></label>
+            <label className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">{t('medicineName')} <span className="text-rose-500">*</span></label>
             <input value={form.medicine_name} onChange={(e) => setForm({ ...form, medicine_name: e.target.value })} required placeholder="e.g. Paracetamol"
               className="w-full rounded-xl border border-gray-200 bg-gray-50 px-3 py-2.5 text-sm text-gray-900 outline-none focus:outline-2 focus:outline-offset-0 focus:outline-amber-500/25 focus:border-amber-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100" />
           </div>
@@ -59,7 +61,7 @@ function MedicineForm({ form, setForm, saving, onCancel, onSubmit, title, submit
               className="w-full rounded-xl border border-gray-200 bg-gray-50 px-3 py-2.5 text-sm text-gray-900 outline-none focus:outline-2 focus:outline-offset-0 focus:outline-amber-500/25 focus:border-amber-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100" />
           </div>
           <div>
-            <label className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">Category</label>
+            <label className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">{t('medicineCategory')}</label>
             <input value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} placeholder="e.g. Analgesic"
               className="w-full rounded-xl border border-gray-200 bg-gray-50 px-3 py-2.5 text-sm text-gray-900 outline-none focus:outline-2 focus:outline-offset-0 focus:outline-amber-500/25 focus:border-amber-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100" />
           </div>
@@ -71,12 +73,12 @@ function MedicineForm({ form, setForm, saving, onCancel, onSubmit, title, submit
             </select>
           </div>
           <div>
-            <label className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">Price Per Unit ($) <span className="text-rose-500">*</span></label>
+            <label className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">{t('medicinePrice')} ($) <span className="text-rose-500">*</span></label>
             <input type="number" step="0.01" min="0" value={form.price_per_unit} onChange={(e) => setForm({ ...form, price_per_unit: e.target.value })} required
               className="w-full rounded-xl border border-gray-200 bg-gray-50 px-3 py-2.5 text-sm text-gray-900 outline-none focus:outline-2 focus:outline-offset-0 focus:outline-amber-500/25 focus:border-amber-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100" />
           </div>
           <div>
-            <label className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">Quantity in Stock <span className="text-rose-500">*</span></label>
+            <label className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">{t('medicineStock')} <span className="text-rose-500">*</span></label>
             <input type="number" min="0" value={form.quantity_in_stock} onChange={(e) => setForm({ ...form, quantity_in_stock: e.target.value })} required
               className="w-full rounded-xl border border-gray-200 bg-gray-50 px-3 py-2.5 text-sm text-gray-900 outline-none focus:outline-2 focus:outline-offset-0 focus:outline-amber-500/25 focus:border-amber-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100" />
           </div>
@@ -106,7 +108,7 @@ function MedicineForm({ form, setForm, saving, onCancel, onSubmit, title, submit
         <div className="mt-8 flex justify-end gap-3 border-t border-gray-100 pt-6 dark:border-gray-800">
           <button type="button" onClick={onCancel}
             className="rounded-xl bg-rose-600 px-5 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-rose-700 dark:bg-rose-500 dark:hover:bg-rose-600">
-            Cancel
+            {t('cancel')}
           </button>
           <button type="submit" disabled={saving}
             className="rounded-xl bg-emerald-600 px-6 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-emerald-700 disabled:opacity-50 dark:bg-emerald-500 dark:hover:bg-emerald-600">
@@ -119,6 +121,7 @@ function MedicineForm({ form, setForm, saving, onCancel, onSubmit, title, submit
 }
 
 export default function PharmacyManagement() {
+  const { t } = useLanguage()
   const [medicines, setMedicines] = useState<Medicine[]>([])
   const [search, setSearch] = useState('')
   const [selected, setSelected] = useState<Medicine | null>(null)
@@ -244,7 +247,7 @@ export default function PharmacyManagement() {
               </div>
               <div className="rounded-xl bg-gray-50 p-4 dark:bg-gray-800/50">
                 <div className="flex items-center gap-2 text-xs font-medium text-gray-500 dark:text-gray-400">
-                  <Activity className="h-3.5 w-3.5" /> Category
+                  <Activity className="h-3.5 w-3.5" /> {t('medicineCategory')}
                 </div>
                 <p className="mt-1 text-sm font-medium text-gray-900 dark:text-white">{m.category || '—'}</p>
               </div>
@@ -256,13 +259,13 @@ export default function PharmacyManagement() {
               </div>
               <div className="rounded-xl bg-gray-50 p-4 dark:bg-gray-800/50">
                 <div className="flex items-center gap-2 text-xs font-medium text-gray-500 dark:text-gray-400">
-                  <DollarSign className="h-3.5 w-3.5" /> Price Per Unit
+                  <DollarSign className="h-3.5 w-3.5" /> {t('medicinePrice')}
                 </div>
                 <p className="mt-1 text-sm font-medium text-gray-900 dark:text-white">${Number(m.price_per_unit).toFixed(2)}</p>
               </div>
               <div className="rounded-xl bg-gray-50 p-4 dark:bg-gray-800/50">
                 <div className="flex items-center gap-2 text-xs font-medium text-gray-500 dark:text-gray-400">
-                  <Package className="h-3.5 w-3.5" /> Quantity in Stock
+                  <Package className="h-3.5 w-3.5" /> {t('medicineStock')}
                 </div>
                 <p className={`mt-1 text-sm font-medium ${m.quantity_in_stock <= m.reorder_level ? 'text-amber-600 dark:text-amber-400' : 'text-gray-900 dark:text-white'}`}>
                   {m.quantity_in_stock} {m.unit}s
@@ -301,8 +304,8 @@ export default function PharmacyManagement() {
           <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-gray-50 dark:bg-gray-800">
             <Pill className="h-8 w-8 text-gray-400" />
           </div>
-          <h3 className="mt-4 text-lg font-semibold text-gray-900 dark:text-white">No medicines found</h3>
-          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">Click "Add Medicine" to create one.</p>
+          <h3 className="mt-4 text-lg font-semibold text-gray-900 dark:text-white">{t('noMedicines')}</h3>
+          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">{t('clickAddMedicineToCreate') || `Click "${t('addMedicine')}" to create one.`}</p>
         </div>
       )
     }
@@ -350,7 +353,7 @@ export default function PharmacyManagement() {
       <MedicineForm
         form={form} setForm={setForm} saving={saving}
         onCancel={() => setShowAddForm(false)} onSubmit={handleAdd}
-        title="Add New Medicine" submitLabel="Create Medicine"
+        title={t('addMedicine')} submitLabel={t('save')}
       />
     )
   }
@@ -359,11 +362,11 @@ export default function PharmacyManagement() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Pharmacy</h1>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{t('pharmacyTitle')}</h1>
           <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">{medicines.length} medicines</p>
         </div>
         <button onClick={openAddForm} className="flex items-center gap-2 rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600">
-          <Plus className="h-4 w-4" /> Add Medicine
+          <Plus className="h-4 w-4" /> {t('addMedicine')}
         </button>
       </div>
 
@@ -388,7 +391,7 @@ export default function PharmacyManagement() {
 
       <div className="relative">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 dark:text-gray-500" />
-        <input type="text" placeholder="Search by name, brand, generic name or category..."
+        <input type="text" placeholder={t('search')}
           value={search} onChange={(e) => setSearch(e.target.value)}
           className="w-full rounded-xl border border-gray-200 bg-white py-2.5 pl-9 pr-4 text-sm text-gray-900 placeholder-gray-400 outline-none focus:outline-2 focus:outline-offset-0 focus:outline-amber-500/25 focus:border-amber-500 transition-all dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500 dark:focus:border-amber-500 dark:focus:outline-amber-500/25"
         />
@@ -400,13 +403,13 @@ export default function PharmacyManagement() {
         <div className="fixed inset-0 z-40 flex items-start justify-center overflow-y-auto bg-black/30 backdrop-blur-sm py-10">
           <div className="relative w-full max-w-2xl rounded-2xl border border-gray-100 bg-white p-6 shadow-xl dark:border-gray-700 dark:bg-gray-800">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-lg font-bold text-gray-900 dark:text-white">Edit Medicine</h2>
+              <h2 className="text-lg font-bold text-gray-900 dark:text-white">{t('editMedicine')}</h2>
               <button onClick={() => setEditing(null)} className="rounded-lg p-1 text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700"><X className="h-5 w-5" /></button>
             </div>
             <MedicineForm
               form={form} setForm={setForm} saving={saving}
               onCancel={() => setEditing(null)} onSubmit={handleSave}
-              title="Edit Medicine" submitLabel="Update Medicine"
+              title={t('editMedicine')} submitLabel={t('save')}
             />
           </div>
         </div>

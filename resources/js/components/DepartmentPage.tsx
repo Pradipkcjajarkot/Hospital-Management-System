@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react'
 import { Building2, Stethoscope, Users } from "lucide-react"
+import { useLanguage } from '@/contexts/LanguageContext'
 
 export default function DepartmentPage() {
   const [departments, setDepartments] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
+  const { t } = useLanguage()
 
   useEffect(() => {
     fetch('/api/public/departments')
@@ -25,7 +27,7 @@ export default function DepartmentPage() {
     <div className="px-4 py-12 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl">
         <div className="text-center">
-          <h1 className="text-4xl font-bold text-gray-900 dark:text-white">Our Departments</h1>
+          <h1 className="text-4xl font-bold text-gray-900 dark:text-white">{t('ourDepartments')}</h1>
           <p className="mt-2 text-gray-500 dark:text-gray-400">Comprehensive medical care across all specialties</p>
         </div>
         <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">

@@ -1,6 +1,8 @@
 import { type FormEvent, useRef, useState } from 'react'
+import { useLanguage } from '@/contexts/LanguageContext'
 
 export function SignUpForm() {
+    const { t } = useLanguage()
     const [step, setStep] = useState<'form' | 'otp'>('form')
     const [username, setUsername] = useState('')
     const [gmail, setGmail] = useState('')
@@ -21,7 +23,7 @@ export function SignUpForm() {
         setError('')
         setSuccess('')
         if (password !== confirmPassword) {
-            setError('Passwords do not match')
+            setError(t('passwordsDoNotMatch'))
             setLoading(false)
             return
         }
@@ -36,7 +38,7 @@ export function SignUpForm() {
             setStep('otp')
             setTimeout(() => inputRefs.current[0]?.focus(), 100)
         } catch (err: unknown) {
-            setError(err instanceof Error ? err.message : 'Something went wrong')
+            setError(err instanceof Error ? err.message : t('somethingWentWrong'))
         } finally {
             setLoading(false)
         }
@@ -73,7 +75,7 @@ export function SignUpForm() {
             if (!res.ok) throw new Error(data.message)
             window.location.href = '/dashboard'
         } catch (err: unknown) {
-            setError(err instanceof Error ? err.message : 'Something went wrong')
+            setError(err instanceof Error ? err.message : t('somethingWentWrong'))
             setCode(['', '', '', ''])
             inputRefs.current[0]?.focus()
         } finally {
@@ -90,9 +92,9 @@ export function SignUpForm() {
                             <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 5.25a3 3 0 0 1 3 3m3 0a6 6 0 0 1-7.029 5.912c-.563-.097-1.159.026-1.563.43L10.5 17.25H8.25v2.25H6v2.25H2.25v-2.818c0-.597.237-1.17.659-1.591l6.499-6.499c.404-.404.527-1 .43-1.563A6 6 0 1 1 21.75 8.25Z" />
                         </svg>
                     </div>
-                    <h1 className="text-xl font-bold text-gray-800">Verify Email</h1>
+                    <h1 className="text-xl font-bold text-gray-800">{t('verifyEmail')}</h1>
                     <p className="text-center text-sm text-gray-500">
-                        A 4-digit code was sent to<br />
+                        {t('otpSent')}<br />
                         <span className="font-medium text-gray-700">{gmail}</span>
                     </p>
                 </div>
@@ -115,10 +117,10 @@ export function SignUpForm() {
                     ))}
                 </div>
                 <button type="submit" disabled={loading} className="rounded-lg bg-red-600 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-red-700 disabled:opacity-50">
-                    {loading ? 'Verifying...' : 'Verify & Sign in'}
+                    {loading ? t('verifying') : t('verifySignIn')}
                 </button>
                 <button type="button" disabled={loading} onClick={() => setStep('form')} className="text-sm text-gray-500 underline hover:text-gray-700">
-                    Back to sign up
+                    {t('backToSignUp')}
                 </button>
             </form>
         )
@@ -132,14 +134,14 @@ export function SignUpForm() {
                         <path strokeLinecap="round" strokeLinejoin="round" d="M18 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0ZM3 19.235v-.11a6.375 6.375 0 0 1 12.75 0v.109A12.318 12.318 0 0 1 9.374 21c-2.331 0-4.512-.645-6.374-1.766Z" />
                     </svg>
                 </div>
-                <h1 className="text-xl font-bold text-gray-800">Create Account</h1>
-                <p className="text-sm text-gray-500">Sign up to get started</p>
+                <h1 className="text-xl font-bold text-gray-800">{t('createAccount')}</h1>
+                <p className="text-sm text-gray-500">{t('signupSubtitle')}</p>
             </div>
             {error && <p className="text-center text-sm text-red-600">{error}</p>}
             {success && <p className="text-center text-sm text-green-600">{success}</p>}
             <div className="flex flex-col gap-4">
                 <div className="flex flex-col gap-2">
-                    <label htmlFor="signup-username" className="text-sm font-medium text-gray-700">Username</label>
+                    <label htmlFor="signup-username" className="text-sm font-medium text-gray-700">{t('username')}</label>
                     <input
                         id="signup-username"
                         type="text"
@@ -151,7 +153,7 @@ export function SignUpForm() {
                     />
                 </div>
                 <div className="flex flex-col gap-2">
-                    <label htmlFor="signup-gmail" className="text-sm font-medium text-gray-700">Gmail</label>
+                    <label htmlFor="signup-gmail" className="text-sm font-medium text-gray-700">{t('gmail')}</label>
                     <input
                         id="signup-gmail"
                         type="email"
@@ -163,7 +165,7 @@ export function SignUpForm() {
                     />
                 </div>
                 <div className="flex flex-col gap-2">
-                    <label htmlFor="signup-phone" className="text-sm font-medium text-gray-700">Phone Number</label>
+                    <label htmlFor="signup-phone" className="text-sm font-medium text-gray-700">{t('phoneNumber')}</label>
                     <input
                         id="signup-phone"
                         type="tel"
@@ -175,7 +177,7 @@ export function SignUpForm() {
                     />
                 </div>
                 <div className="flex flex-col gap-2">
-                    <label htmlFor="signup-password" className="text-sm font-medium text-gray-700">Password</label>
+                    <label htmlFor="signup-password" className="text-sm font-medium text-gray-700">{t('password')}</label>
                     <div className="relative">
                         <input
                             id="signup-password"
@@ -201,7 +203,7 @@ export function SignUpForm() {
                     </div>
                 </div>
                 <div className="flex flex-col gap-2">
-                    <label htmlFor="signup-confirm-password" className="text-sm font-medium text-gray-700">Confirm Password</label>
+                    <label htmlFor="signup-confirm-password" className="text-sm font-medium text-gray-700">{t('confirmPassword')}</label>
                     <div className="relative">
                         <input
                             id="signup-confirm-password"
@@ -227,7 +229,7 @@ export function SignUpForm() {
                     </div>
                 </div>
                 <button type="submit" disabled={loading} className="rounded-lg bg-red-600 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-red-700 disabled:opacity-50">
-                    {loading ? 'Creating account...' : 'Sign Up'}
+                    {loading ? t('creatingAccount') : t('signUp')}
                 </button>
             </div>
         </form>

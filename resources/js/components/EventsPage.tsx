@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react'
 import { Calendar, Clock, MapPin } from "lucide-react"
+import { useLanguage } from '@/contexts/LanguageContext'
 
 export default function EventsPage() {
   const [events, setEvents] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
+  const { t } = useLanguage()
 
   useEffect(() => {
     fetch('/api/public/events')
@@ -28,13 +30,13 @@ export default function EventsPage() {
     <div className="px-4 py-12 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl">
         <div className="text-center">
-          <h1 className="text-4xl font-bold text-gray-900 dark:text-white">Events</h1>
+          <h1 className="text-4xl font-bold text-gray-900 dark:text-white">{t('events')}</h1>
           <p className="mt-2 text-gray-500 dark:text-gray-400">Health camps, workshops, and community programs</p>
         </div>
 
         {upcoming.length > 0 && (
           <>
-            <h2 className="mt-10 text-xl font-semibold text-gray-900 dark:text-white">Upcoming Events</h2>
+            <h2 className="mt-10 text-xl font-semibold text-gray-900 dark:text-white">{t('upcomingEvents')}</h2>
             <div className="mt-4 grid gap-4 sm:grid-cols-2">
               {upcoming.map((e: any) => (
                 <EventCard key={e.id} event={e} />
@@ -55,7 +57,7 @@ export default function EventsPage() {
         )}
 
         {events.length === 0 && (
-          <div className="mt-12 text-center text-gray-500 dark:text-gray-400">No events scheduled at this time.</div>
+          <div className="mt-12 text-center text-gray-500 dark:text-gray-400">{t('noEvents')}</div>
         )}
       </div>
     </div>

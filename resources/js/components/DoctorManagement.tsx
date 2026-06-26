@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { Search, Edit3, Trash2, X, Phone, Mail, User, ArrowLeft, GraduationCap, Stethoscope, BadgeDollarSign, Clock, MapPin, Plus, Camera } from "lucide-react"
+import { useLanguage } from '@/contexts/LanguageContext'
 
 interface Doctor {
   id: number
@@ -43,6 +44,7 @@ function DoctorForm({ form, setForm, saving, onCancel, onSubmit, title, submitLa
   title: string
   submitLabel: string
 }) {
+  const { t } = useLanguage()
   return (
     <div className="space-y-6">
       <div>
@@ -52,11 +54,11 @@ function DoctorForm({ form, setForm, saving, onCancel, onSubmit, title, submitLa
       <form onSubmit={onSubmit} className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-900">
         <div className="space-y-6">
           <div>
-            <h3 className="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">Personal Information</h3>
+            <h3 className="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">{t('personalInfo')}</h3>
             <div className="mt-3 grid gap-4 sm:grid-cols-2">
               {[
-                { label: 'First Name', key: 'first_name', required: true },
-                { label: 'Last Name', key: 'last_name', required: true },
+                { label: t('doctorFirstName'), key: 'first_name', required: true },
+                { label: t('doctorLastName'), key: 'last_name', required: true },
               ].map((f) => (
                 <div key={f.key}>
                   <label className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">{f.label}{f.required && <span className="text-rose-500 ml-0.5">*</span>}</label>
@@ -65,18 +67,18 @@ function DoctorForm({ form, setForm, saving, onCancel, onSubmit, title, submitLa
                 </div>
               ))}
               {[
-                { label: 'Email', key: 'email', type: 'email', required: true },
-                { label: 'Phone', key: 'phone' },
-                { label: 'Specialization', key: 'specialization' },
-                { label: 'Qualification', key: 'qualification' },
-                { label: 'License Number', key: 'license_number' },
-                { label: 'Department', key: 'department' },
-                { label: 'Experience (years)', key: 'experience_years', type: 'number' },
-                { label: 'Consultation Fee', key: 'consultation_fee', type: 'number' },
-                { label: 'Available Days', key: 'available_days', placeholder: 'e.g. Mon-Fri' },
-                { label: 'Available From', key: 'available_time_start', type: 'time' },
-                { label: 'Available To', key: 'available_time_end', type: 'time' },
-                { label: 'Status', key: 'status', type: 'select', options: ['active', 'inactive', 'on_leave'] },
+                { label: t('doctorEmail'), key: 'email', type: 'email', required: true },
+                { label: t('doctorPhone'), key: 'phone' },
+                { label: t('doctorSpecialization'), key: 'specialization' },
+                { label: t('doctorQualification'), key: 'qualification' },
+                { label: t('doctorLicenseNumber'), key: 'license_number' },
+                { label: t('doctorDepartment'), key: 'department' },
+                { label: t('doctorExperience'), key: 'experience_years', type: 'number' },
+                { label: t('doctorConsultationFee'), key: 'consultation_fee', type: 'number' },
+                { label: t('doctorAvailableDays'), key: 'available_days', placeholder: t('egMonFri') },
+                { label: t('doctorAvailableFrom'), key: 'available_time_start', type: 'time' },
+                { label: t('doctorAvailableTo'), key: 'available_time_end', type: 'time' },
+                { label: t('userStatus'), key: 'status', type: 'select', options: ['active', 'inactive', 'on_leave'] },
               ].map((f) => (
                 <div key={f.key}>
                   <label className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">{f.label}{f.required && <span className="text-rose-500 ml-0.5">*</span>}</label>
@@ -95,13 +97,13 @@ function DoctorForm({ form, setForm, saving, onCancel, onSubmit, title, submitLa
           </div>
 
           <div className="border-t border-gray-100 pt-6 dark:border-gray-800">
-            <h3 className="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">Address</h3>
+            <h3 className="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">{t('address')}</h3>
             <div className="mt-3">
               <textarea value={form.address} onChange={(e) => setForm({ ...form, address: e.target.value })} rows={2}
                 className="w-full rounded-xl border border-gray-200 bg-gray-50 px-3 py-2.5 text-sm text-gray-900 outline-none focus:outline-2 focus:outline-offset-0 focus:outline-blue-500/25 focus:border-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100" />
             </div>
             <div className="mt-3 grid gap-4 sm:grid-cols-3">
-              {[{ label: 'City', key: 'city' }, { label: 'State', key: 'state' }, { label: 'Pincode', key: 'pincode' }].map((f) => (
+              {[{ label: t('city'), key: 'city' }, { label: t('state'), key: 'state' }, { label: t('pincode'), key: 'pincode' }].map((f) => (
                 <div key={f.key}>
                   <label className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">{f.label}</label>
                   <input value={(form as any)[f.key]} onChange={(e) => setForm({ ...form, [f.key]: e.target.value })}
@@ -115,11 +117,11 @@ function DoctorForm({ form, setForm, saving, onCancel, onSubmit, title, submitLa
         <div className="mt-8 flex justify-end gap-3 border-t border-gray-100 pt-6 dark:border-gray-800">
           <button type="button" onClick={onCancel}
             className="rounded-xl bg-rose-600 px-5 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-rose-700 dark:bg-rose-500 dark:hover:bg-rose-600">
-            Cancel
+            {t('cancel')}
           </button>
           <button type="submit" disabled={saving}
             className="rounded-xl bg-emerald-600 px-6 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-emerald-700 disabled:opacity-50 dark:bg-emerald-500 dark:hover:bg-emerald-600">
-            {saving ? 'Saving...' : submitLabel}
+            {saving ? t('saving') : submitLabel}
           </button>
         </div>
       </form>
@@ -128,6 +130,7 @@ function DoctorForm({ form, setForm, saving, onCancel, onSubmit, title, submitLa
 }
 
 export default function DoctorManagement() {
+  const { t } = useLanguage()
   const [doctors, setDoctors] = useState<Doctor[]>([])
   const [search, setSearch] = useState('')
   const [selected, setSelected] = useState<Doctor | null>(null)
@@ -221,7 +224,7 @@ export default function DoctorManagement() {
   }
 
   async function handleDelete(id: number) {
-    if (!confirm('Delete this doctor?')) return
+    if (!confirm(t('deleteConfirm'))) return
     try {
       const res = await fetch(`/api/doctors/${id}`, { method: 'DELETE' })
       if (res.ok) {
@@ -255,7 +258,7 @@ export default function DoctorManagement() {
     return (
       <div className="space-y-6">
         <button onClick={() => setSelected(null)} className="flex items-center gap-2 text-sm font-medium text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
-          <ArrowLeft className="h-4 w-4" /> Back to all doctors
+          <ArrowLeft className="h-4 w-4" /> {t('backToAll')}
         </button>
 
         <div className="rounded-2xl border border-gray-100 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900">
@@ -304,25 +307,25 @@ export default function DoctorManagement() {
             <div className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
               <div className="rounded-xl bg-gray-50 p-4 dark:bg-gray-800/50">
                 <div className="flex items-center gap-2 text-xs font-medium text-gray-500 dark:text-gray-400">
-                  <Stethoscope className="h-3.5 w-3.5" /> Specialization
+                  <Stethoscope className="h-3.5 w-3.5" /> {t('doctorSpecialization')}
                 </div>
                 <p className="mt-1 text-sm font-medium text-gray-900 dark:text-white">{d.specialization || '—'}</p>
               </div>
               <div className="rounded-xl bg-gray-50 p-4 dark:bg-gray-800/50">
                 <div className="flex items-center gap-2 text-xs font-medium text-gray-500 dark:text-gray-400">
-                  <GraduationCap className="h-3.5 w-3.5" /> Qualification
+                  <GraduationCap className="h-3.5 w-3.5" /> {t('doctorQualification')}
                 </div>
                 <p className="mt-1 text-sm font-medium text-gray-900 dark:text-white">{d.qualification || '—'}</p>
               </div>
               <div className="rounded-xl bg-gray-50 p-4 dark:bg-gray-800/50">
                 <div className="flex items-center gap-2 text-xs font-medium text-gray-500 dark:text-gray-400">
-                  <BadgeDollarSign className="h-3.5 w-3.5" /> Consultation Fee
+                  <BadgeDollarSign className="h-3.5 w-3.5" /> {t('doctorConsultationFee')}
                 </div>
                 <p className="mt-1 text-sm font-medium text-gray-900 dark:text-white">{d.consultation_fee ? `$${d.consultation_fee}` : '—'}</p>
               </div>
               <div className="rounded-xl bg-gray-50 p-4 dark:bg-gray-800/50">
                 <div className="flex items-center gap-2 text-xs font-medium text-gray-500 dark:text-gray-400">
-                  <Clock className="h-3.5 w-3.5" /> Availability
+                  <Clock className="h-3.5 w-3.5" /> {t('doctorSchedule')}
                 </div>
                 <p className="mt-1 text-sm font-medium text-gray-900 dark:text-white">
                   {d.available_days ? `${d.available_days}${d.available_time_start ? ` ${d.available_time_start}-${d.available_time_end || ''}` : ''}` : '—'}
@@ -332,26 +335,26 @@ export default function DoctorManagement() {
 
             <div className="mt-6 grid gap-6 sm:grid-cols-2">
               <div>
-                <h3 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Department</h3>
+                <h3 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">{t('doctorDepartment')}</h3>
                 <p className="mt-1 text-sm text-gray-900 dark:text-white">{d.department || '—'}</p>
               </div>
               <div>
-                <h3 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">License Number</h3>
+                <h3 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">{t('doctorLicenseNumber')}</h3>
                 <p className="mt-1 text-sm text-gray-900 dark:text-white">{d.license_number || '—'}</p>
               </div>
               <div>
-                <h3 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Experience</h3>
+                <h3 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">{t('doctorExperience')}</h3>
                 <p className="mt-1 text-sm text-gray-900 dark:text-white">{d.experience_years ? `${d.experience_years} years` : '—'}</p>
               </div>
               <div>
-                <h3 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Registered On</h3>
+                <h3 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">{t('registeredOn')}</h3>
                 <p className="mt-1 text-sm text-gray-900 dark:text-white">{new Date(d.created_at).toLocaleDateString()}</p>
               </div>
             </div>
 
             {(d.address || d.city || d.state || d.pincode) && (
               <div className="mt-6">
-                <h3 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Address</h3>
+                <h3 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">{t('address')}</h3>
                 <div className="mt-1 flex items-start gap-1.5 text-sm text-gray-600 dark:text-gray-400">
                   <MapPin className="mt-0.5 h-4 w-4 shrink-0" />
                   <span>{[d.address, d.city, d.state, d.pincode].filter(Boolean).join(', ')}</span>
@@ -371,8 +374,8 @@ export default function DoctorManagement() {
           <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-gray-50 dark:bg-gray-800">
             <User className="h-8 w-8 text-gray-400" />
           </div>
-          <h3 className="mt-4 text-lg font-semibold text-gray-900 dark:text-white">No doctors found</h3>
-          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">Click "Add Doctor" to register a new doctor.</p>
+          <h3 className="mt-4 text-lg font-semibold text-gray-900 dark:text-white">{t('noDoctors')}</h3>
+          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">{t('clickAddToCreate')}</p>
         </div>
       )
     }
@@ -437,8 +440,8 @@ export default function DoctorManagement() {
         saving={saving}
         onCancel={() => setShowAddForm(false)}
         onSubmit={handleAdd}
-        title="Add New Doctor"
-        submitLabel="Add Doctor"
+        title={t('addDoctor')}
+        submitLabel={t('addDoctor')}
       />
     )
   }
@@ -447,17 +450,17 @@ export default function DoctorManagement() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Doctors</h1>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{t('doctors')}</h1>
           <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">{doctors.length} registered doctors</p>
         </div>
         <button onClick={openAddForm} className="flex items-center gap-2 rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600">
-          <Plus className="h-4 w-4" /> Add Doctor
+          <Plus className="h-4 w-4" /> {t('addDoctor')}
         </button>
       </div>
 
       <div className="relative">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 dark:text-gray-500" />
-        <input type="text" placeholder="Search by name, email, phone or specialization..."
+        <input type="text" placeholder={t('search')}
           value={search} onChange={(e) => setSearch(e.target.value)}
           className="w-full rounded-xl border border-gray-200 bg-white py-2.5 pl-9 pr-4 text-sm text-gray-900 placeholder-gray-400 outline-none focus:outline-2 focus:outline-offset-0 focus:outline-violet-500/25 focus:border-violet-500 transition-all dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500 dark:focus:border-violet-500 dark:focus:outline-violet-500/25"
         />
@@ -469,7 +472,7 @@ export default function DoctorManagement() {
         <div className="fixed inset-0 z-40 flex items-start justify-center overflow-y-auto bg-black/30 backdrop-blur-sm py-10">
           <div className="relative w-full max-w-2xl rounded-2xl border border-gray-100 bg-white p-6 shadow-xl dark:border-gray-700 dark:bg-gray-800">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-lg font-bold text-gray-900 dark:text-white">Edit Doctor</h2>
+              <h2 className="text-lg font-bold text-gray-900 dark:text-white">{t('editDoctor')}</h2>
               <button onClick={() => setEditing(null)} className="rounded-lg p-1 text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700"><X className="h-5 w-5" /></button>
             </div>
 
@@ -483,12 +486,12 @@ export default function DoctorManagement() {
                   )}
                 </div>
                 <div className="flex-1">
-                  <p className="text-sm font-medium text-gray-900 dark:text-white">Doctor Photo</p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">PNG, JPG or WebP (max 2MB)</p>
+                  <p className="text-sm font-medium text-gray-900 dark:text-white">{t('doctorPhoto')}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">{t('photoFormatHint')}</p>
                 </div>
                 <button onClick={() => photoInputRef.current?.click()} disabled={photoUploading}
                   className="flex items-center gap-2 rounded-xl bg-rose-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-rose-700 disabled:opacity-50 transition-all">
-                  <Camera className="h-4 w-4" /> {photoUploading ? 'Uploading...' : 'Upload Photo'}
+                  <Camera className="h-4 w-4" /> {photoUploading ? t('uploading') : t('uploadPhoto')}
                 </button>
               </div>
             </div>
@@ -499,8 +502,8 @@ export default function DoctorManagement() {
               saving={saving}
               onCancel={() => setEditing(null)}
               onSubmit={handleSave}
-              title="Edit Doctor"
-              submitLabel="Update Doctor"
+              title={t('editDoctor')}
+              submitLabel={t('save')}
             />
           </div>
         </div>
@@ -512,7 +515,7 @@ export default function DoctorManagement() {
           <div className="rounded-2xl bg-white p-6 shadow-xl dark:bg-gray-800">
             <div className="flex items-center gap-3">
               <div className="h-5 w-5 animate-spin rounded-full border-2 border-rose-600 border-t-transparent" />
-              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Uploading photo...</span>
+              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{t('uploadingPhoto')}</span>
             </div>
           </div>
         </div>

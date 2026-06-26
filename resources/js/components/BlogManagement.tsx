@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useLanguage } from '@/contexts/LanguageContext'
 import { Search, Plus, X, FileText, Calendar, User } from "lucide-react"
 
 interface Post {
@@ -14,6 +15,7 @@ interface Post {
 }
 
 export default function BlogManagement() {
+  const { t } = useLanguage()
   const [posts, setPosts] = useState<Post[]>([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
@@ -60,17 +62,17 @@ export default function BlogManagement() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <div><h1 className="text-2xl font-bold text-gray-900 dark:text-white">Blog Management</h1><p className="mt-1 text-sm text-gray-500 dark:text-gray-400">{posts.length} posts</p></div>
-        <button onClick={() => { setShowAdd(true); setEditing(null); setForm({ title: '', content: '', excerpt: '', category: '', author: '', status: 'draft' }) }} className="flex items-center gap-2 rounded-xl bg-rose-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-rose-700 transition-all"><Plus className="h-4 w-4" /> New Post</button>
+        <div><h1 className="text-2xl font-bold text-gray-900 dark:text-white">{t('blogManagement')}</h1><p className="mt-1 text-sm text-gray-500 dark:text-gray-400">{posts.length} {t('posts')}</p></div>
+        <button onClick={() => { setShowAdd(true); setEditing(null); setForm({ title: '', content: '', excerpt: '', category: '', author: '', status: 'draft' }) }} className="flex items-center gap-2 rounded-xl bg-rose-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-rose-700 transition-all"><Plus className="h-4 w-4" /> {t('addPost')}</button>
       </div>
 
       <div className="relative">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-        <input type="text" placeholder="Search posts..." value={search} onChange={e => setSearch(e.target.value)} className="w-full rounded-xl border border-gray-200 py-2.5 pl-10 pr-4 text-sm focus:border-rose-400 focus:outline-none focus:ring-2 focus:ring-rose-100 dark:border-gray-700 dark:bg-gray-800 dark:text-white" />
+        <input type="text" placeholder={t('search')} value={search} onChange={e => setSearch(e.target.value)} className="w-full rounded-xl border border-gray-200 py-2.5 pl-10 pr-4 text-sm focus:border-rose-400 focus:outline-none focus:ring-2 focus:ring-rose-100 dark:border-gray-700 dark:bg-gray-800 dark:text-white" />
       </div>
 
       {filtered.length === 0 ? (
-        <div className="rounded-2xl border border-gray-100 bg-white p-12 text-center text-gray-500 dark:border-gray-800 dark:bg-gray-900">No posts found.</div>
+        <div className="rounded-2xl border border-gray-100 bg-white p-12 text-center text-gray-500 dark:border-gray-800 dark:bg-gray-900">{t('noPosts')}</div>
       ) : (
         <div className="grid gap-4 sm:grid-cols-2">
           {filtered.map(post => (
@@ -78,7 +80,7 @@ export default function BlogManagement() {
               <div className="flex items-start justify-between">
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
-                    <span className={`inline-block rounded-full px-2.5 py-0.5 text-xs font-medium ${post.status === 'published' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' : 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400'}`}>{post.status}</span>
+                    <span className={`inline-block rounded-full px-2.5 py-0.5 text-xs font-medium ${post.status === 'published' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' : 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400'}`}>{post.status === 'published' ? t('published') : t('draft')}</span>
                     {post.category && <span className="text-xs text-gray-400 bg-gray-100 dark:bg-gray-800 px-2 py-0.5 rounded-full">{post.category}</span>}
                   </div>
                   <h3 className="mt-2 font-semibold text-gray-900 dark:text-white line-clamp-1">{post.title}</h3>
@@ -90,8 +92,8 @@ export default function BlogManagement() {
                 </div>
               </div>
               <div className="mt-3 flex gap-2">
-                <button onClick={() => openEdit(post)} className="rounded-lg px-3 py-1.5 text-xs font-medium text-rose-600 hover:bg-rose-50 dark:text-rose-400 dark:hover:bg-rose-900/20">Edit</button>
-                <button onClick={() => handleDelete(post.id)} className="rounded-lg px-3 py-1.5 text-xs font-medium text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20">Delete</button>
+                <button onClick={() => openEdit(post)} className="rounded-lg px-3 py-1.5 text-xs font-medium text-rose-600 hover:bg-rose-50 dark:text-rose-400 dark:hover:bg-rose-900/20">{t('editPost')}</button>
+                <button onClick={() => handleDelete(post.id)} className="rounded-lg px-3 py-1.5 text-xs font-medium text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20">{t('delete')}</button>
               </div>
             </div>
           ))}
@@ -102,21 +104,21 @@ export default function BlogManagement() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm p-4" onClick={() => { if (!saving) { setShowAdd(false); setEditing(null) } }}>
           <div className="w-full max-w-2xl rounded-2xl bg-white p-6 shadow-xl dark:bg-gray-800" onClick={e => e.stopPropagation()}>
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">{editing ? 'Edit Post' : 'New Post'}</h2>
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">{editing ? t('editPost') : t('addPost')}</h2>
               <button onClick={() => { setShowAdd(false); setEditing(null) }} className="rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700"><X className="h-5 w-5" /></button>
             </div>
             <form onSubmit={handleSubmit} className="space-y-4">
-              <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Title *</label><input type="text" required value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} className="mt-1 w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm focus:border-rose-400 focus:outline-none focus:ring-2 focus:ring-rose-100 dark:border-gray-700 dark:bg-gray-800 dark:text-white" /></div>
+              <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300">{t('postTitle')} *</label><input type="text" required value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} className="mt-1 w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm focus:border-rose-400 focus:outline-none focus:ring-2 focus:ring-rose-100 dark:border-gray-700 dark:bg-gray-800 dark:text-white" /></div>
               <div className="grid gap-4 sm:grid-cols-2">
-                <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Category</label><input type="text" value={form.category} onChange={e => setForm({ ...form, category: e.target.value })} className="mt-1 w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm focus:border-rose-400 focus:outline-none focus:ring-2 focus:ring-rose-100 dark:border-gray-700 dark:bg-gray-800 dark:text-white" /></div>
+                <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300">{t('postCategory')}</label><input type="text" value={form.category} onChange={e => setForm({ ...form, category: e.target.value })} className="mt-1 w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm focus:border-rose-400 focus:outline-none focus:ring-2 focus:ring-rose-100 dark:border-gray-700 dark:bg-gray-800 dark:text-white" /></div>
                 <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Author</label><input type="text" value={form.author} onChange={e => setForm({ ...form, author: e.target.value })} className="mt-1 w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm focus:border-rose-400 focus:outline-none focus:ring-2 focus:ring-rose-100 dark:border-gray-700 dark:bg-gray-800 dark:text-white" /></div>
               </div>
               <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Excerpt</label><textarea rows={2} value={form.excerpt} onChange={e => setForm({ ...form, excerpt: e.target.value })} className="mt-1 w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm focus:border-rose-400 focus:outline-none focus:ring-2 focus:ring-rose-100 dark:border-gray-700 dark:bg-gray-800 dark:text-white" /></div>
-              <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Content *</label><textarea rows={6} required value={form.content} onChange={e => setForm({ ...form, content: e.target.value })} className="mt-1 w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm focus:border-rose-400 focus:outline-none focus:ring-2 focus:ring-rose-100 dark:border-gray-700 dark:bg-gray-800 dark:text-white" /></div>
-              <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Status</label><select value={form.status} onChange={e => setForm({ ...form, status: e.target.value })} className="mt-1 w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm focus:border-rose-400 focus:outline-none focus:ring-2 focus:ring-rose-100 dark:border-gray-700 dark:bg-gray-800 dark:text-white"><option value="draft">Draft</option><option value="published">Published</option></select></div>
+              <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300">{t('postContent')} *</label><textarea rows={6} required value={form.content} onChange={e => setForm({ ...form, content: e.target.value })} className="mt-1 w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm focus:border-rose-400 focus:outline-none focus:ring-2 focus:ring-rose-100 dark:border-gray-700 dark:bg-gray-800 dark:text-white" /></div>
+              <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300">{t('postStatus')}</label><select value={form.status} onChange={e => setForm({ ...form, status: e.target.value })} className="mt-1 w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm focus:border-rose-400 focus:outline-none focus:ring-2 focus:ring-rose-100 dark:border-gray-700 dark:bg-gray-800 dark:text-white"><option value="draft">{t('draft')}</option><option value="published">{t('published')}</option></select></div>
               <div className="flex justify-end gap-3 pt-2">
-                <button type="button" onClick={() => { setShowAdd(false); setEditing(null) }} className="rounded-xl border border-gray-200 px-5 py-2.5 text-sm font-medium text-gray-600 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700">Cancel</button>
-                <button type="submit" disabled={saving} className="rounded-xl bg-rose-600 px-5 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-rose-700 disabled:opacity-50">{saving ? 'Saving...' : editing ? 'Update' : 'Create'}</button>
+                <button type="button" onClick={() => { setShowAdd(false); setEditing(null) }} className="rounded-xl border border-gray-200 px-5 py-2.5 text-sm font-medium text-gray-600 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700">{t('cancel')}</button>
+                <button type="submit" disabled={saving} className="rounded-xl bg-rose-600 px-5 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-rose-700 disabled:opacity-50">{saving ? 'Saving...' : t('save')}</button>
               </div>
             </form>
           </div>

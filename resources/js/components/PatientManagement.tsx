@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Search, Edit3, Trash2, X, Phone, Mail, User, PhoneCall, AlertTriangle, ArrowLeft } from "lucide-react"
+import { useLanguage } from '@/contexts/LanguageContext'
 
 interface Patient {
   id: number
@@ -31,6 +32,7 @@ const emptyForm = {
 }
 
 export default function PatientManagement() {
+  const { t } = useLanguage()
   const [patients, setPatients] = useState<Patient[]>([])
   const [search, setSearch] = useState('')
   const [selected, setSelected] = useState<Patient | null>(null)
@@ -83,7 +85,7 @@ export default function PatientManagement() {
   }
 
   async function handleDelete(id: number) {
-    if (!confirm('Delete this patient?')) return
+    if (!confirm(t('deleteConfirm'))) return
     try {
       const res = await fetch(`/api/patients/${id}`, { method: 'DELETE' })
       if (res.ok) {
@@ -102,7 +104,7 @@ export default function PatientManagement() {
     return (
       <div className="space-y-6">
         <button onClick={() => setSelected(null)} className="flex items-center gap-2 text-sm font-medium text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
-          <ArrowLeft className="h-4 w-4" /> Back to all patients
+          <ArrowLeft className="h-4 w-4" /> {t('backToAll')}
         </button>
 
         <div className="rounded-2xl border border-gray-100 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900">
@@ -143,26 +145,26 @@ export default function PatientManagement() {
 
             <div className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
               <div className="rounded-xl bg-gray-50 p-4 dark:bg-gray-800/50">
-                <p className="text-xs font-medium text-gray-500 dark:text-gray-400">Gender</p>
+                  <p className="text-xs font-medium text-gray-500 dark:text-gray-400">{t('patientGender')}</p>
                 <p className="mt-1 text-sm font-medium text-gray-900 dark:text-white capitalize">{p.gender || '—'}</p>
               </div>
               <div className="rounded-xl bg-gray-50 p-4 dark:bg-gray-800/50">
-                <p className="text-xs font-medium text-gray-500 dark:text-gray-400">Date of Birth</p>
+                  <p className="text-xs font-medium text-gray-500 dark:text-gray-400">{t('dateOfBirth')}</p>
                 <p className="mt-1 text-sm font-medium text-gray-900 dark:text-white">{p.dob || '—'}</p>
               </div>
               <div className="rounded-xl bg-gray-50 p-4 dark:bg-gray-800/50">
-                <p className="text-xs font-medium text-gray-500 dark:text-gray-400">Blood Group</p>
+                  <p className="text-xs font-medium text-gray-500 dark:text-gray-400">{t('patientBloodGroup')}</p>
                 <p className="mt-1 text-sm font-medium text-gray-900 dark:text-white">{p.blood_group || '—'}</p>
               </div>
               <div className="rounded-xl bg-gray-50 p-4 dark:bg-gray-800/50">
-                <p className="text-xs font-medium text-gray-500 dark:text-gray-400">Registered On</p>
+                  <p className="text-xs font-medium text-gray-500 dark:text-gray-400">{t('registeredOn')}</p>
                 <p className="mt-1 text-sm font-medium text-gray-900 dark:text-white">{new Date(p.created_at).toLocaleDateString()}</p>
               </div>
             </div>
 
             {p.address && (
               <div className="mt-6">
-                <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300">Address</h3>
+                <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300">{t('address')}</h3>
                 <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">{p.address}{p.pincode ? ` - ${p.pincode}` : ''}</p>
                 {(p.city || p.state) && <p className="text-sm text-gray-500 dark:text-gray-500">{[p.city, p.state].filter(Boolean).join(', ')}</p>}
               </div>
@@ -170,7 +172,7 @@ export default function PatientManagement() {
 
             {(p.emergency_contact_name || p.emergency_contact_phone) && (
               <div className="mt-6">
-                <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300">Emergency Contact</h3>
+                <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300">{t('emergencyContact')}</h3>
                 <div className="mt-1 flex items-center gap-4 text-sm text-gray-600 dark:text-gray-400">
                   {p.emergency_contact_name && <span className="flex items-center gap-1.5"><PhoneCall className="h-4 w-4" /> {p.emergency_contact_name}</span>}
                   {p.emergency_contact_phone && <span>{p.emergency_contact_phone}</span>}
@@ -181,13 +183,13 @@ export default function PatientManagement() {
             <div className="mt-6 grid gap-6 sm:grid-cols-2">
               {p.medical_history && (
                 <div>
-                  <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300">Medical History</h3>
+                  <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300">{t('medicalHistory')}</h3>
                   <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">{p.medical_history}</p>
                 </div>
               )}
               {p.allergies && (
                 <div>
-                  <h3 className="flex items-center gap-1.5 text-sm font-semibold text-gray-700 dark:text-gray-300"><AlertTriangle className="h-4 w-4" /> Allergies</h3>
+                  <h3 className="flex items-center gap-1.5 text-sm font-semibold text-gray-700 dark:text-gray-300"><AlertTriangle className="h-4 w-4" /> {t('allergies')}</h3>
                   <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">{p.allergies}</p>
                 </div>
               )}
@@ -205,8 +207,8 @@ export default function PatientManagement() {
           <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-gray-50 dark:bg-gray-800">
             <User className="h-8 w-8 text-gray-400" />
           </div>
-          <h3 className="mt-4 text-lg font-semibold text-gray-900 dark:text-white">No patients found</h3>
-          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">Register a new patient from the Register Patient section.</p>
+          <h3 className="mt-4 text-lg font-semibold text-gray-900 dark:text-white">{t('noPatients')}</h3>
+          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">{t('registerNewPatient')}</p>
         </div>
       )
     }
@@ -270,14 +272,14 @@ export default function PatientManagement() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Patient Details</h1>
-        <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">{patients.length} registered patients</p>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{t('patients')}</h1>
+        <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">{patients.length} {t('registeredPatients')}</p>
       </div>
 
       <div className="relative">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 dark:text-gray-500" />
         <input
-          type="text" placeholder="Search by name, email or phone..."
+          type="text" placeholder={t('search')}
           value={search} onChange={(e) => setSearch(e.target.value)}
           className="w-full rounded-xl border border-gray-200 bg-white py-2.5 pl-9 pr-4 text-sm text-gray-900 placeholder-gray-400 outline-none focus:outline-2 focus:outline-offset-0 focus:outline-blue-500/25 focus:border-blue-500 transition-all dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500 dark:focus:border-blue-500 dark:focus:outline-blue-500/25"
         />
@@ -289,14 +291,14 @@ export default function PatientManagement() {
         <div className="fixed inset-0 z-40 flex items-start justify-center overflow-y-auto bg-black/30 backdrop-blur-sm py-10">
           <div className="relative w-full max-w-2xl rounded-2xl border border-gray-100 bg-white p-6 shadow-xl dark:border-gray-700 dark:bg-gray-800">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-lg font-bold text-gray-900 dark:text-white">Edit Patient</h2>
+              <h2 className="text-lg font-bold text-gray-900 dark:text-white">{t('editPatient')}</h2>
               <button onClick={() => setEditing(null)} className="rounded-lg p-1 text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700"><X className="h-5 w-5" /></button>
             </div>
             <form onSubmit={handleSave} className="space-y-4">
               <div className="grid gap-4 sm:grid-cols-2">
                 {[
-                  { label: 'First Name', key: 'first_name', required: true },
-                  { label: 'Last Name', key: 'last_name', required: true },
+                  { label: t('patientFirstName'), key: 'first_name', required: true },
+                  { label: t('patientLastName'), key: 'last_name', required: true },
                 ].map((f) => (
                   <div key={f.key}>
                     <label className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">{f.label}{f.required && <span className="text-rose-500 ml-0.5">*</span>}</label>
@@ -305,19 +307,19 @@ export default function PatientManagement() {
                   </div>
                 ))}
                 {[
-                  { label: 'Email', key: 'email', type: 'email' },
-                  { label: 'Phone', key: 'phone' },
-                  { label: 'Date of Birth', key: 'dob', type: 'date' },
-                  { label: 'Gender', key: 'gender', type: 'select', options: ['', 'male', 'female', 'other'] },
-                  { label: 'Blood Group', key: 'blood_group', type: 'select', options: ['', 'A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'] },
-                  { label: 'Status', key: 'status', type: 'select', options: ['active', 'inactive', 'discharged'] },
+                  { label: t('patientEmail'), key: 'email', type: 'email' },
+                  { label: t('patientPhone'), key: 'phone' },
+                  { label: t('dateOfBirth'), key: 'dob', type: 'date' },
+                  { label: t('patientGender'), key: 'gender', type: 'select', options: ['', 'male', 'female', 'other'] },
+                  { label: t('patientBloodGroup'), key: 'blood_group', type: 'select', options: ['', 'A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'] },
+                  { label: t('userStatus'), key: 'status', type: 'select', options: ['active', 'inactive', 'discharged'] },
                 ].map((f) => (
                   <div key={f.key}>
                     <label className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">{f.label}</label>
                     {f.type === 'select' ? (
                       <select value={(form as any)[f.key]} onChange={(e) => setForm({ ...form, [f.key]: e.target.value })}
                         className="w-full rounded-xl border border-gray-200 bg-gray-50 px-3 py-2.5 text-sm text-gray-900 outline-none focus:outline-2 focus:outline-offset-0 focus:outline-blue-500/25 focus:border-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100">
-                        {f.options.map((o) => <option key={o} value={o}>{o || 'Select...'}</option>)}
+                        {f.options.map((o) => <option key={o} value={o}>{o || t('select')}</option>)}
                       </select>
                     ) : (
                       <input type={f.type || 'text'} value={(form as any)[f.key]} onChange={(e) => setForm({ ...form, [f.key]: e.target.value })}
@@ -327,12 +329,12 @@ export default function PatientManagement() {
                 ))}
               </div>
               <div>
-                <label className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">Address</label>
+                <label className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">{t('address')}</label>
                 <textarea value={form.address} onChange={(e) => setForm({ ...form, address: e.target.value })} rows={2}
                   className="w-full rounded-xl border border-gray-200 bg-gray-50 px-3 py-2.5 text-sm text-gray-900 outline-none focus:outline-2 focus:outline-offset-0 focus:outline-blue-500/25 focus:border-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100" />
               </div>
               <div className="grid gap-4 sm:grid-cols-3">
-                {[{ label: 'City', key: 'city' }, { label: 'State', key: 'state' }, { label: 'Pincode', key: 'pincode' }].map((f) => (
+                {[{ label: t('city'), key: 'city' }, { label: t('state'), key: 'state' }, { label: t('pincode'), key: 'pincode' }].map((f) => (
                   <div key={f.key}>
                     <label className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">{f.label}</label>
                     <input value={(form as any)[f.key]} onChange={(e) => setForm({ ...form, [f.key]: e.target.value })}
@@ -342,32 +344,32 @@ export default function PatientManagement() {
               </div>
               <div className="grid gap-4 sm:grid-cols-2">
                 <div>
-                  <label className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">Emergency Contact Name</label>
+                  <label className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">{t('emergencyContactName')}</label>
                   <input value={form.emergency_contact_name} onChange={(e) => setForm({ ...form, emergency_contact_name: e.target.value })}
                     className="w-full rounded-xl border border-gray-200 bg-gray-50 px-3 py-2.5 text-sm text-gray-900 outline-none focus:outline-2 focus:outline-offset-0 focus:outline-blue-500/25 focus:border-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100" />
                 </div>
                 <div>
-                  <label className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">Emergency Contact Phone</label>
+                  <label className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">{t('emergencyContactPhone')}</label>
                   <input value={form.emergency_contact_phone} onChange={(e) => setForm({ ...form, emergency_contact_phone: e.target.value })}
                     className="w-full rounded-xl border border-gray-200 bg-gray-50 px-3 py-2.5 text-sm text-gray-900 outline-none focus:outline-2 focus:outline-offset-0 focus:outline-blue-500/25 focus:border-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100" />
                   </div>
               </div>
               <div className="grid gap-4 sm:grid-cols-2">
                 <div>
-                  <label className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">Medical History</label>
+                  <label className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">{t('medicalHistory')}</label>
                   <textarea value={form.medical_history} onChange={(e) => setForm({ ...form, medical_history: e.target.value })} rows={2}
                     className="w-full rounded-xl border border-gray-200 bg-gray-50 px-3 py-2.5 text-sm text-gray-900 outline-none focus:outline-2 focus:outline-offset-0 focus:outline-blue-500/25 focus:border-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100" />
                 </div>
                 <div>
-                  <label className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">Allergies</label>
+                  <label className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">{t('allergies')}</label>
                   <textarea value={form.allergies} onChange={(e) => setForm({ ...form, allergies: e.target.value })} rows={2}
                     className="w-full rounded-xl border border-gray-200 bg-gray-50 px-3 py-2.5 text-sm text-gray-900 outline-none focus:outline-2 focus:outline-offset-0 focus:outline-blue-500/25 focus:border-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100" />
                 </div>
               </div>
               <div className="flex justify-end gap-3 pt-2">
-                <button type="button" onClick={() => setEditing(null)} className="rounded-xl border border-gray-200 px-5 py-2.5 text-sm font-medium text-gray-600 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-400 dark:hover:bg-gray-700">Cancel</button>
+                <button type="button" onClick={() => setEditing(null)} className="rounded-xl border border-gray-200 px-5 py-2.5 text-sm font-medium text-gray-600 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-400 dark:hover:bg-gray-700">{t('cancel')}</button>
                 <button type="submit" disabled={saving} className="rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-blue-700 disabled:opacity-50 dark:bg-blue-500 dark:hover:bg-blue-600">
-                  {saving ? 'Saving...' : 'Update Patient'}
+                  {saving ? t('saving') : t('save')}
                 </button>
               </div>
             </form>

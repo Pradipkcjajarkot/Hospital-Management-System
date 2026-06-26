@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Search, Building2, Edit3, Trash2, X, ArrowLeft, Plus, Phone, Mail, MapPin, User } from "lucide-react"
+import { useLanguage } from '@/contexts/LanguageContext'
 
 interface Department {
   id: number
@@ -26,6 +27,7 @@ function DepartmentForm({ form, setForm, saving, onCancel, onSubmit, title, subm
   title: string
   submitLabel: string
 }) {
+  const { t } = useLanguage()
   return (
     <div className="space-y-6">
       <div>
@@ -35,22 +37,22 @@ function DepartmentForm({ form, setForm, saving, onCancel, onSubmit, title, subm
       <form onSubmit={onSubmit} className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-900">
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="sm:col-span-2">
-            <label className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">Department Name <span className="text-rose-500">*</span></label>
+            <label className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">{t('departmentName')} <span className="text-rose-500">*</span></label>
             <input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} required placeholder="e.g. Cardiology"
               className="w-full rounded-xl border border-gray-200 bg-gray-50 px-3 py-2.5 text-sm text-gray-900 outline-none focus:outline-2 focus:outline-offset-0 focus:outline-amber-500/25 focus:border-amber-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100" />
           </div>
           <div className="sm:col-span-2">
-            <label className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">Description</label>
+            <label className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">{t('departmentDescription')}</label>
             <textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} rows={2} placeholder="Department description..."
               className="w-full rounded-xl border border-gray-200 bg-gray-50 px-3 py-2.5 text-sm text-gray-900 outline-none focus:outline-2 focus:outline-offset-0 focus:outline-amber-500/25 focus:border-amber-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100" />
           </div>
           <div>
-            <label className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">Head of Department</label>
+            <label className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">{t('departmentHead')}</label>
             <input value={form.head_of_department} onChange={(e) => setForm({ ...form, head_of_department: e.target.value })} placeholder="e.g. Dr. John Smith"
               className="w-full rounded-xl border border-gray-200 bg-gray-50 px-3 py-2.5 text-sm text-gray-900 outline-none focus:outline-2 focus:outline-offset-0 focus:outline-amber-500/25 focus:border-amber-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100" />
           </div>
           <div>
-            <label className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">Location</label>
+            <label className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">{t('location')}</label>
             <input value={form.location} onChange={(e) => setForm({ ...form, location: e.target.value })} placeholder="e.g. 3rd Floor, East Wing"
               className="w-full rounded-xl border border-gray-200 bg-gray-50 px-3 py-2.5 text-sm text-gray-900 outline-none focus:outline-2 focus:outline-offset-0 focus:outline-amber-500/25 focus:border-amber-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100" />
           </div>
@@ -60,27 +62,27 @@ function DepartmentForm({ form, setForm, saving, onCancel, onSubmit, title, subm
               className="w-full rounded-xl border border-gray-200 bg-gray-50 px-3 py-2.5 text-sm text-gray-900 outline-none focus:outline-2 focus:outline-offset-0 focus:outline-amber-500/25 focus:border-amber-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100" />
           </div>
           <div>
-            <label className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">Email</label>
+            <label className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">{t('email')}</label>
             <input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} placeholder="e.g. cardiology@hospital.com"
               className="w-full rounded-xl border border-gray-200 bg-gray-50 px-3 py-2.5 text-sm text-gray-900 outline-none focus:outline-2 focus:outline-offset-0 focus:outline-amber-500/25 focus:border-amber-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100" />
           </div>
           <div>
-            <label className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">Status</label>
+            <label className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">{t('userStatus')}</label>
             <select value={form.status} onChange={(e) => setForm({ ...form, status: e.target.value })}
               className="w-full rounded-xl border border-gray-200 bg-gray-50 px-3 py-2.5 text-sm text-gray-900 outline-none focus:outline-2 focus:outline-offset-0 focus:outline-amber-500/25 focus:border-amber-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100">
-              <option value="active">Active</option>
-              <option value="inactive">Inactive</option>
+              <option value="active">{t('userActive')}</option>
+              <option value="inactive">{t('userInactive')}</option>
             </select>
           </div>
         </div>
         <div className="mt-8 flex justify-end gap-3 border-t border-gray-100 pt-6 dark:border-gray-800">
           <button type="button" onClick={onCancel}
             className="rounded-xl bg-rose-600 px-5 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-rose-700 dark:bg-rose-500 dark:hover:bg-rose-600">
-            Cancel
+            {t('cancel')}
           </button>
           <button type="submit" disabled={saving}
             className="rounded-xl bg-emerald-600 px-6 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-emerald-700 disabled:opacity-50 dark:bg-emerald-500 dark:hover:bg-emerald-600">
-            {saving ? 'Saving...' : submitLabel}
+            {saving ? t('saving') : submitLabel}
           </button>
         </div>
       </form>
@@ -89,6 +91,7 @@ function DepartmentForm({ form, setForm, saving, onCancel, onSubmit, title, subm
 }
 
 export default function DepartmentManagement() {
+  const { t } = useLanguage()
   const [departments, setDepartments] = useState<Department[]>([])
   const [search, setSearch] = useState('')
   const [selected, setSelected] = useState<Department | null>(null)
@@ -196,7 +199,7 @@ export default function DepartmentManagement() {
               {d.head_of_department && (
                 <div className="rounded-xl bg-gray-50 p-4 dark:bg-gray-800/50">
                   <div className="flex items-center gap-2 text-xs font-medium text-gray-500 dark:text-gray-400">
-                    <User className="h-3.5 w-3.5" /> Head of Department
+                    <User className="h-3.5 w-3.5" /> {t('departmentHead')}
                   </div>
                   <p className="mt-1 text-sm font-medium text-gray-900 dark:text-white">{d.head_of_department}</p>
                 </div>
@@ -204,7 +207,7 @@ export default function DepartmentManagement() {
               {d.location && (
                 <div className="rounded-xl bg-gray-50 p-4 dark:bg-gray-800/50">
                   <div className="flex items-center gap-2 text-xs font-medium text-gray-500 dark:text-gray-400">
-                    <MapPin className="h-3.5 w-3.5" /> Location
+                    <MapPin className="h-3.5 w-3.5" /> {t('location')}
                   </div>
                   <p className="mt-1 text-sm font-medium text-gray-900 dark:text-white">{d.location}</p>
                 </div>
@@ -212,7 +215,7 @@ export default function DepartmentManagement() {
               {d.phone && (
                 <div className="rounded-xl bg-gray-50 p-4 dark:bg-gray-800/50">
                   <div className="flex items-center gap-2 text-xs font-medium text-gray-500 dark:text-gray-400">
-                    <Phone className="h-3.5 w-3.5" /> Phone
+                    <Phone className="h-3.5 w-3.5" /> {t('phone')}
                   </div>
                   <p className="mt-1 text-sm font-medium text-gray-900 dark:text-white">{d.phone}</p>
                 </div>
@@ -220,14 +223,14 @@ export default function DepartmentManagement() {
               {d.email && (
                 <div className="rounded-xl bg-gray-50 p-4 dark:bg-gray-800/50">
                   <div className="flex items-center gap-2 text-xs font-medium text-gray-500 dark:text-gray-400">
-                    <Mail className="h-3.5 w-3.5" /> Email
+                    <Mail className="h-3.5 w-3.5" /> {t('email')}
                   </div>
                   <p className="mt-1 text-sm font-medium text-gray-900 dark:text-white">{d.email}</p>
                 </div>
               )}
               <div className="rounded-xl bg-gray-50 p-4 dark:bg-gray-800/50">
                 <div className="flex items-center gap-2 text-xs font-medium text-gray-500 dark:text-gray-400">
-                  <Building2 className="h-3.5 w-3.5" /> Created
+                  <Building2 className="h-3.5 w-3.5" /> {t('userCreated')}
                 </div>
                 <p className="mt-1 text-sm font-medium text-gray-900 dark:text-white">{new Date(d.created_at).toLocaleDateString()}</p>
               </div>
@@ -235,7 +238,7 @@ export default function DepartmentManagement() {
 
             {d.description && (
               <div className="mt-6">
-                <h3 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Description</h3>
+                <h3 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">{t('departmentDescription')}</h3>
                 <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">{d.description}</p>
               </div>
             )}
@@ -252,8 +255,8 @@ export default function DepartmentManagement() {
           <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-gray-50 dark:bg-gray-800">
             <Building2 className="h-8 w-8 text-gray-400" />
           </div>
-          <h3 className="mt-4 text-lg font-semibold text-gray-900 dark:text-white">No departments found</h3>
-          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">Click "Add Department" to create one.</p>
+          <h3 className="mt-4 text-lg font-semibold text-gray-900 dark:text-white">{t('noDepartments')}</h3>
+          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">{t('clickAddToCreate')}</p>
         </div>
       )
     }
@@ -267,7 +270,7 @@ export default function DepartmentManagement() {
                 <Building2 className="h-6 w-6" />
               </div>
               <h4 className="font-semibold text-gray-900 dark:text-white">{d.name}</h4>
-              {d.head_of_department && <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">Head: {d.head_of_department}</p>}
+              {d.head_of_department && <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">{t('headColon')} {d.head_of_department}</p>}
               {d.location && <p className="text-xs text-gray-400 dark:text-gray-500">{d.location}</p>}
               <span className={`mt-3 inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-medium ${
                 d.status === 'active' ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' : 'bg-gray-50 text-gray-600 dark:bg-gray-800 dark:text-gray-400'
@@ -295,7 +298,7 @@ export default function DepartmentManagement() {
       <DepartmentForm
         form={form} setForm={setForm} saving={saving}
         onCancel={() => setShowAddForm(false)} onSubmit={handleAdd}
-        title="Add New Department" submitLabel="Create Department"
+        title={t('addDepartment')} submitLabel={t('save')}
       />
     )
   }
@@ -308,13 +311,13 @@ export default function DepartmentManagement() {
           <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">{departments.length} departments</p>
         </div>
         <button onClick={openAddForm} className="flex items-center gap-2 rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600">
-          <Plus className="h-4 w-4" /> Add Department
+          <Plus className="h-4 w-4" /> {t('addDepartment')}
         </button>
       </div>
 
       <div className="relative">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 dark:text-gray-500" />
-        <input type="text" placeholder="Search by name, description, head or location..."
+        <input type="text" placeholder={t('search')}
           value={search} onChange={(e) => setSearch(e.target.value)}
           className="w-full rounded-xl border border-gray-200 bg-white py-2.5 pl-9 pr-4 text-sm text-gray-900 placeholder-gray-400 outline-none focus:outline-2 focus:outline-offset-0 focus:outline-amber-500/25 focus:border-amber-500 transition-all dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500 dark:focus:border-amber-500 dark:focus:outline-amber-500/25"
         />
@@ -326,13 +329,13 @@ export default function DepartmentManagement() {
         <div className="fixed inset-0 z-40 flex items-start justify-center overflow-y-auto bg-black/30 backdrop-blur-sm py-10">
           <div className="relative w-full max-w-2xl rounded-2xl border border-gray-100 bg-white p-6 shadow-xl dark:border-gray-700 dark:bg-gray-800">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-lg font-bold text-gray-900 dark:text-white">Edit Department</h2>
+              <h2 className="text-lg font-bold text-gray-900 dark:text-white">{t('editDepartment')}</h2>
               <button onClick={() => setEditing(null)} className="rounded-lg p-1 text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700"><X className="h-5 w-5" /></button>
             </div>
             <DepartmentForm
               form={form} setForm={setForm} saving={saving}
               onCancel={() => setEditing(null)} onSubmit={handleSave}
-              title="Edit Department" submitLabel="Update Department"
+              title={t('editDepartment')} submitLabel={t('save')}
             />
           </div>
         </div>

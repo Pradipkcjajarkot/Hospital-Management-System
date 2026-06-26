@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useLanguage } from '@/contexts/LanguageContext'
 import { Search, Plus, X, ChevronRight, Activity, Heart, Weight, Thermometer, Wind, Eye, Stethoscope, Pill, Loader2, CheckCircle2 } from "lucide-react"
 
 interface Patient { id: number; first_name: string; last_name: string; full_name: string; email: string; phone: string; }
@@ -9,6 +10,7 @@ interface Consultation { id: number; diagnosis: string; notes: string; investiga
 interface Prescription { id: number; medicine_name: string; dosage: string; frequency: string; duration: string; instructions: string; }
 
 export default function OPDManagement() {
+  const { t } = useLanguage()
   const [registrations, setRegistrations] = useState<OpdRegistration[]>([])
   const [patients, setPatients] = useState<Patient[]>([])
   const [doctors, setDoctors] = useState<Doctor[]>([])
@@ -40,8 +42,8 @@ export default function OPDManagement() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-lg font-bold text-gray-900 dark:text-white">OPD Management</h2>
-        <button onClick={() => { setShowAdd(true); setSelected(null) }} className="flex items-center gap-2 rounded-xl bg-rose-600 px-4 py-2 text-sm font-medium text-white hover:bg-rose-700 transition-all"><Plus className="h-4 w-4" /> New Registration</button>
+        <h2 className="text-lg font-bold text-gray-900 dark:text-white">{t('opdList')}</h2>
+        <button onClick={() => { setShowAdd(true); setSelected(null) }} className="flex items-center gap-2 rounded-xl bg-rose-600 px-4 py-2 text-sm font-medium text-white hover:bg-rose-700 transition-all"><Plus className="h-4 w-4" /> {t('opdRegistration')}</button>
       </div>
 
       {showAdd && <AddRegistrationForm patients={patients} doctors={doctors} onDone={() => { setShowAdd(false); fetchData() }} onCancel={() => setShowAdd(false)} />}
@@ -51,7 +53,7 @@ export default function OPDManagement() {
       ) : (
         <div className="space-y-3">
           {registrations.length === 0 ? (
-            <p className="py-8 text-center text-gray-500">No OPD registrations yet.</p>
+            <p className="py-8 text-center text-gray-500">{t('opdNoPatients')}</p>
           ) : registrations.map((r) => (
             <button key={r.id} onClick={() => openRegistration(r)} className="w-full rounded-2xl border border-gray-200 bg-white p-5 text-left shadow-sm hover:border-rose-200 dark:border-gray-700 dark:bg-gray-800 dark:hover:border-rose-700 transition-all">
               <div className="flex items-start justify-between gap-4">
@@ -75,6 +77,7 @@ export default function OPDManagement() {
 }
 
 function AddRegistrationForm({ patients, doctors, onDone, onCancel }: { patients: Patient[]; doctors: Doctor[]; onDone: () => void; onCancel: () => void }) {
+  const { t } = useLanguage()
   const [patientId, setPatientId] = useState('')
   const [doctorId, setDoctorId] = useState('')
   const [complaints, setComplaints] = useState('')
@@ -94,7 +97,7 @@ function AddRegistrationForm({ patients, doctors, onDone, onCancel }: { patients
 
   return (
     <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800">
-      <h3 className="mb-4 font-semibold text-gray-900 dark:text-white">New OPD Registration</h3>
+      <h3 className="mb-4 font-semibold text-gray-900 dark:text-white">{t('opdRegistration')}</h3>
       <form onSubmit={handleSubmit} className="grid gap-4 sm:grid-cols-2">
         <div><label className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-300">Patient *</label>
           <select required value={patientId} onChange={e => setPatientId(e.target.value)} className="w-full rounded-xl border border-gray-300 px-4 py-3 text-sm focus:border-rose-500 focus:ring-2 focus:ring-rose-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white">
@@ -111,8 +114,8 @@ function AddRegistrationForm({ patients, doctors, onDone, onCancel }: { patients
         <div className="sm:col-span-2"><label className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-300">Complaints</label><textarea rows={3} value={complaints} onChange={e => setComplaints(e.target.value)} className="w-full rounded-xl border border-gray-300 px-4 py-3 text-sm focus:border-rose-500 focus:ring-2 focus:ring-rose-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white" /></div>
         <div className="sm:col-span-2"><label className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-300">Symptoms</label><textarea rows={3} value={symptoms} onChange={e => setSymptoms(e.target.value)} className="w-full rounded-xl border border-gray-300 px-4 py-3 text-sm focus:border-rose-500 focus:ring-2 focus:ring-rose-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white" /></div>
         <div className="sm:col-span-2 flex items-center gap-3">
-          <button disabled={saving} className="rounded-xl bg-rose-600 px-6 py-2.5 text-sm font-medium text-white hover:bg-rose-700 disabled:opacity-50">{saving ? 'Saving...' : 'Register'}</button>
-          <button type="button" onClick={onCancel} className="rounded-xl border border-gray-300 px-6 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300">Cancel</button>
+          <button disabled={saving} className="rounded-xl bg-rose-600 px-6 py-2.5 text-sm font-medium text-white hover:bg-rose-700 disabled:opacity-50">{saving ? 'Saving...' : t('save')}</button>
+          <button type="button" onClick={onCancel} className="rounded-xl border border-gray-300 px-6 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300">{t('cancel')}</button>
         </div>
       </form>
     </div>
@@ -120,6 +123,7 @@ function AddRegistrationForm({ patients, doctors, onDone, onCancel }: { patients
 }
 
 function VitalsForm({ registration, onDone }: { registration: OpdRegistration; onDone: () => void }) {
+  const { t } = useLanguage()
   const [bpS, setBpS] = useState('')
   const [bpD, setBpD] = useState('')
   const [pulse, setPulse] = useState('')
@@ -152,13 +156,14 @@ function VitalsForm({ registration, onDone }: { registration: OpdRegistration; o
       <div><label className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">Weight (kg)</label><input type="number" step="0.1" value={weight} onChange={e => setWeight(e.target.value)} placeholder="70" className="w-full rounded-xl border border-gray-300 px-3 py-2.5 text-sm focus:border-rose-500 focus:ring-2 focus:ring-rose-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white" /></div>
       <div><label className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">Height (cm)</label><input type="number" step="0.1" value={height} onChange={e => setHeight(e.target.value)} placeholder="170" className="w-full rounded-xl border border-gray-300 px-3 py-2.5 text-sm focus:border-rose-500 focus:ring-2 focus:ring-rose-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white" /></div>
       <div className="col-span-full flex items-center gap-3 pt-2">
-        <button disabled={saving} className="rounded-xl bg-rose-600 px-5 py-2 text-sm font-medium text-white hover:bg-rose-700 disabled:opacity-50"><Activity className="mr-1.5 inline h-4 w-4" />{saving ? 'Saving...' : 'Record Vitals'}</button>
+        <button disabled={saving} className="rounded-xl bg-rose-600 px-5 py-2 text-sm font-medium text-white hover:bg-rose-700 disabled:opacity-50"><Activity className="mr-1.5 inline h-4 w-4" />{saving ? 'Saving...' : t('opdVitals')}</button>
       </div>
     </form>
   )
 }
 
 function ConsultationForm({ registration, doctors, onDone }: { registration: OpdRegistration; doctors: Doctor[]; onDone: () => void }) {
+  const { t } = useLanguage()
   const [doctorId, setDoctorId] = useState(registration.doctor_id?.toString() || '')
   const [diagnosis, setDiagnosis] = useState('')
   const [notes, setNotes] = useState('')
@@ -201,8 +206,8 @@ function ConsultationForm({ registration, doctors, onDone }: { registration: Opd
 
       <div>
         <div className="mb-3 flex items-center justify-between">
-          <h4 className="font-medium text-gray-900 dark:text-white"><Pill className="mr-1.5 inline h-4 w-4" />Prescriptions</h4>
-          <button type="button" onClick={addRx} className="rounded-lg border border-gray-300 px-3 py-1.5 text-xs font-medium text-gray-600 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300"><Plus className="mr-1 inline h-3 w-3" />Add Medicine</button>
+          <h4 className="font-medium text-gray-900 dark:text-white"><Pill className="mr-1.5 inline h-4 w-4" />{t('opdPrescription')}</h4>
+          <button type="button" onClick={addRx} className="rounded-lg border border-gray-300 px-3 py-1.5 text-xs font-medium text-gray-600 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300"><Plus className="mr-1 inline h-3 w-3" />{t('addMedicine')}</button>
         </div>
         {rx.map((r, i) => (
           <div key={i} className="mb-3 grid grid-cols-2 gap-2 rounded-xl border border-gray-200 bg-gray-50 p-3 dark:border-gray-700 dark:bg-gray-700/30 sm:grid-cols-5">
@@ -216,7 +221,7 @@ function ConsultationForm({ registration, doctors, onDone }: { registration: Opd
       </div>
 
       <div className="flex items-center gap-3">
-        <button disabled={saving} className="rounded-xl bg-rose-600 px-6 py-2.5 text-sm font-medium text-white hover:bg-rose-700 disabled:opacity-50"><Stethoscope className="mr-1.5 inline h-4 w-4" />{saving ? 'Completing...' : 'Complete Consultation'}</button>
+        <button disabled={saving} className="rounded-xl bg-rose-600 px-6 py-2.5 text-sm font-medium text-white hover:bg-rose-700 disabled:opacity-50"><Stethoscope className="mr-1.5 inline h-4 w-4" />{saving ? 'Completing...' : t('opdConsultation')}</button>
       </div>
     </form>
   )
@@ -225,6 +230,7 @@ function ConsultationForm({ registration, doctors, onDone }: { registration: Opd
 function RegistrationDetail({ registration, doctors, onBack, onRefresh, activeSubTab, setActiveSubTab }: {
   registration: OpdRegistration; doctors: Doctor[]; onBack: () => void; onRefresh: () => void; activeSubTab: 'vitals' | 'consultation'; setActiveSubTab: (t: 'vitals' | 'consultation') => void
 }) {
+  const { t } = useLanguage()
   return (
     <div>
       <button onClick={onBack} className="mb-4 flex items-center gap-2 text-sm text-gray-500 hover:text-rose-600">&larr; Back</button>
@@ -243,13 +249,13 @@ function RegistrationDetail({ registration, doctors, onBack, onRefresh, activeSu
       </div>
 
       <div className="mb-4 flex gap-2">
-        <button onClick={() => setActiveSubTab('vitals')} className={`rounded-xl px-5 py-2.5 text-sm font-medium transition-all ${activeSubTab === 'vitals' ? 'bg-rose-600 text-white shadow-sm' : 'bg-white text-gray-600 hover:bg-gray-100 dark:bg-gray-800 dark:text-gray-400'}`}><Activity className="mr-1.5 inline h-4 w-4" />Vitals</button>
-        <button onClick={() => setActiveSubTab('consultation')} className={`rounded-xl px-5 py-2.5 text-sm font-medium transition-all ${activeSubTab === 'consultation' ? 'bg-rose-600 text-white shadow-sm' : 'bg-white text-gray-600 hover:bg-gray-100 dark:bg-gray-800 dark:text-gray-400'}`}><Stethoscope className="mr-1.5 inline h-4 w-4" />Consultation</button>
+        <button onClick={() => setActiveSubTab('vitals')} className={`rounded-xl px-5 py-2.5 text-sm font-medium transition-all ${activeSubTab === 'vitals' ? 'bg-rose-600 text-white shadow-sm' : 'bg-white text-gray-600 hover:bg-gray-100 dark:bg-gray-800 dark:text-gray-400'}`}><Activity className="mr-1.5 inline h-4 w-4" />{t('opdVitals')}</button>
+        <button onClick={() => setActiveSubTab('consultation')} className={`rounded-xl px-5 py-2.5 text-sm font-medium transition-all ${activeSubTab === 'consultation' ? 'bg-rose-600 text-white shadow-sm' : 'bg-white text-gray-600 hover:bg-gray-100 dark:bg-gray-800 dark:text-gray-400'}`}><Stethoscope className="mr-1.5 inline h-4 w-4" />{t('opdConsultation')}</button>
       </div>
 
       {activeSubTab === 'vitals' && (
         <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-700 dark:bg-gray-800">
-          <h4 className="mb-4 font-semibold text-gray-900 dark:text-white">Patient Vitals</h4>
+          <h4 className="mb-4 font-semibold text-gray-900 dark:text-white">{t('opdVitals')}</h4>
           {registration.vitals && registration.vitals.length > 0 ? (
             <div>
               <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 mb-4">
@@ -274,7 +280,7 @@ function RegistrationDetail({ registration, doctors, onBack, onRefresh, activeSu
 
       {activeSubTab === 'consultation' && (
         <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-700 dark:bg-gray-800">
-          <h4 className="mb-4 font-semibold text-gray-900 dark:text-white">Consultation</h4>
+          <h4 className="mb-4 font-semibold text-gray-900 dark:text-white">{t('opdConsultation')}</h4>
           {registration.consultation ? (
             <div>
               <div className="space-y-3">
@@ -285,7 +291,7 @@ function RegistrationDetail({ registration, doctors, onBack, onRefresh, activeSu
               </div>
               {registration.consultation.prescriptions?.length > 0 && (
                 <div className="mt-4">
-                  <h5 className="mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">Prescriptions</h5>
+                  <h5 className="mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">{t('opdPrescription')}</h5>
                   <div className="overflow-x-auto">
                     <table className="w-full text-sm"><thead><tr className="border-b border-gray-200 text-left text-xs uppercase text-gray-500 dark:border-gray-700"><th className="pb-2 pr-3">Medicine</th><th className="pb-2 pr-3">Dosage</th><th className="pb-2 pr-3">Frequency</th><th className="pb-2 pr-3">Duration</th><th className="pb-2">Instructions</th></tr></thead>
                       <tbody>{registration.consultation.prescriptions.map((p, i) => (

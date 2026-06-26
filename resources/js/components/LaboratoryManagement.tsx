@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Search, FlaskConical, Edit3, Trash2, X, ArrowLeft, Plus, User, Stethoscope, Calendar, Activity, Beaker } from "lucide-react"
+import { useLanguage } from '@/contexts/LanguageContext'
 
 interface LabTest {
   id: number
@@ -37,6 +38,7 @@ function LabTestForm({ form, setForm, saving, onCancel, onSubmit, title, submitL
   patients: { id: number; first_name: string; last_name: string }[]
   doctors: { id: number; first_name: string; last_name: string }[]
 }) {
+  const { t } = useLanguage()
   return (
     <div className="space-y-6">
       <div>
@@ -46,12 +48,12 @@ function LabTestForm({ form, setForm, saving, onCancel, onSubmit, title, submitL
       <form onSubmit={onSubmit} className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-900">
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="sm:col-span-2">
-            <label className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">Test Name <span className="text-rose-500">*</span></label>
+            <label className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">{t('testName')} <span className="text-rose-500">*</span></label>
             <input value={form.test_name} onChange={(e) => setForm({ ...form, test_name: e.target.value })} required placeholder="e.g. Complete Blood Count"
               className="w-full rounded-xl border border-gray-200 bg-gray-50 px-3 py-2.5 text-sm text-gray-900 outline-none focus:outline-2 focus:outline-offset-0 focus:outline-amber-500/25 focus:border-amber-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100" />
           </div>
           <div>
-            <label className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">Patient <span className="text-rose-500">*</span></label>
+            <label className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">{t('patient')} <span className="text-rose-500">*</span></label>
             <select value={form.patient_id} onChange={(e) => setForm({ ...form, patient_id: e.target.value })} required
               className="w-full rounded-xl border border-gray-200 bg-gray-50 px-3 py-2.5 text-sm text-gray-900 outline-none focus:outline-2 focus:outline-offset-0 focus:outline-amber-500/25 focus:border-amber-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100">
               <option value="">Select patient...</option>
@@ -59,15 +61,15 @@ function LabTestForm({ form, setForm, saving, onCancel, onSubmit, title, submitL
             </select>
           </div>
           <div>
-            <label className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">Doctor</label>
+            <label className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">{t('doctors')}</label>
             <select value={form.doctor_id} onChange={(e) => setForm({ ...form, doctor_id: e.target.value })}
               className="w-full rounded-xl border border-gray-200 bg-gray-50 px-3 py-2.5 text-sm text-gray-900 outline-none focus:outline-2 focus:outline-offset-0 focus:outline-amber-500/25 focus:border-amber-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100">
-              <option value="">-- None --</option>
+              <option value="">{t('none')}</option>
               {doctors.map((d) => <option key={d.id} value={d.id}>{d.first_name} {d.last_name}</option>)}
             </select>
           </div>
           <div>
-            <label className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">Test Category</label>
+            <label className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">{t('testCategory')}</label>
             <input value={form.test_category} onChange={(e) => setForm({ ...form, test_category: e.target.value })} placeholder="e.g. Hematology"
               className="w-full rounded-xl border border-gray-200 bg-gray-50 px-3 py-2.5 text-sm text-gray-900 outline-none focus:outline-2 focus:outline-offset-0 focus:outline-amber-500/25 focus:border-amber-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100" />
           </div>
@@ -77,24 +79,24 @@ function LabTestForm({ form, setForm, saving, onCancel, onSubmit, title, submitL
               className="w-full rounded-xl border border-gray-200 bg-gray-50 px-3 py-2.5 text-sm text-gray-900 outline-none focus:outline-2 focus:outline-offset-0 focus:outline-amber-500/25 focus:border-amber-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100" />
           </div>
           <div>
-            <label className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">Test Date <span className="text-rose-500">*</span></label>
+            <label className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">{t('testDate')} <span className="text-rose-500">*</span></label>
             <input type="date" value={form.test_date} onChange={(e) => setForm({ ...form, test_date: e.target.value })} required
               className="w-full rounded-xl border border-gray-200 bg-gray-50 px-3 py-2.5 text-sm text-gray-900 outline-none focus:outline-2 focus:outline-offset-0 focus:outline-amber-500/25 focus:border-amber-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100" />
           </div>
           <div>
-            <label className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">Result Date</label>
+            <label className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">{t('resultDate')}</label>
             <input type="date" value={form.result_date} onChange={(e) => setForm({ ...form, result_date: e.target.value })}
               className="w-full rounded-xl border border-gray-200 bg-gray-50 px-3 py-2.5 text-sm text-gray-900 outline-none focus:outline-2 focus:outline-offset-0 focus:outline-amber-500/25 focus:border-amber-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100" />
           </div>
           <div>
-            <label className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">Status</label>
+            <label className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">{t('labStatus')}</label>
             <select value={form.status} onChange={(e) => setForm({ ...form, status: e.target.value })}
               className="w-full rounded-xl border border-gray-200 bg-gray-50 px-3 py-2.5 text-sm text-gray-900 outline-none focus:outline-2 focus:outline-offset-0 focus:outline-amber-500/25 focus:border-amber-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100">
               {statuses.map((s) => <option key={s} value={s}>{s.replace(/_/g, ' ').replace(/\b\w/g, (l) => l.toUpperCase())}</option>)}
             </select>
           </div>
           <div>
-            <label className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">Normal Range</label>
+            <label className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">{t('normalRange')}</label>
             <input value={form.normal_range} onChange={(e) => setForm({ ...form, normal_range: e.target.value })} placeholder="e.g. 4.5-11.0 x10^9/L"
               className="w-full rounded-xl border border-gray-200 bg-gray-50 px-3 py-2.5 text-sm text-gray-900 outline-none focus:outline-2 focus:outline-offset-0 focus:outline-amber-500/25 focus:border-amber-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100" />
           </div>
@@ -104,7 +106,7 @@ function LabTestForm({ form, setForm, saving, onCancel, onSubmit, title, submitL
               className="w-full rounded-xl border border-gray-200 bg-gray-50 px-3 py-2.5 text-sm text-gray-900 outline-none focus:outline-2 focus:outline-offset-0 focus:outline-amber-500/25 focus:border-amber-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100" />
           </div>
           <div className="sm:col-span-2">
-            <label className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">Notes</label>
+            <label className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">{t('notes')}</label>
             <textarea value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} rows={2} placeholder="Any additional notes..."
               className="w-full rounded-xl border border-gray-200 bg-gray-50 px-3 py-2.5 text-sm text-gray-900 outline-none focus:outline-2 focus:outline-offset-0 focus:outline-amber-500/25 focus:border-amber-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100" />
           </div>
@@ -112,11 +114,11 @@ function LabTestForm({ form, setForm, saving, onCancel, onSubmit, title, submitL
         <div className="mt-8 flex justify-end gap-3 border-t border-gray-100 pt-6 dark:border-gray-800">
           <button type="button" onClick={onCancel}
             className="rounded-xl bg-rose-600 px-5 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-rose-700 dark:bg-rose-500 dark:hover:bg-rose-600">
-            Cancel
+            {t('cancel')}
           </button>
           <button type="submit" disabled={saving}
             className="rounded-xl bg-emerald-600 px-6 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-emerald-700 disabled:opacity-50 dark:bg-emerald-500 dark:hover:bg-emerald-600">
-            {saving ? 'Saving...' : submitLabel}
+            {saving ? t('saving') : submitLabel}
           </button>
         </div>
       </form>
@@ -125,6 +127,7 @@ function LabTestForm({ form, setForm, saving, onCancel, onSubmit, title, submitL
 }
 
 export default function LaboratoryManagement() {
+  const { t } = useLanguage()
   const [labTests, setLabTests] = useState<LabTest[]>([])
   const [patients, setPatients] = useState<{ id: number; first_name: string; last_name: string }[]>([])
   const [doctors, setDoctors] = useState<{ id: number; first_name: string; last_name: string }[]>([])
@@ -184,7 +187,7 @@ export default function LaboratoryManagement() {
   }
 
   async function handleDelete(id: number) {
-    if (!confirm('Delete this lab test?')) return
+    if (!confirm(t('deleteConfirm'))) return
     try {
       const res = await fetch(`/api/lab-tests/${id}`, { method: 'DELETE' })
       if (res.ok) { if (selected?.id === id) setSelected(null); await fetchLabTests() }
@@ -207,7 +210,7 @@ export default function LaboratoryManagement() {
     return (
       <div className="space-y-6">
         <button onClick={() => setSelected(null)} className="flex items-center gap-2 text-sm font-medium text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
-          <ArrowLeft className="h-4 w-4" /> Back to all lab tests
+          <ArrowLeft className="h-4 w-4" /> {t('backToAll')}
         </button>
 
         <div className="rounded-2xl border border-gray-100 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900">
@@ -240,31 +243,31 @@ export default function LaboratoryManagement() {
             <div className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               <div className="rounded-xl bg-gray-50 p-4 dark:bg-gray-800/50">
                 <div className="flex items-center gap-2 text-xs font-medium text-gray-500 dark:text-gray-400">
-                  <User className="h-3.5 w-3.5" /> Patient
+                  <User className="h-3.5 w-3.5" /> {t('patient')}
                 </div>
                 <p className="mt-1 text-sm font-medium text-gray-900 dark:text-white">{t.patient.first_name} {t.patient.last_name}</p>
               </div>
               <div className="rounded-xl bg-gray-50 p-4 dark:bg-gray-800/50">
                 <div className="flex items-center gap-2 text-xs font-medium text-gray-500 dark:text-gray-400">
-                  <Stethoscope className="h-3.5 w-3.5" /> Doctor
+                  <Stethoscope className="h-3.5 w-3.5" /> {t('doctors')}
                 </div>
                 <p className="mt-1 text-sm font-medium text-gray-900 dark:text-white">{t.doctor ? `${t.doctor.first_name} ${t.doctor.last_name}` : '—'}</p>
               </div>
               <div className="rounded-xl bg-gray-50 p-4 dark:bg-gray-800/50">
                 <div className="flex items-center gap-2 text-xs font-medium text-gray-500 dark:text-gray-400">
-                  <Beaker className="h-3.5 w-3.5" /> Category
+                  <Beaker className="h-3.5 w-3.5" /> {t('testCategory')}
                 </div>
                 <p className="mt-1 text-sm font-medium text-gray-900 dark:text-white">{t.test_category || '—'}</p>
               </div>
               <div className="rounded-xl bg-gray-50 p-4 dark:bg-gray-800/50">
                 <div className="flex items-center gap-2 text-xs font-medium text-gray-500 dark:text-gray-400">
-                  <Activity className="h-3.5 w-3.5" /> Sample Type
+                  <Activity className="h-3.5 w-3.5" /> {t('sampleType')}
                 </div>
                 <p className="mt-1 text-sm font-medium text-gray-900 dark:text-white">{t.sample_type || '—'}</p>
               </div>
               <div className="rounded-xl bg-gray-50 p-4 dark:bg-gray-800/50">
                 <div className="flex items-center gap-2 text-xs font-medium text-gray-500 dark:text-gray-400">
-                  <Calendar className="h-3.5 w-3.5" /> Test Date
+                  <Calendar className="h-3.5 w-3.5" /> {t('testDate')}
                 </div>
                 <p className="mt-1 text-sm font-medium text-gray-900 dark:text-white">{new Date(t.test_date).toLocaleDateString()}</p>
               </div>
@@ -292,7 +295,7 @@ export default function LaboratoryManagement() {
             )}
             {t.notes && (
               <div className="mt-4">
-                <h3 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Notes</h3>
+                <h3 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">{t('notes')}</h3>
                 <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">{t.notes}</p>
               </div>
             )}
@@ -309,8 +312,8 @@ export default function LaboratoryManagement() {
           <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-gray-50 dark:bg-gray-800">
             <FlaskConical className="h-8 w-8 text-gray-400" />
           </div>
-          <h3 className="mt-4 text-lg font-semibold text-gray-900 dark:text-white">No lab tests found</h3>
-          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">Click "Add Lab Test" to create one.</p>
+          <h3 className="mt-4 text-lg font-semibold text-gray-900 dark:text-white">{t('noTests')}</h3>
+          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">{t('clickAddToCreate')}</p>
         </div>
       )
     }
@@ -350,7 +353,7 @@ export default function LaboratoryManagement() {
       <LabTestForm
         form={form} setForm={setForm} saving={saving} patients={patients} doctors={doctors}
         onCancel={() => setShowAddForm(false)} onSubmit={handleAdd}
-        title="Add New Lab Test" submitLabel="Create Lab Test"
+        title={t('addTest')} submitLabel={t('save')}
       />
     )
   }
@@ -359,25 +362,25 @@ export default function LaboratoryManagement() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Laboratory</h1>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{t('labTitle')}</h1>
           <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">{labTests.length} lab tests</p>
         </div>
         <button onClick={openAddForm} className="flex items-center gap-2 rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600">
-          <Plus className="h-4 w-4" /> Add Lab Test
+          <Plus className="h-4 w-4" /> {t('addTest')}
         </button>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-4">
         <div className="rounded-2xl border border-gray-100 bg-white p-4 shadow-sm dark:border-gray-800 dark:bg-gray-900">
-          <p className="text-xs font-medium text-gray-500 dark:text-gray-400">Total Tests</p>
+          <p className="text-xs font-medium text-gray-500 dark:text-gray-400">{t('totalTests')}</p>
           <p className="mt-1 text-2xl font-bold text-gray-900 dark:text-white">{labTests.length}</p>
         </div>
         <div className="rounded-2xl border border-gray-100 bg-white p-4 shadow-sm dark:border-gray-800 dark:bg-gray-900">
-          <p className="text-xs font-medium text-amber-600 dark:text-amber-400">Pending</p>
+          <p className="text-xs font-medium text-amber-600 dark:text-amber-400">{t('pending')}</p>
           <p className="mt-1 text-2xl font-bold text-amber-700 dark:text-amber-300">{labTests.filter((t) => t.status === 'pending').length}</p>
         </div>
         <div className="rounded-2xl border border-gray-100 bg-white p-4 shadow-sm dark:border-gray-800 dark:bg-gray-900">
-          <p className="text-xs font-medium text-blue-600 dark:text-blue-400">In Progress</p>
+          <p className="text-xs font-medium text-blue-600 dark:text-blue-400">{t('inProgress')}</p>
           <p className="mt-1 text-2xl font-bold text-blue-700 dark:text-blue-300">{labTests.filter((t) => t.status === 'in_progress').length}</p>
         </div>
         <div className="rounded-2xl border border-gray-100 bg-white p-4 shadow-sm dark:border-gray-800 dark:bg-gray-900">
@@ -388,7 +391,7 @@ export default function LaboratoryManagement() {
 
       <div className="relative">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 dark:text-gray-500" />
-        <input type="text" placeholder="Search by test name, category or sample type..."
+        <input type="text" placeholder={t('search')}
           value={search} onChange={(e) => setSearch(e.target.value)}
           className="w-full rounded-xl border border-gray-200 bg-white py-2.5 pl-9 pr-4 text-sm text-gray-900 placeholder-gray-400 outline-none focus:outline-2 focus:outline-offset-0 focus:outline-amber-500/25 focus:border-amber-500 transition-all dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500 dark:focus:border-amber-500 dark:focus:outline-amber-500/25"
         />
@@ -400,7 +403,7 @@ export default function LaboratoryManagement() {
         <div className="fixed inset-0 z-40 flex items-start justify-center overflow-y-auto bg-black/30 backdrop-blur-sm py-10">
           <div className="relative w-full max-w-2xl rounded-2xl border border-gray-100 bg-white p-6 shadow-xl dark:border-gray-700 dark:bg-gray-800">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-lg font-bold text-gray-900 dark:text-white">Edit Lab Test</h2>
+              <h2 className="text-lg font-bold text-gray-900 dark:text-white">{t('editTest')}</h2>
               <button onClick={() => setEditing(null)} className="rounded-lg p-1 text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700"><X className="h-5 w-5" /></button>
             </div>
             <LabTestForm

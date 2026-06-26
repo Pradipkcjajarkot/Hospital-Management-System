@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Search, Users, Edit3, Trash2, X, Plus, Shield, Mail, Phone, User as UserIcon, Calendar } from "lucide-react"
+import { useLanguage } from '@/contexts/LanguageContext'
 
 interface User {
   id: number
@@ -28,6 +29,7 @@ function UserForm({ form, setForm, saving, onCancel, onSubmit, title, submitLabe
   submitLabel: string
   isEdit: boolean
 }) {
+  const { t } = useLanguage()
   return (
     <div className="space-y-6">
       <div>
@@ -37,12 +39,12 @@ function UserForm({ form, setForm, saving, onCancel, onSubmit, title, submitLabe
       <form onSubmit={onSubmit} className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-900">
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
-            <label className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">Full Name <span className="text-rose-500">*</span></label>
+            <label className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">{t('userName')} <span className="text-rose-500">*</span></label>
             <input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} required placeholder="e.g. John Doe"
               className="w-full rounded-xl border border-gray-200 bg-gray-50 px-3 py-2.5 text-sm text-gray-900 outline-none focus:outline-2 focus:outline-offset-0 focus:outline-amber-500/25 focus:border-amber-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100" />
           </div>
           <div>
-            <label className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">Email <span className="text-rose-500">*</span></label>
+            <label className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">{t('userEmail')} <span className="text-rose-500">*</span></label>
             <input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} required placeholder="e.g. john@hospital.com"
               className="w-full rounded-xl border border-gray-200 bg-gray-50 px-3 py-2.5 text-sm text-gray-900 outline-none focus:outline-2 focus:outline-offset-0 focus:outline-amber-500/25 focus:border-amber-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100" />
           </div>
@@ -52,19 +54,19 @@ function UserForm({ form, setForm, saving, onCancel, onSubmit, title, submitLabe
               className="w-full rounded-xl border border-gray-200 bg-gray-50 px-3 py-2.5 text-sm text-gray-900 outline-none focus:outline-2 focus:outline-offset-0 focus:outline-amber-500/25 focus:border-amber-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100" />
           </div>
           <div>
-            <label className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">Password {!isEdit && <span className="text-rose-500">*</span>}</label>
+            <label className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">{t('password')} {!isEdit && <span className="text-rose-500">*</span>}</label>
             <input type="password" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} placeholder={isEdit ? 'Leave blank to keep current' : 'Min 8 characters'}
               className="w-full rounded-xl border border-gray-200 bg-gray-50 px-3 py-2.5 text-sm text-gray-900 outline-none focus:outline-2 focus:outline-offset-0 focus:outline-amber-500/25 focus:border-amber-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100" />
           </div>
           <div>
-            <label className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">Role <span className="text-rose-500">*</span></label>
+            <label className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">{t('userRole')} <span className="text-rose-500">*</span></label>
             <select value={form.role} onChange={(e) => setForm({ ...form, role: e.target.value })}
               className="w-full rounded-xl border border-gray-200 bg-gray-50 px-3 py-2.5 text-sm text-gray-900 outline-none focus:outline-2 focus:outline-offset-0 focus:outline-amber-500/25 focus:border-amber-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100">
               {roles.map((r) => <option key={r} value={r}>{r.replace(/\b\w/g, (l) => l.toUpperCase())}</option>)}
             </select>
           </div>
           <div>
-            <label className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">Status</label>
+            <label className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">{t('userStatus')}</label>
             <select value={form.status} onChange={(e) => setForm({ ...form, status: e.target.value })}
               className="w-full rounded-xl border border-gray-200 bg-gray-50 px-3 py-2.5 text-sm text-gray-900 outline-none focus:outline-2 focus:outline-offset-0 focus:outline-amber-500/25 focus:border-amber-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100">
               {statuses.map((s) => <option key={s} value={s}>{s.replace(/\b\w/g, (l) => l.toUpperCase())}</option>)}
@@ -74,11 +76,11 @@ function UserForm({ form, setForm, saving, onCancel, onSubmit, title, submitLabe
         <div className="mt-8 flex justify-end gap-3 border-t border-gray-100 pt-6 dark:border-gray-800">
           <button type="button" onClick={onCancel}
             className="rounded-xl bg-rose-600 px-5 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-rose-700 dark:bg-rose-500 dark:hover:bg-rose-600">
-            Cancel
+            {t('cancel')}
           </button>
           <button type="submit" disabled={saving}
             className="rounded-xl bg-emerald-600 px-6 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-emerald-700 disabled:opacity-50 dark:bg-emerald-500 dark:hover:bg-emerald-600">
-            {saving ? 'Saving...' : submitLabel}
+            {saving ? t('saving') : submitLabel}
           </button>
         </div>
       </form>
@@ -87,6 +89,7 @@ function UserForm({ form, setForm, saving, onCancel, onSubmit, title, submitLabe
 }
 
 export default function UserManagement() {
+  const { t } = useLanguage()
   const [users, setUsers] = useState<User[]>([])
   const [search, setSearch] = useState('')
   const [editing, setEditing] = useState<User | null>(null)
@@ -160,7 +163,7 @@ export default function UserManagement() {
       <UserForm
         form={form} setForm={setForm} saving={saving}
         onCancel={() => setShowAddForm(false)} onSubmit={handleAdd}
-        title="Add New User" submitLabel="Create User" isEdit={false}
+        title={t('addUser')} submitLabel={t('save')} isEdit={false}
       />
     )
   }
@@ -169,17 +172,17 @@ export default function UserManagement() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Users</h1>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{t('usersTitle')}</h1>
           <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">{users.length} users</p>
         </div>
         <button onClick={openAddForm} className="flex items-center gap-2 rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600">
-          <Plus className="h-4 w-4" /> Add User
+          <Plus className="h-4 w-4" /> {t('addUser')}
         </button>
       </div>
 
       <div className="relative">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 dark:text-gray-500" />
-        <input type="text" placeholder="Search by name, email or role..."
+        <input type="text" placeholder={t('search')}
           value={search} onChange={(e) => setSearch(e.target.value)}
           className="w-full rounded-xl border border-gray-200 bg-white py-2.5 pl-9 pr-4 text-sm text-gray-900 placeholder-gray-400 outline-none focus:outline-2 focus:outline-offset-0 focus:outline-amber-500/25 focus:border-amber-500 transition-all dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500 dark:focus:border-amber-500 dark:focus:outline-amber-500/25"
         />
@@ -189,19 +192,19 @@ export default function UserManagement() {
         {filtered.length === 0 ? (
           <div className="p-12 text-center">
             <Users className="mx-auto h-8 w-8 text-gray-400" />
-            <h3 className="mt-4 text-lg font-semibold text-gray-900 dark:text-white">No users found</h3>
-            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">Click "Add User" to create one.</p>
+            <h3 className="mt-4 text-lg font-semibold text-gray-900 dark:text-white">{t('noUsers')}</h3>
+            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">{t('clickAddToCreate')}</p>
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm">
               <thead>
                 <tr className="border-b border-gray-100 bg-gray-50/50 dark:border-gray-800 dark:bg-gray-800/50">
-                  <th className="px-5 py-3.5 font-semibold text-gray-600 dark:text-gray-400">User</th>
-                  <th className="px-5 py-3.5 font-semibold text-gray-600 dark:text-gray-400">Role</th>
-                  <th className="px-5 py-3.5 font-semibold text-gray-600 dark:text-gray-400">Status</th>
-                  <th className="px-5 py-3.5 font-semibold text-gray-600 dark:text-gray-400">Joined</th>
-                  <th className="px-5 py-3.5 font-semibold text-gray-600 dark:text-gray-400">Actions</th>
+                  <th className="px-5 py-3.5 font-semibold text-gray-600 dark:text-gray-400">{t('userName')}</th>
+                  <th className="px-5 py-3.5 font-semibold text-gray-600 dark:text-gray-400">{t('userRole')}</th>
+                  <th className="px-5 py-3.5 font-semibold text-gray-600 dark:text-gray-400">{t('userStatus')}</th>
+                  <th className="px-5 py-3.5 font-semibold text-gray-600 dark:text-gray-400">{t('userCreated')}</th>
+                  <th className="px-5 py-3.5 font-semibold text-gray-600 dark:text-gray-400">{t('actions')}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-50 dark:divide-gray-800">
@@ -260,13 +263,13 @@ export default function UserManagement() {
         <div className="fixed inset-0 z-40 flex items-start justify-center overflow-y-auto bg-black/30 backdrop-blur-sm py-10">
           <div className="relative w-full max-w-2xl rounded-2xl border border-gray-100 bg-white p-6 shadow-xl dark:border-gray-700 dark:bg-gray-800">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-lg font-bold text-gray-900 dark:text-white">Edit User</h2>
+              <h2 className="text-lg font-bold text-gray-900 dark:text-white">{t('editUser')}</h2>
               <button onClick={() => setEditing(null)} className="rounded-lg p-1 text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700"><X className="h-5 w-5" /></button>
             </div>
             <UserForm
               form={form} setForm={setForm} saving={saving}
               onCancel={() => setEditing(null)} onSubmit={handleSave}
-              title="Edit User" submitLabel="Update User" isEdit={true}
+              title={t('editUser')} submitLabel={t('save')} isEdit={true}
             />
           </div>
         </div>

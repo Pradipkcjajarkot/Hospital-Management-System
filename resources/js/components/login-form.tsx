@@ -1,6 +1,8 @@
 import { type FormEvent, useState } from 'react'
+import { useLanguage } from '@/contexts/LanguageContext'
 
 export function LoginForm() {
+    const { t } = useLanguage()
     const [username, setUsername] = useState('')
     const [gmail, setGmail] = useState('')
     const [password, setPassword] = useState('')
@@ -24,7 +26,7 @@ export function LoginForm() {
             if (!res.ok) throw new Error(data.message)
             window.location.href = '/dashboard'
         } catch (err: unknown) {
-            setError(err instanceof Error ? err.message : 'Something went wrong')
+            setError(err instanceof Error ? err.message : t('somethingWentWrong'))
         } finally {
             setLoading(false)
         }
@@ -38,13 +40,13 @@ export function LoginForm() {
                         <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
                     </svg>
                 </div>
-                <h1 className="text-xl font-bold text-gray-800">Sign In</h1>
-                <p className="text-sm text-gray-500">Enter your credentials to continue</p>
+                <h1 className="text-xl font-bold text-gray-800">{t('signIn')}</h1>
+                <p className="text-sm text-gray-500">{t('loginSubtitle')}</p>
             </div>
             {error && <p className="text-center text-sm text-red-600">{error}</p>}
             <div className="flex flex-col gap-4">
                 <div className="flex flex-col gap-2">
-                    <label htmlFor="username" className="text-sm font-medium text-gray-700">Username</label>
+                    <label htmlFor="username" className="text-sm font-medium text-gray-700">{t('username')}</label>
                     <input
                         id="username"
                         type="text"
@@ -56,7 +58,7 @@ export function LoginForm() {
                     />
                 </div>
                 <div className="flex flex-col gap-2">
-                    <label htmlFor="gmail" className="text-sm font-medium text-gray-700">Gmail</label>
+                    <label htmlFor="gmail" className="text-sm font-medium text-gray-700">{t('gmail')}</label>
                     <input
                         id="gmail"
                         type="email"
@@ -68,7 +70,7 @@ export function LoginForm() {
                     />
                 </div>
                 <div className="flex flex-col gap-2">
-                    <label htmlFor="password" className="text-sm font-medium text-gray-700">Password</label>
+                    <label htmlFor="password" className="text-sm font-medium text-gray-700">{t('password')}</label>
                     <div className="relative">
                         <input
                             id="password"
@@ -95,10 +97,10 @@ export function LoginForm() {
                 </div>
                 <label className="flex items-center gap-2 cursor-pointer">
                     <input type="checkbox" checked={remember} onChange={(e) => setRemember(e.target.checked)} className="h-4 w-4 rounded border-gray-300 text-red-600 focus:ring-red-500" />
-                    <span className="text-sm text-gray-600">Remember me</span>
+                    <span className="text-sm text-gray-600">{t('rememberMe')}</span>
                 </label>
                 <button type="submit" disabled={loading} className="rounded-lg bg-red-600 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-red-700 disabled:opacity-50">
-                    {loading ? 'Signing in...' : 'Sign in'}
+                    {loading ? t('signingIn') : t('signIn')}
                 </button>
             </div>
         </form>
