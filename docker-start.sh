@@ -29,11 +29,9 @@ EOF
 php artisan config:clear 2>/dev/null
 
 for i in $(seq 1 30); do
-  php artisan migrate --force 2>/dev/null && break
+  php artisan migrate --force 2>/dev/null && php artisan db:seed --force 2>/dev/null && break
   echo "Waiting for MySQL..."
   sleep 2
 done
-
-php artisan db:seed --force 2>/dev/null
 
 php artisan serve --host=0.0.0.0 --port=${PORT:-8080}
