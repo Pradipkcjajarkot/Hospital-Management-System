@@ -97,9 +97,9 @@ export default function SettingsPage() {
       <div className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-900">
         <h3 className="mb-4 font-semibold text-gray-900 dark:text-white">Hospital Logo</h3>
         <div className="flex flex-col sm:flex-row items-center gap-6">
-          <div className="flex h-24 w-24 items-center justify-center overflow-hidden rounded-2xl border-2 border-dashed border-gray-200 bg-gray-50 dark:border-gray-700 dark:bg-gray-800">
+          <div className="flex h-24 w-24 items-center justify-center overflow-hidden rounded-full border-2 border-dashed border-gray-200 bg-gray-50 dark:border-gray-700 dark:bg-gray-800">
             {logoPreview ? (
-              <img src={logoPreview} alt="Logo" className="h-full w-full object-contain" />
+              <img src={logoPreview} alt="Logo" className="h-full w-full object-cover" />
             ) : (
               <ImageIcon className="h-8 w-8 text-gray-300 dark:text-gray-600" />
             )}
