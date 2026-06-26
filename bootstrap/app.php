@@ -4,7 +4,6 @@ use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use App\Http\Middleware\PortalAuth;
-use App\Http\Middleware\AdminMiddleware;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -13,10 +12,7 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        $middleware->alias([
-            'portal.auth' => PortalAuth::class,
-            'admin' => AdminMiddleware::class,
-        ]);
+        $middleware->alias(['portal.auth' => PortalAuth::class]);
         $middleware->validateCsrfTokens(except: [
             'api/login',
             'api/register',

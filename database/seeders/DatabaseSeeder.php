@@ -12,23 +12,11 @@ class DatabaseSeeder extends Seeder
 
     public function run(): void
     {
-        if (User::count() === 0) {
-            User::create([
-                'name' => 'Admin',
-                'email' => 'admin@hospital.com',
-                'password' => 'admin123',
-                'role' => 'admin',
-                'status' => 'active',
-            ]);
-            $this->command->info('Default admin user created: admin@hospital.com / admin123');
-        }
+        // User::factory(10)->create();
 
-        $user = User::where('email', 'neupane0123456@yopmail.com')->first()
-              ?? User::whereNull('role')->orderBy('id')->first()
-              ?? User::orderBy('id')->first();
-        if ($user && $user->role !== 'admin') {
-            $user->update(['role' => 'admin']);
-            $this->command->info("User '{$user->email}' has been set as admin.");
-        }
+        User::factory()->create([
+            'name' => 'Test User',
+            'email' => 'test@example.com',
+        ]);
     }
 }
