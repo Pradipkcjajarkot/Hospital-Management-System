@@ -16,42 +16,57 @@ use App\Models\Setting;
 use App\Models\Testimonial;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class PublicController extends Controller
 {
     public function home(): JsonResponse
     {
-        $departments = Department::where('status', 'active')->take(6)->get();
-        $doctors = Doctor::where('status', 'active')->take(4)->get();
-        $testimonials = Testimonial::latest()->take(3)->get();
-        $blogPosts = BlogPost::published()->latest('published_at')->take(3)->get();
-        $events = Event::upcoming()->take(4)->get();
-        $settings = Setting::all()->pluck('value', 'key');
-        $stats = [
-            'patients' => \App\Models\Patient::count(),
-            'doctors' => Doctor::where('status', 'active')->count(),
-            'departments' => Department::where('status', 'active')->count(),
-            'years' => 15,
-        ];
+        $data = Cache::remember('public_home', 300, function () {
+            $departments = Department::where('status', 'active')->take(6)->get();
+            $doctors = Doctor::where('status', 'active')->take(4)->get();
+            $testimonials = Testimonial::latest()->take(3)->get();
+            $blogPosts = BlogPost::published()->latest('published_at')->take(3)->get();
+            $events = Event::upcoming()->take(4)->get();
+            $settings = Setting::all()->pluck('value', 'key');
+            $stats = [
+                'patients' => Patient::count(),
+                'doctors' => Doctor::where('status', 'active')->count(),
+                'departments' => Department::where('status', 'active')->count(),
+                'years' => 15,
+            ];
 
-        return response()->json(compact('departments', 'doctors', 'testimonials', 'blogPosts', 'events', 'settings', 'stats'));
+            return compact('departments', 'doctors', 'testimonials', 'blogPosts', 'events', 'settings', 'stats');
+        });
+
+        return response()->json($data);
     }
 
-    public function doctors(): JsonResponse
+    public function doctors(Request $request): JsonResponse
     {
-        $doctors = Doctor::where('status', 'active')->with('user')->get();
+        $doctors = Cache::remember('public_doctors', 600, function () use ($request) {
+            $query = Doctor::where('status', 'active');
+            if ($request->filled('department')) {
+                $query->where('department', $request->department);
+            }
+            return $query->get();
+        });
         return response()->json($doctors);
     }
 
     public function departments(): JsonResponse
     {
-        $departments = Department::where('status', 'active')->get();
+        $departments = Cache::remember('public_departments', 600, function () {
+            return Department::where('status', 'active')->get();
+        });
         return response()->json($departments);
     }
 
     public function blog(): JsonResponse
     {
-        $posts = BlogPost::published()->latest('published_at')->get();
+        $posts = Cache::remember('public_blog', 600, function () {
+            return BlogPost::published()->latest('published_at')->get();
+        });
         return response()->json($posts);
     }
 
@@ -63,20 +78,27 @@ class PublicController extends Controller
 
     public function gallery(): JsonResponse
     {
-        $items = GalleryItem::latest()->get();
+        $items = Cache::remember('public_gallery', 600, function () {
+            return GalleryItem::latest()->get();
+        });
         return response()->json($items);
     }
 
     public function events(): JsonResponse
     {
-        $upcoming = Event::upcoming()->get();
-        $past = Event::where('event_date', '<', now())->orderBy('event_date', 'desc')->take(10)->get();
-        return response()->json($upcoming->concat($past));
+        $events = Cache::remember('public_events', 600, function () {
+            $upcoming = Event::upcoming()->get();
+            $past = Event::where('event_date', '<', now())->orderBy('event_date', 'desc')->take(10)->get();
+            return $upcoming->concat($past);
+        });
+        return response()->json($events);
     }
 
     public function contact(): JsonResponse
     {
-        $settings = Setting::all()->pluck('value', 'key');
+        $settings = Cache::remember('public_contact_settings', 600, function () {
+            return Setting::all()->pluck('value', 'key');
+        });
         return response()->json(['settings' => $settings]);
     }
 
