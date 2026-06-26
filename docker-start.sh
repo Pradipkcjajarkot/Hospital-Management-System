@@ -1,6 +1,16 @@
 #!/bin/sh
 set -e
 
+echo "=== Railway Deploy Debug ==="
+echo "PORT=$PORT"
+echo "RAILWAY_PUBLIC_DOMAIN=$RAILWAY_PUBLIC_DOMAIN"
+echo "MYSQLHOST=$MYSQLHOST"
+echo "MYSQLPORT=$MYSQLPORT"
+echo "MYSQLDATABASE=$MYSQLDATABASE"
+echo "MYSQLUSER=$MYSQLUSER"
+echo "MYSQLPASSWORD is set: $(if [ -n "$MYSQLPASSWORD" ]; then echo 'YES'; else echo 'NO'; fi)"
+echo "==========================="
+
 cat > .env << EOF
 APP_KEY=$(grep ^APP_KEY .env | head -1)
 APP_ENV=production
@@ -29,8 +39,12 @@ EOF
 php artisan config:clear 2>/dev/null
 
 for i in $(seq 1 30); do
-  php artisan migrate --force 2>/dev/null && php artisan db:seed --force 2>/dev/null && break
-  echo "Waiting for MySQL..."
+  echo "Attempt $i: Running migrations..."
+  if php artisan migrate --force 2>&1; then
+    echo "Migrations done. Running seeder..."
+    php artisan db:seed --force 2>&1 && break
+  fi
+  echo "Waiting for MySQL... ($i/30)"
   sleep 2
 done
 
