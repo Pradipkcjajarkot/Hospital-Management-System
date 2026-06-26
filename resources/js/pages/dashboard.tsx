@@ -442,7 +442,7 @@ export default function Dashboard() {
             <div className="flex items-center gap-2.5 animate-fade-in">
               {logoUrl ? (
                 <div className="h-10 w-10 overflow-hidden rounded-full border-2 border-white/30 bg-white shadow-sm">
-                  <img src={logoUrl} alt="Logo" className="h-full w-full object-contain p-1" />
+                  <img src={logoUrl} alt="Logo" className="h-full w-full object-cover" />
                 </div>
               ) : (
                 <>

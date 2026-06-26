@@ -56,7 +56,7 @@ export default function PublicLayout({ page, setPage, onLogin, children }: Publi
           <button onClick={() => { setPage('home'); setMobileOpen(false) }} className="flex items-center gap-2.5">
             {logo ? (
               <div className="h-10 w-10 overflow-hidden rounded-full border-2 border-white/30 bg-white shadow-sm ring-1 ring-rose-200/50">
-                <img src={logo} alt="Hospital Logo" className="h-full w-full object-contain p-1" />
+                <img src={logo} alt="Hospital Logo" className="h-full w-full object-cover" />
               </div>
             ) : (
               <>
