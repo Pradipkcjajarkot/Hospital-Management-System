@@ -11,12 +11,8 @@ echo "MYSQLUSER=$MYSQLUSER"
 echo "MYSQLPASSWORD is set: $(if [ -n "$MYSQLPASSWORD" ]; then echo 'YES'; else echo 'NO'; fi)"
 echo "==========================="
 
-if [ -z "$APP_KEY" ]; then
-  APP_KEY=$(php -r "echo 'base64:'.base64_encode(random_bytes(32));")
-  echo "Generated APP_KEY (not set in Railway env)"
-fi
 cat > .env << EOF
-APP_KEY=${APP_KEY}
+APP_KEY=
 APP_ENV=production
 APP_DEBUG=true
 APP_URL=https://${RAILWAY_PUBLIC_DOMAIN:-localhost}
@@ -40,6 +36,7 @@ MAIL_FROM_NAME=${MAIL_FROM_NAME:-}
 RESEND_API_KEY=${RESEND_API_KEY:-}
 EOF
 
+php artisan key:generate 2>&1
 php artisan config:clear 2>/dev/null
 
 for i in $(seq 1 30); do
