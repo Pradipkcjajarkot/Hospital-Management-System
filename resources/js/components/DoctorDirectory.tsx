@@ -25,7 +25,7 @@ export default function DoctorDirectory({ setPage }: { setPage: (p: string) => v
   const filtered = doctors.filter((d) => {
     const q = search.toLowerCase()
     const nameMatch = (d.first_name + ' ' + d.last_name).toLowerCase().includes(q) || d.specialization?.toLowerCase().includes(q) || d.department?.toLowerCase().includes(q)
-    const deptMatch = !deptFilter || d.department_id === parseInt(deptFilter)
+    const deptMatch = !deptFilter || (d.department?.toLowerCase() === depts.find((x: any) => x.id === parseInt(deptFilter))?.name?.toLowerCase())
     return nameMatch && deptMatch
   })
 
@@ -98,9 +98,17 @@ export default function DoctorDirectory({ setPage }: { setPage: (p: string) => v
                   <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-amber-100 text-amber-600 dark:bg-amber-900/30 dark:text-amber-400"><CalendarDays className="h-4 w-4" /></div>
                   <div><p className="text-sm font-medium text-gray-900 dark:text-white">Available Days</p>
                     <div className="mt-1 flex flex-wrap gap-1">
-                      {(Array.isArray(d.available_days) ? d.available_days : JSON.parse(d.available_days || '[]')).map((day: string) => (
-                        <span key={day} className="rounded-md bg-gray-100 px-2 py-0.5 text-xs text-gray-600 dark:bg-gray-700 dark:text-gray-400">{day}</span>
-                      ))}
+                      {(() => {
+                        let days: string[] = []
+                        const raw = d.available_days
+                        if (Array.isArray(raw)) days = raw
+                        else if (typeof raw === 'string') {
+                          try { days = JSON.parse(raw) } catch { days = raw.split(',').map((s: string) => s.trim()).filter(Boolean) }
+                        }
+                        return days.map((day: string) => (
+                          <span key={day} className="rounded-md bg-gray-100 px-2 py-0.5 text-xs text-gray-600 dark:bg-gray-700 dark:text-gray-400">{day}</span>
+                        ))
+                      })()}
                     </div>
                   </div>
                 </div>

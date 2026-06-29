@@ -32,7 +32,7 @@ function App() {
     return <Dashboard />;
   }
 
-  const [page, setPage] = useState<Page>('landing');
+  const [page, setPage] = useState<Page>('home');
   const [portalToken, setPortalToken] = useState<string | null>(() => localStorage.getItem('portal_token'));
 
   const handlePortalLogin = (token: string) => {

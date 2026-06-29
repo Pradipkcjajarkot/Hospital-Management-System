@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\GalleryController;
 use App\Http\Controllers\Admin\TestimonialController;
 use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\BedController;
 use App\Http\Controllers\BillController;
 use App\Http\Controllers\DepartmentController;
@@ -62,6 +63,7 @@ Route::middleware('portal.auth')->group(function () {
 });
 
 Route::middleware('auth')->group(function () {
+    Route::get('/api/dashboard-stats', [DashboardController::class, 'stats']);
     Route::post('/api/upload-logo', [AuthController::class, 'uploadLogo']);
     Route::get('/api/patients', [PatientController::class, 'index']);
     Route::post('/api/patients', [PatientController::class, 'store']);

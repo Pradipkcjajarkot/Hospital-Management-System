@@ -44,10 +44,12 @@ class PublicController extends Controller
 
     public function doctors(Request $request): JsonResponse
     {
-        $doctors = Cache::remember('public_doctors', 600, function () use ($request) {
+        $dept = $request->input('department', '');
+        $cacheKey = 'public_doctors_' . md5($dept);
+        $doctors = Cache::remember($cacheKey, 600, function () use ($dept) {
             $query = Doctor::where('status', 'active');
-            if ($request->filled('department')) {
-                $query->where('department', $request->department);
+            if ($dept) {
+                $query->where('department', $dept);
             }
             return $query->get();
         });

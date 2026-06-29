@@ -139,13 +139,16 @@ export default function DoctorManagement() {
   const [saving, setSaving] = useState(false)
   const [showAddForm, setShowAddForm] = useState(false)
   const [photoUploading, setPhotoUploading] = useState(false)
+  const [photoFile, setPhotoFile] = useState<File | null>(null)
+  const [photoPreview, setPhotoPreview] = useState('')
   const photoInputRef = useRef<HTMLInputElement>(null)
+  const addPhotoInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => { fetchDoctors() }, [])
 
   async function fetchDoctors() {
     try {
-      const res = await fetch('/api/doctors')
+      const res = await fetch('/api/doctors', { credentials: 'same-origin', headers: { 'Accept': 'application/json' } })
       const data = await res.json()
       setDoctors(data.doctors)
     } catch { /* ignore */ }
@@ -170,6 +173,8 @@ export default function DoctorManagement() {
     setForm(emptyForm)
     setShowAddForm(true)
     setSelected(null)
+    setPhotoFile(null)
+    setPhotoPreview('')
   }
 
   async function handleSave(e: React.FormEvent) {
@@ -183,17 +188,23 @@ export default function DoctorManagement() {
     try {
       const res = await fetch(`/api/doctors/${editing!.id}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        credentials: 'same-origin',
         body: JSON.stringify(body),
       })
       if (res.ok) {
         setEditing(null)
         await fetchDoctors()
       } else {
-        const data = await res.json()
-        alert(Object.values(data.errors || { message: data.message || 'Error' }).flat().join('\n'))
+        const text = await res.text()
+        try {
+          const data = JSON.parse(text)
+          alert(Object.values(data.errors || { message: data.message || 'Error' }).flat().join('\n'))
+        } catch {
+          alert('Update failed: server error. Refresh and try again.')
+        }
       }
-    } catch { alert('Update failed') }
+    } catch { alert('Update failed: please log in again.') }
     finally { setSaving(false) }
   }
 
@@ -201,26 +212,59 @@ export default function DoctorManagement() {
     e.preventDefault()
     setSaving(true)
     const body = {
-      ...form,
+      first_name: form.first_name, last_name: form.last_name, email: form.email,
+      phone: form.phone || null, specialization: form.specialization || null,
+      qualification: form.qualification || null, license_number: form.license_number || null,
+      department: form.department || null,
       experience_years: form.experience_years ? Number(form.experience_years) : null,
       consultation_fee: form.consultation_fee ? Number(form.consultation_fee) : null,
+      available_days: form.available_days || null,
+      available_time_start: form.available_time_start || null,
+      available_time_end: form.available_time_end || null,
+      address: form.address || null, city: form.city || null,
+      state: form.state || null, pincode: form.pincode || null,
+      status: form.status,
     }
     try {
       const res = await fetch('/api/doctors', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        credentials: 'same-origin',
         body: JSON.stringify(body),
       })
       if (res.ok) {
-        setShowAddForm(false)
-        setForm(emptyForm)
-        await fetchDoctors()
-      } else {
         const data = await res.json()
-        alert(Object.values(data.errors || { message: data.message || 'Error' }).flat().join('\n'))
+        setShowAddForm(false)
+        setPhotoFile(null)
+        setPhotoPreview('')
+        setForm(emptyForm)
+        if (photoFile && data.doctor?.id) {
+          const photoFd = new FormData()
+          photoFd.append('photo', photoFile)
+          try {
+            await fetch(`/api/doctors/${data.doctor.id}/upload-photo`, { method: 'POST', body: photoFd })
+          } catch { /* photo upload optional */ }
+        }
+        await fetchDoctors()
+        if (data.doctor) openEdit(data.doctor)
+      } else {
+        const text = await res.text()
+        try {
+          const data = JSON.parse(text)
+          alert(Object.values(data.errors || { message: data.message || 'Error' }).flat().join('\n'))
+        } catch {
+          alert('Server error. Please refresh and try again.')
+        }
       }
-    } catch { alert('Add failed') }
+    } catch (err) { alert('Error: please log out and log in again, then retry.') }
     finally { setSaving(false) }
+  }
+
+  function handleAddPhotoSelect(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    if (!file) return
+    setPhotoFile(file)
+    setPhotoPreview(URL.createObjectURL(file))
   }
 
   async function handleDelete(id: number) {
@@ -434,15 +478,40 @@ export default function DoctorManagement() {
 
   if (showAddForm) {
     return (
-      <DoctorForm
-        form={form}
-        setForm={setForm}
-        saving={saving}
-        onCancel={() => setShowAddForm(false)}
-        onSubmit={handleAdd}
-        title={t('addDoctor')}
-        submitLabel={t('addDoctor')}
-      />
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{t('addDoctor')}</h1>
+          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">{t('fillDetails')}</p>
+        </div>
+        <div className="mb-6 rounded-xl border-2 border-dashed border-gray-200 bg-gray-50 p-4 dark:border-gray-700 dark:bg-gray-800/50">
+          <div className="flex items-center gap-4">
+            <div className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-violet-100 to-purple-100 text-lg font-bold text-violet-700 dark:from-violet-900/40 dark:to-purple-900/40 dark:text-violet-400">
+              {photoPreview ? (
+                <img src={photoPreview} alt="" className="h-full w-full object-cover" />
+              ) : (
+                <Camera className="h-6 w-6" />
+              )}
+            </div>
+            <div className="flex-1">
+              <p className="text-sm font-medium text-gray-900 dark:text-white">{t('doctorPhoto')}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">{t('photoFormatHint')}</p>
+            </div>
+            <button onClick={() => addPhotoInputRef.current?.click()}
+              className="flex items-center gap-2 rounded-xl bg-rose-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-rose-700 transition-all">
+              <Camera className="h-4 w-4" /> {photoFile ? t('changePhoto') : t('uploadPhoto')}
+            </button>
+          </div>
+        </div>
+        <DoctorForm
+          form={form}
+          setForm={setForm}
+          saving={saving}
+          onCancel={() => { setShowAddForm(false); setPhotoFile(null); setPhotoPreview('') }}
+          onSubmit={handleAdd}
+          title={t('addDoctor')}
+          submitLabel={t('addDoctor')}
+        />
+      </div>
     )
   }
 
@@ -510,6 +579,7 @@ export default function DoctorManagement() {
       )}
 
       <input ref={photoInputRef} type="file" accept="image/png,image/jpeg,image/jpg,image/webp" className="hidden" onChange={handlePhotoUpload} />
+      <input ref={addPhotoInputRef} type="file" accept="image/png,image/jpeg,image/jpg,image/webp" className="hidden" onChange={handleAddPhotoSelect} />
       {photoUploading && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/20 backdrop-blur-sm">
           <div className="rounded-2xl bg-white p-6 shadow-xl dark:bg-gray-800">

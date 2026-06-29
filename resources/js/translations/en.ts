@@ -33,6 +33,7 @@ const en = {
   edit: 'Edit',
   create: 'Create',
   update: 'Update',
+  home: 'Home',
   search: 'Search',
   back: 'Back',
   print: 'Print',
@@ -71,6 +72,8 @@ const en = {
   otpPlaceholder: 'Enter OTP',
   profile: 'Profile',
   uploadPhoto: 'Upload Photo',
+  changePhoto: 'Change Photo',
+  fillDetails: 'Fill in the details below.',
   removePhoto: 'Remove Photo',
 
   // Public Website
@@ -271,6 +274,9 @@ const en = {
   totalStaff: 'Total Staff',
   availableBeds: 'Available Beds',
   todaysRevenue: "Today's Revenue",
+  opdToday: "OPD Today",
+  noAppointmentsToday: "No appointments today",
+  noRecentActivities: "No recent activities",
 
   // OPD
   opdRegistration: 'OPD Registration',

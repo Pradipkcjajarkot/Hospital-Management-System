@@ -39,7 +39,8 @@ class DoctorController extends Controller
         ]);
 
         $doctor = Doctor::create($validated);
-        return response()->json(['doctor' => $doctor, 'message' => 'Doctor created successfully'], 201);
+
+        return response()->json(['doctor' => $doctor->fresh(), 'message' => 'Doctor created successfully'], 201);
     }
 
     public function show(Doctor $doctor): JsonResponse

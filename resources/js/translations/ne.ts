@@ -35,6 +35,7 @@ const ne: Translations = {
   edit: 'सम्पादन',
   create: 'सिर्जना',
   update: 'अद्यावधिक',
+  home: 'गृहपृष्ठ',
   search: 'खोज्नुहोस्',
   back: 'पछाडि',
   print: 'प्रिन्ट',
@@ -73,6 +74,8 @@ const ne: Translations = {
   otpPlaceholder: 'ओटिपी प्रविष्ट गर्नुहोस्',
   profile: 'प्रोफाइल',
   uploadPhoto: 'फोटो अपलोड',
+  changePhoto: 'फोटो परिवर्तन',
+  fillDetails: 'तलको विवरण भर्नुहोस्।',
   removePhoto: 'फोटो हटाउनुहोस्',
 
   // Public Website
@@ -273,6 +276,9 @@ const ne: Translations = {
   totalStaff: 'कुल कर्मचारी',
   availableBeds: 'उपलब्ध बेड',
   todaysRevenue: 'आजको राजस्व',
+  opdToday: 'आजको ओपीडी',
+  noAppointmentsToday: 'आज कुनै भेटघाट छैन',
+  noRecentActivities: 'कुनै हालको गतिविधि छैन',
 
   // OPD
   opdRegistration: 'ओपिडी दर्ता',
