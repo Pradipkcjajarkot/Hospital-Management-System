@@ -11,6 +11,8 @@ echo "MYSQLUSER=$MYSQLUSER"
 echo "MYSQLPASSWORD is set: $(if [ -n "$MYSQLPASSWORD" ]; then echo 'YES'; else echo 'NO'; fi)"
 echo "==========================="
 
+touch /app/database/database.sqlite
+
 if [ -n "$MYSQLHOST" ]; then
   DB_CONNECTION=mysql
   DB_HOST=$MYSQLHOST
@@ -25,7 +27,6 @@ else
   DB_DATABASE=/app/database/database.sqlite
   DB_USERNAME=""
   DB_PASSWORD=""
-  touch /app/database/database.sqlite
 fi
 
 cat > .env << EOF
@@ -57,17 +58,7 @@ EOF
 php artisan key:generate 2>&1
 php artisan config:clear 2>/dev/null
 
-set +e
-for i in $(seq 1 30); do
-  echo "Attempt $i: Running migrations..."
-  php artisan migrate --force 2>&1
-  if [ $? -eq 0 ]; then
-    echo "Migrations done. Running seeder..."
-    php artisan db:seed --force 2>&1 && break
-  fi
-  echo "Waiting for database... ($i/30)"
-  sleep 2
-done
-set -e
+php artisan migrate --force 2>&1 &
+php artisan db:seed --force 2>&1 &
 
 php artisan serve --host=0.0.0.0 --port=${PORT:-8080}
