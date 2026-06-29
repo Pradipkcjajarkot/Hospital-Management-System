@@ -4,7 +4,8 @@ WORKDIR /app
 
 RUN apk add --no-cache \
     libpng-dev libzip-dev oniguruma-dev freetype-dev \
-    icu-dev libwebp-dev jpegoptim optipng pngquant curl
+    icu-dev libwebp-dev jpegoptim optipng pngquant curl \
+    sqlite-dev
 
 RUN docker-php-ext-install pdo_mysql pdo_sqlite mysqli mbstring exif pcntl bcmath gd zip
 
