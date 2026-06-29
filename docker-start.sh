@@ -16,6 +16,7 @@ APP_KEY=
 APP_ENV=production
 APP_DEBUG=true
 APP_URL=https://${RAILWAY_PUBLIC_DOMAIN:-localhost}
+ASSET_URL=https://${RAILWAY_PUBLIC_DOMAIN:-localhost}
 DB_CONNECTION=mysql
 DB_HOST=${MYSQLHOST:-mysql}
 DB_PORT=${MYSQLPORT:-3306}
