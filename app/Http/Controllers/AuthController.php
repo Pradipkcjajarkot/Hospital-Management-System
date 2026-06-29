@@ -39,55 +39,22 @@ class AuthController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email',
+            'email' => 'required|email',
             'phone' => 'required|string|max:20',
             'password' => 'required|min:6|confirmed',
         ]);
 
-        User::create([
+        $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'phone' => $request->phone,
             'password' => $request->password,
+            'email_verified_at' => now(),
         ]);
 
-        $otp = str_pad((string) random_int(0, 9999), 4, '0', STR_PAD_LEFT);
-        Cache::put('otp_signup_' . $request->email, $otp, now()->addMinutes(10));
-        OtpLog::create([
-            'email' => $request->email,
-            'otp' => $otp,
-            'purpose' => 'signup',
-            'status' => 'sent',
-            'expires_at' => now()->addMinutes(10),
-        ]);
-        Mail::to($request->email)->send(new OtpMail($otp));
-
-        return response()->json(['message' => 'Verification code sent to your email'], 201);
-    }
-
-    public function verifySignupOtp(Request $request): JsonResponse
-    {
-        $request->validate([
-            'email' => 'required|email',
-            'otp' => 'required|string|size:4',
-        ]);
-
-        $cached = Cache::get('otp_signup_' . $request->email);
-
-        if (!$cached || $cached !== $request->otp) {
-            return response()->json(['message' => 'Invalid or expired OTP'], 401);
-        }
-
-        Cache::forget('otp_signup_' . $request->email);
-
-        OtpLog::where('email', $request->email)->where('otp', $request->otp)->latest()->first()
-            ?->update(['status' => 'verified', 'verified_at' => now()]);
-
-        $user = User::where('email', $request->email)->first();
-        $user->update(['email_verified_at' => now()]);
         Auth::login($user);
 
-        return response()->json(['message' => 'Account verified successfully']);
+        return response()->json(['message' => 'Account created successfully'], 201);
     }
 
     public function sendOtp(Request $request): JsonResponse

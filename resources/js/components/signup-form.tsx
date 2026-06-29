@@ -3,7 +3,6 @@ import { useLanguage } from '@/contexts/LanguageContext'
 
 export function SignUpForm() {
     const { t } = useLanguage()
-    const [step, setStep] = useState<'form' | 'otp'>('form')
     const [username, setUsername] = useState('')
     const [gmail, setGmail] = useState('')
     const [phone, setPhone] = useState('')
@@ -11,11 +10,9 @@ export function SignUpForm() {
     const [confirmPassword, setConfirmPassword] = useState('')
     const [showPassword, setShowPassword] = useState(false)
     const [showConfirm, setShowConfirm] = useState(false)
-    const [code, setCode] = useState(['', '', '', ''])
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState('')
     const [success, setSuccess] = useState('')
-    const inputRefs = useRef<(HTMLInputElement | null)[]>([])
 
     async function handleFormSubmit(e: FormEvent) {
         e.preventDefault()
@@ -35,95 +32,12 @@ export function SignUpForm() {
             })
             const data = await res.json()
             if (!res.ok) throw new Error(data.message)
-            setStep('otp')
-            setTimeout(() => inputRefs.current[0]?.focus(), 100)
-        } catch (err: unknown) {
-            setError(err instanceof Error ? err.message : t('somethingWentWrong'))
-        } finally {
-            setLoading(false)
-        }
-    }
-
-    function handleCodeChange(index: number, value: string) {
-        if (!/^\d?$/.test(value)) return
-        const newCode = [...code]
-        newCode[index] = value
-        setCode(newCode)
-        if (value && index < 3) {
-            inputRefs.current[index + 1]?.focus()
-        }
-    }
-
-    function handleCodeKeyDown(index: number, e: React.KeyboardEvent) {
-        if (e.key === 'Backspace' && !code[index] && index > 0) {
-            inputRefs.current[index - 1]?.focus()
-        }
-    }
-
-    async function handleOtpSubmit(e: FormEvent) {
-        e.preventDefault()
-        setLoading(true)
-        setError('')
-        try {
-            const otp = code.join('')
-            const res = await fetch('/api/verify-signup-otp', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
-                body: JSON.stringify({ email: gmail, otp }),
-            })
-            const data = await res.json()
-            if (!res.ok) throw new Error(data.message)
             window.location.href = '/dashboard'
         } catch (err: unknown) {
             setError(err instanceof Error ? err.message : t('somethingWentWrong'))
-            setCode(['', '', '', ''])
-            inputRefs.current[0]?.focus()
         } finally {
             setLoading(false)
         }
-    }
-
-    if (step === 'otp') {
-        return (
-            <form onSubmit={handleOtpSubmit} className="flex flex-col gap-6">
-                <div className="flex flex-col items-center gap-2">
-                    <div className="flex h-14 w-14 items-center justify-center rounded-full bg-red-100">
-                        <svg fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="h-8 w-8 text-red-600">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 5.25a3 3 0 0 1 3 3m3 0a6 6 0 0 1-7.029 5.912c-.563-.097-1.159.026-1.563.43L10.5 17.25H8.25v2.25H6v2.25H2.25v-2.818c0-.597.237-1.17.659-1.591l6.499-6.499c.404-.404.527-1 .43-1.563A6 6 0 1 1 21.75 8.25Z" />
-                        </svg>
-                    </div>
-                    <h1 className="text-xl font-bold text-gray-800">{t('verifyEmail')}</h1>
-                    <p className="text-center text-sm text-gray-500">
-                        {t('otpSent')}<br />
-                        <span className="font-medium text-gray-700">{gmail}</span>
-                    </p>
-                </div>
-                {error && <p className="text-center text-sm text-red-600">{error}</p>}
-                <div className="flex justify-center gap-3">
-                    {code.map((digit, i) => (
-                        <input
-                            key={i}
-                            ref={(el) => { inputRefs.current[i] = el }}
-                            type="text"
-                            inputMode="numeric"
-                            maxLength={1}
-                            value={digit}
-                            disabled={loading}
-                            onChange={(e) => handleCodeChange(i, e.target.value)}
-                            onKeyDown={(e) => handleCodeKeyDown(i, e)}
-                            className="h-14 w-14 rounded-lg border border-gray-300 text-center text-xl font-semibold outline-none transition focus:border-red-400 focus:ring-2 focus:ring-red-100 disabled:opacity-50"
-                            required
-                        />
-                    ))}
-                </div>
-                <button type="submit" disabled={loading} className="rounded-lg bg-red-600 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-red-700 disabled:opacity-50">
-                    {loading ? t('verifying') : t('verifySignIn')}
-                </button>
-                <button type="button" disabled={loading} onClick={() => setStep('form')} className="text-sm text-gray-500 underline hover:text-gray-700">
-                    {t('backToSignUp')}
-                </button>
-            </form>
-        )
     }
 
     return (
