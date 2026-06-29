@@ -11,18 +11,35 @@ echo "MYSQLUSER=$MYSQLUSER"
 echo "MYSQLPASSWORD is set: $(if [ -n "$MYSQLPASSWORD" ]; then echo 'YES'; else echo 'NO'; fi)"
 echo "==========================="
 
+if [ -n "$MYSQLHOST" ]; then
+  DB_CONNECTION=mysql
+  DB_HOST=$MYSQLHOST
+  DB_PORT=${MYSQLPORT:-3306}
+  DB_DATABASE=${MYSQLDATABASE:-railway}
+  DB_USERNAME=${MYSQLUSER:-root}
+  DB_PASSWORD=${MYSQLPASSWORD:-}
+else
+  DB_CONNECTION=sqlite
+  DB_HOST=""
+  DB_PORT=""
+  DB_DATABASE=/app/database/database.sqlite
+  DB_USERNAME=""
+  DB_PASSWORD=""
+  touch /app/database/database.sqlite
+fi
+
 cat > .env << EOF
 APP_KEY=
 APP_ENV=production
 APP_DEBUG=true
 APP_URL=https://${RAILWAY_PUBLIC_DOMAIN:-localhost}
 ASSET_URL=https://${RAILWAY_PUBLIC_DOMAIN:-localhost}
-DB_CONNECTION=mysql
-DB_HOST=${MYSQLHOST:-mysql}
-DB_PORT=${MYSQLPORT:-3306}
-DB_DATABASE=${MYSQLDATABASE:-railway}
-DB_USERNAME=${MYSQLUSER:-root}
-DB_PASSWORD=${MYSQLPASSWORD:-}
+DB_CONNECTION=${DB_CONNECTION}
+DB_HOST=${DB_HOST}
+DB_PORT=${DB_PORT}
+DB_DATABASE=${DB_DATABASE}
+DB_USERNAME=${DB_USERNAME}
+DB_PASSWORD=${DB_PASSWORD}
 SESSION_DRIVER=file
 CACHE_STORE=file
 QUEUE_CONNECTION=sync
@@ -40,14 +57,17 @@ EOF
 php artisan key:generate 2>&1
 php artisan config:clear 2>/dev/null
 
+set +e
 for i in $(seq 1 30); do
   echo "Attempt $i: Running migrations..."
-  if php artisan migrate --force 2>&1; then
+  php artisan migrate --force 2>&1
+  if [ $? -eq 0 ]; then
     echo "Migrations done. Running seeder..."
     php artisan db:seed --force 2>&1 && break
   fi
-  echo "Waiting for MySQL... ($i/30)"
+  echo "Waiting for database... ($i/30)"
   sleep 2
 done
+set -e
 
 php artisan serve --host=0.0.0.0 --port=${PORT:-8080}
