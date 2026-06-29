@@ -10,6 +10,7 @@
         @vite(['resources/css/app.css', 'resources/js/app.tsx'])
     </head>
     <body>
-        <div id="app">Welcome to Hospitalmanagement Systemaguygfdhgdufg</div>
+        <div id="app">Welcome to Hospitalmanagement System</div>
+        <div><h1>Pradip k c (Neupane)</h1></div>
     </body>
 </html>

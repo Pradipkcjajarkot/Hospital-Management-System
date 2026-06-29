@@ -1,5 +1,5 @@
 import './bootstrap';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { createRoot } from 'react-dom/client';
 import { LanguageProvider } from '@/contexts/LanguageContext';
 import LoginPage from '@/pages/login';
@@ -27,25 +27,44 @@ declare global {
   }
 }
 
+const pages: Page[] = ['home', 'doctors', 'departments', 'blog', 'gallery', 'events', 'contact', 'booking', 'careers', 'portal_login', 'portal', 'landing', 'login', 'signup'];
+
+function pageFromPath(): Page {
+  const p = window.location.pathname.slice(1) as Page;
+  return pages.includes(p) ? p : 'home';
+}
+
+function navigate(page: Page) {
+  window.history.pushState(null, '', page === 'home' ? '/' : '/' + page);
+}
+
 function App() {
   if (window.APP_PAGE === 'dashboard') {
     return <Dashboard />;
   }
 
-  const [page, setPage] = useState<Page>('home');
+  const [page, setPage] = useState<Page>(pageFromPath);
   const [portalToken, setPortalToken] = useState<string | null>(() => localStorage.getItem('portal_token'));
+
+  useEffect(() => {
+    const onPop = () => setPage(pageFromPath());
+    window.addEventListener('popstate', onPop);
+    return () => window.removeEventListener('popstate', onPop);
+  }, []);
+
+  const go = (p: Page) => { setPage(p); navigate(p); };
 
   const handlePortalLogin = (token: string) => {
     localStorage.setItem('portal_token', token);
     setPortalToken(token);
-    setPage('portal');
+    go('portal');
   };
 
   const handlePortalLogout = () => {
     fetch('/api/portal/logout', { method: 'POST', headers: { 'Authorization': `Bearer ${portalToken}` } }).catch(() => {});
     localStorage.removeItem('portal_token');
     setPortalToken(null);
-    setPage('home');
+    go('home');
   };
 
   if (portalToken && page === 'portal') {
@@ -53,15 +72,15 @@ function App() {
   }
 
   if (page === 'portal_login') {
-    return <PortalLogin onLogin={handlePortalLogin} onBack={() => setPage('home')} />;
+    return <PortalLogin onLogin={handlePortalLogin} onBack={() => go('home')} />;
   }
 
   if (page === 'login') {
-    return <LoginPage onSignUp={() => setPage('signup')} onBack={() => setPage('home')} />;
+    return <LoginPage onSignUp={() => go('signup')} onBack={() => go('home')} />;
   }
 
   if (page === 'signup') {
-    return <SignUpPage onLogin={() => setPage('login')} onBack={() => setPage('home')} />;
+    return <SignUpPage onLogin={() => go('login')} onBack={() => go('home')} />;
   }
 
   if (page === 'landing') {
@@ -101,8 +120,8 @@ function App() {
                 </div>
               ))}
             </div>
-            <button onClick={() => setPage('home')} className="mr-4 rounded-xl bg-gray-600 px-8 py-3.5 text-base font-medium text-white shadow-lg transition hover:bg-gray-700">Visit Website</button>
-            <button onClick={() => setPage('login')} className="rounded-xl bg-red-600 px-10 py-3.5 text-lg font-medium text-white shadow-lg transition hover:bg-red-700">Login to Dashboard</button>
+            <button onClick={() => go('home')} className="mr-4 rounded-xl bg-gray-600 px-8 py-3.5 text-base font-medium text-white shadow-lg transition hover:bg-gray-700">Visit Website</button>
+            <button onClick={() => go('login')} className="rounded-xl bg-red-600 px-10 py-3.5 text-lg font-medium text-white shadow-lg transition hover:bg-red-700">Login to Dashboard</button>
           </div>
         </main>
         <footer className="border-t bg-white py-4 text-center text-sm text-gray-400">&copy; 2026 MediCare Hospital Management System. All rights reserved.</footer>
@@ -113,16 +132,16 @@ function App() {
   const publicPages: Page[] = ['home', 'doctors', 'departments', 'blog', 'gallery', 'events', 'contact', 'booking', 'careers'];
   if (publicPages.includes(page)) {
     return (
-      <PublicLayout page={page} setPage={(p) => setPage(p as Page)} onLogin={() => setPage('login')}>
-        {page === 'home' && <HomePage setPage={(p) => setPage(p as Page)} />}
-        {page === 'doctors' && <DoctorDirectory setPage={(p) => setPage(p as Page)} />}
+      <PublicLayout page={page} setPage={(p) => go(p as Page)} onLogin={() => go('login')}>
+        {page === 'home' && <HomePage setPage={(p) => go(p as Page)} />}
+        {page === 'doctors' && <DoctorDirectory setPage={(p) => go(p as Page)} />}
         {page === 'departments' && <DepartmentPage />}
-        {page === 'blog' && <BlogList setPage={(p) => setPage(p as Page)} />}
+        {page === 'blog' && <BlogList setPage={(p) => go(p as Page)} />}
         {page === 'gallery' && <GalleryPage />}
         {page === 'events' && <EventsPage />}
         {page === 'contact' && <ContactPage />}
-        {page === 'booking' && <BookingWizard setPage={(p) => setPage(p as Page)} />}
-        {page === 'careers' && <CareersPage setPage={(p) => setPage(p as Page)} />}
+        {page === 'booking' && <BookingWizard setPage={(p) => go(p as Page)} />}
+        {page === 'careers' && <CareersPage setPage={(p) => go(p as Page)} />}
       </PublicLayout>
     );
   }
