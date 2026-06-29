@@ -12,9 +12,14 @@ interface HomeData {
   stats: { patients: number; doctors: number; departments: number; years: number }
 }
 
+const defaultHomeData: HomeData = {
+  departments: [], doctors: [], testimonials: [], blogPosts: [], events: [],
+  settings: {}, stats: { patients: 0, doctors: 0, departments: 0, years: 15 },
+}
+
 export default function HomePage({ setPage }: { setPage: (p: string) => void }) {
   const { t } = useLanguage()
-  const [data, setData] = useState<HomeData | null>(null)
+  const [data, setData] = useState<HomeData>(defaultHomeData)
   const [aptForm, setAptForm] = useState({ name: '', phone: '', department: '', doctor: '', date: '', time: '', notes: '' })
   const [aptSaving, setAptSaving] = useState(false)
 
@@ -33,14 +38,6 @@ export default function HomePage({ setPage }: { setPage: (p: string) => void }) 
       else { const d = await res.json(); alert(Object.values(d.errors || { message: d.message || 'Error' }).flat().join('\n')) }
     } catch { alert('Booking failed') }
     finally { setAptSaving(false) }
-  }
-
-  if (!data) {
-    return (
-      <div className="flex h-[60vh] items-center justify-center">
-        <div className="h-10 w-10 animate-spin rounded-full border-2 border-gray-300 border-t-rose-500" />
-      </div>
-    )
   }
 
   const s = data.settings || {}
